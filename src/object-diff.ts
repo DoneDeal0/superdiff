@@ -7,10 +7,23 @@ import {
 } from "./model";
 import { hasNestedValues, isEqual } from "./utils";
 
+function getObjectStatus(diff: ObjectDiff["diff"]): DiffStatus {
+  return diff.some((property) => property.status !== STATUS.EQUAL)
+    ? STATUS.UPDATED
+    : STATUS.EQUAL;
+}
+
 function formatSingleObjectDiff(
   data: ObjectData,
   status: DiffStatus
 ): ObjectDiff {
+  if (!data) {
+    return {
+      type: "object",
+      status: STATUS.isEqual,
+      diff: [],
+    };
+  }
   const diff: ObjectDiff["diff"] = [];
   Object.entries(data).forEach(([property, value]) => {
     if (hasNestedValues(value)) {
@@ -40,6 +53,7 @@ function formatSingleObjectDiff(
   });
   return {
     type: "object",
+    status,
     diff,
   };
 }
@@ -51,6 +65,7 @@ export function getObjectDiff(
   if (!prevData && !nextData) {
     return {
       type: "object",
+      status: STATUS.EQUAL,
       diff: [],
     };
   }
@@ -108,6 +123,7 @@ export function getObjectDiff(
   });
   return {
     type: "object",
+    status: getObjectStatus(diff),
     diff,
   };
 }

@@ -5,9 +5,9 @@ function formatSingleListDiff(
   listData: ListData[],
   status: DiffStatus
 ): ListDiff {
-  console.log("formatsingle", listData);
   return {
     type: "list",
+    status,
     diff: listData.map((data: ListData, i) => ({
       value: data,
       prevIndex: status === STATUS.ADDED ? null : i,
@@ -18,6 +18,12 @@ function formatSingleListDiff(
   };
 }
 
+function getListStatus(listDiff: ListDiff["diff"]): DiffStatus {
+  return listDiff.some((value) => value.status !== STATUS.EQUAL)
+    ? STATUS.UPDATED
+    : STATUS.EQUAL;
+}
+
 export const getListDiff = (
   prevList: ListData[] | undefined | null,
   nextList: ListData[] | undefined | null
@@ -25,6 +31,7 @@ export const getListDiff = (
   if (!prevList && !nextList) {
     return {
       type: "list",
+      status: STATUS.EQUAL,
       diff: [],
     };
   }
@@ -80,10 +87,7 @@ export const getListDiff = (
   });
   return {
     type: "list",
+    status: getListStatus(diff),
     diff,
   };
 };
-
-export function hasListChanged(listDiff: ListDiff): boolean {
-  return listDiff.diff.some((d) => d.status !== STATUS.EQUAL);
-}

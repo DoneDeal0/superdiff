@@ -12,6 +12,7 @@ export type ListData = any;
 
 export type ListDiff = {
   type: "list";
+  status: DiffStatus;
   diff: {
     value: ListData;
     prevIndex: number | null;
@@ -30,6 +31,7 @@ export type Subproperties = {
 
 export type ObjectDiff = {
   type: "object";
+  status: DiffStatus;
   diff: {
     property: string;
     previousValue: any;
