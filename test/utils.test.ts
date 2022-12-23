@@ -38,6 +38,7 @@ describe("isEqual", () => {
         ]
       )
     ).toBeFalsy();
+    expect(isEqual(["psg"], ["psg", "nantes"])).toBeFalsy();
   });
 });
 

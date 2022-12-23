@@ -148,4 +148,131 @@ describe("getObjectDiff", () => {
       ],
     });
   });
+  it("detects changed between two deep nested objects", () => {
+    expect(
+      getObjectDiff(
+        {
+          id: 54,
+          user: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg"],
+                rugby: ["france"],
+              },
+            },
+          },
+        },
+        {
+          id: 54,
+          user: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                rugby: ["france"],
+              },
+            },
+          },
+        }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "updated",
+      diff: [
+        {
+          property: "id",
+          previousValue: 54,
+          currentValue: 54,
+          status: "equal",
+        },
+        {
+          property: "user",
+          previousValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg"],
+                rugby: ["france"],
+              },
+            },
+          },
+          currentValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                rugby: ["france"],
+              },
+            },
+          },
+          status: "updated",
+          subPropertiesDiff: [
+            {
+              name: "name",
+              previousValue: "joe",
+              currentValue: "joe",
+              status: "equal",
+            },
+            {
+              name: "data",
+              previousValue: {
+                member: true,
+                hobbies: {
+                  football: ["psg"],
+                  rugby: ["france"],
+                },
+              },
+              currentValue: {
+                member: true,
+                hobbies: {
+                  football: ["psg", "nantes"],
+                  rugby: ["france"],
+                },
+              },
+              status: "updated",
+              subDiff: [
+                {
+                  name: "member",
+                  previousValue: true,
+                  currentValue: true,
+                  status: "equal",
+                },
+                {
+                  name: "hobbies",
+                  previousValue: {
+                    football: ["psg"],
+                    rugby: ["france"],
+                  },
+                  currentValue: {
+                    football: ["psg", "nantes"],
+                    rugby: ["france"],
+                  },
+                  status: "updated",
+                  subDiff: [
+                    {
+                      name: "football",
+                      previousValue: ["psg"],
+                      currentValue: ["psg", "nantes"],
+                      status: "updated",
+                    },
+                    {
+                      name: "rugby",
+                      previousValue: ["france"],
+                      currentValue: ["france"],
+                      status: "equal",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
 });
