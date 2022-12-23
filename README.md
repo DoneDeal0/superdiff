@@ -1,8 +1,8 @@
-## DATA DIFF
+# DATA DIFF
 
 This library compares two arrays or objects and return a complete diff of their differences.
 
-# Object exemple:
+## Object exemple:
 
 `getObjectDiff()` checks base properties but also provides a complete diff of nested properties.
 
@@ -90,7 +90,7 @@ Output
     }
 ```
 
-List exemple:
+## List exemple:
 
 `getListDiff()` works with arrays of string, number and objects.
 It doesn't work yet with duplicated values.
