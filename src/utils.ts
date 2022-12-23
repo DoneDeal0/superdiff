@@ -1,7 +1,7 @@
 export function isEqual(a: any, b: any): boolean {
-  if (typeof a !== typeof b) return true;
+  if (typeof a !== typeof b) return false;
   if (Array.isArray(a)) {
-    return a.toString() === b.toString();
+    return a.every((v, i) => JSON.stringify(v) === JSON.stringify(b[i]));
   }
   if (typeof a === "object") {
     return JSON.stringify(a) === JSON.stringify(b);
@@ -9,6 +9,6 @@ export function isEqual(a: any, b: any): boolean {
   return a === b;
 }
 
-export function hasNestedValues(value: any): value is Record<string, any> {
-  return typeof value === "object" && !Array.isArray(value);
+export function isObject(value: any): value is Record<string, any> {
+  return !!value && typeof value === "object" && !Array.isArray(value);
 }

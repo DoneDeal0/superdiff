@@ -5,7 +5,7 @@ import {
   STATUS,
   Subproperties,
 } from "./model";
-import { hasNestedValues, isEqual } from "./utils";
+import { isObject, isEqual } from "./utils";
 
 function getObjectStatus(diff: ObjectDiff["diff"]): DiffStatus {
   return diff.some((property) => property.status !== STATUS.EQUAL)
@@ -26,7 +26,7 @@ function formatSingleObjectDiff(
   }
   const diff: ObjectDiff["diff"] = [];
   Object.entries(data).forEach(([property, value]) => {
-    if (hasNestedValues(value)) {
+    if (isObject(value)) {
       const subPropertiesDiff: Subproperties[] = [];
       Object.entries(value).forEach(([subProperty, subValue]) => {
         subPropertiesDiff.push({
@@ -79,7 +79,7 @@ export function getObjectDiff(
   Object.entries(nextData).forEach(([nextProperty, nextValue]) => {
     const previousValue = prevData[nextProperty];
 
-    if (hasNestedValues(nextValue)) {
+    if (isObject(nextValue)) {
       const prevSubValues = previousValue
         ? Object.entries(previousValue)
         : null;
