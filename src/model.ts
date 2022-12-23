@@ -27,6 +27,7 @@ export type Subproperties = {
   previousValue: any;
   currentValue: any;
   status: DiffStatus;
+  subDiff?: Subproperties[];
 };
 
 export type ObjectDiff = {
