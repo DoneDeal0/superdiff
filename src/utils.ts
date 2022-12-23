@@ -1,6 +1,9 @@
 export function isEqual(a: any, b: any): boolean {
   if (typeof a !== typeof b) return false;
   if (Array.isArray(a)) {
+    if (a.length !== b.length) {
+      return false;
+    }
     return a.every((v, i) => JSON.stringify(v) === JSON.stringify(b[i]));
   }
   if (typeof a === "object") {

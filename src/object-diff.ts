@@ -62,11 +62,12 @@ function getPreviousMatch(
   prevSubValues: [string, any][] | null,
   nextSubProperty: any
 ): any | undefined {
-  const previousMatch =
-    prevSubValues &&
-    prevSubValues.find(([subPreviousKey]) =>
-      isEqual(subPreviousKey, nextSubProperty)
-    );
+  if (!prevSubValues) {
+    return undefined;
+  }
+  const previousMatch = prevSubValues.find(([subPreviousKey]) =>
+    isEqual(subPreviousKey, nextSubProperty)
+  );
   return previousMatch ? previousMatch[1] : undefined;
 }
 
@@ -88,18 +89,16 @@ function getSubPropertiesDiff(
         subDiff = data;
       }
     }
-    if (prevSubValues) {
-      if (previousMatch) {
-        subPropertiesDiff.push({
-          name: nextSubProperty,
-          previousValue: previousMatch,
-          currentValue: nextSubValue,
-          status: isEqual(previousMatch, nextSubValue)
-            ? STATUS.EQUAL
-            : STATUS.UPDATED,
-          ...(!!subDiff && { subDiff }),
-        });
-      }
+    if (previousMatch) {
+      subPropertiesDiff.push({
+        name: nextSubProperty,
+        previousValue: previousMatch,
+        currentValue: nextSubValue,
+        status: isEqual(previousMatch, nextSubValue)
+          ? STATUS.EQUAL
+          : STATUS.UPDATED,
+        ...(!!subDiff && { subDiff }),
+      });
     }
   });
   return subPropertiesDiff;
