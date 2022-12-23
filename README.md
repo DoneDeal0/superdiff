@@ -8,14 +8,14 @@ This library compares two arrays or objects and return a complete diff of their 
 
 Input
 
-```js
+```diff
 getObjectDiff(
   {
     id: 54,
     user: {
       name: "joe",
-      member: true,
-      hobbies: ["golf", "football"],
+-     member: true,
+-     hobbies: ["golf", "football"],
       age: 66,
     },
   },
@@ -23,8 +23,8 @@ getObjectDiff(
     id: 54,
     user: {
       name: "joe",
-      member: false,
-      hobbies: ["golf", "chess"],
++     member: false,
++     hobbies: ["golf", "chess"],
       age: 66,
     },
   }
@@ -33,10 +33,10 @@ getObjectDiff(
 
 Output
 
-```js
+```diff
 {
       type: "object",
-      status: "updated",
++     status: "updated",
       diff: [
         {
           property: "id",
@@ -58,7 +58,7 @@ Output
             hobbies: ["golf", "chess"],
             age: 66,
           },
-          status: "updated",
++         status: "updated",
           subPropertiesDiff: [
             {
               name: "name",
@@ -66,18 +66,18 @@ Output
               currentValue: "joe",
               status: "equal",
             },
-            {
-              name: "member",
-              previousValue: true,
-              currentValue: false,
-              status: "updated",
-            },
-            {
-              name: "hobbies",
-              previousValue: ["golf", "football"],
-              currentValue: ["golf", "chess"],
-              status: "updated",
-            },
++           {
++             name: "member",
++             previousValue: true,
++             currentValue: false,
++             status: "updated",
++           },
++           {
++             name: "hobbies",
++             previousValue: ["golf", "football"],
++             currentValue: ["golf", "chess"],
++             status: "updated",
++           },
             {
               name: "age",
               previousValue: 66,
@@ -97,19 +97,19 @@ It doesn't work yet with duplicated values.
 
 Input
 
-```js
+```diff
 getListDiff(
-  ["mbappe", "mendes", "verratti", "ruiz"],
-  ["mbappe", "messi", "ruiz"]
+- ["mbappe", "mendes", "verratti", "ruiz"],
++ ["mbappe", "messi", "ruiz"]
 );
 ```
 
 Output
 
-```js
+```diff
 {
       type: "list",
-      status: "updated",
++     status: "updated",
       diff: [
         {
           value: "mbappe",
@@ -118,33 +118,33 @@ Output
           indexDiff: 0,
           status: "equal",
         },
-        {
-          value: "mendes",
-          prevIndex: 1,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
-          value: "verratti",
-          prevIndex: 2,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
-          value: "messi",
-          prevIndex: null,
-          newIndex: 1,
-          indexDiff: null,
-          status: "added",
-        },
-        {
-          value: "ruiz",
-          prevIndex: 3,
-          newIndex: 2,
-          indexDiff: -1,
-          status: "moved",
+-       {
+-         value: "mendes",
+-         prevIndex: 1,
+-         newIndex: null,
+-         indexDiff: null,
+-         status: "deleted",
+-       },
+-       {
+-         value: "verratti",
+-         prevIndex: 2,
+-         newIndex: null,
+-         indexDiff: null,
+-         status: "deleted",
+-       },
++       {
++         value: "messi",
++         prevIndex: null,
++         newIndex: 1,
++         indexDiff: null,
++         status: "added",
++       },
++       {
++         value: "ruiz",
++         prevIndex: 3,
++         newIndex: 2,
++         indexDiff: -1,
++         status: "moved",
         },
       ],
     }
