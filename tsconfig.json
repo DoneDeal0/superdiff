@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "./dist",
+    "jsx": "react",
+    "lib": ["esnext", "dom"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "noUnusedParameters": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "outDir": "./dist",
+    "strict": true,
+    "target": "es5",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true
+  },
+  "include": ["src/**/*.tsx"],
+  "exclude": ["node_modules"]
+}

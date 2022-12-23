@@ -1,13 +1,20 @@
-import { STATUS, ListDiff, ListData } from "./model";
+import { STATUS, ListDiff, ListData, DiffStatus } from "./model";
 import { isEqual } from "./utils";
 
 function formatSingleListDiff(
-  listData: ListData,
-  status: "added" | "removed"
+  listData: ListData[],
+  status: DiffStatus
 ): ListDiff {
+  console.log("formatsingle", listData);
   return {
     type: "list",
-    diff: listData.map((data) => ({ value: data, status })),
+    diff: listData.map((data: ListData, i) => ({
+      value: data,
+      prevIndex: status === STATUS.ADDED ? null : i,
+      newIndex: status === STATUS.ADDED ? i : null,
+      indexDiff: null,
+      status,
+    })),
   };
 }
 
@@ -22,10 +29,10 @@ export const getListDiff = (
     };
   }
   if (!prevList) {
-    return formatSingleListDiff(nextList, "added");
+    return formatSingleListDiff(nextList as ListData, STATUS.ADDED);
   }
   if (!nextList) {
-    return formatSingleListDiff(prevList, "removed");
+    return formatSingleListDiff(prevList as ListData, STATUS.DELETED);
   }
   const diff: ListDiff["diff"] = [];
   nextList.forEach((nextValue, i) => {
