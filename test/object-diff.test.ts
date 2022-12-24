@@ -76,6 +76,7 @@ describe("getObjectDiff", () => {
       getObjectDiff(
         {
           id: 54,
+          type: "sport",
           user: {
             name: "joe",
             member: true,
@@ -85,6 +86,7 @@ describe("getObjectDiff", () => {
         },
         {
           id: 54,
+          country: "us",
           user: {
             name: "joe",
             member: false,
@@ -102,6 +104,12 @@ describe("getObjectDiff", () => {
           previousValue: 54,
           currentValue: 54,
           status: "equal",
+        },
+        {
+          property: "country",
+          previousValue: undefined,
+          currentValue: "us",
+          status: "added",
         },
         {
           property: "user",
@@ -144,6 +152,12 @@ describe("getObjectDiff", () => {
               status: "equal",
             },
           ],
+        },
+        {
+          property: "type",
+          previousValue: "sport",
+          currentValue: undefined,
+          status: "deleted",
         },
       ],
     });

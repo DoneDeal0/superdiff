@@ -84,11 +84,27 @@ function getPropertyStatus(subPropertiesDiff: Subproperties[]): DiffStatus {
     : STATUS.EQUAL;
 }
 
-function getDeletedProperties(
+function getDeletedMainProperties(
+  previousValue: Record<string, any>,
+  nextValue: Record<string, any>
+): { property: string; value: any }[] | undefined {
+  const prevKeys = Object.keys(previousValue);
+  const nextKeys = Object.keys(nextValue);
+  const deletedKeys = prevKeys.filter((prevKey) => !nextKeys.includes(prevKey));
+  if (deletedKeys.length > 0) {
+    return deletedKeys.map((deletedKey) => ({
+      property: deletedKey,
+      value: previousValue[deletedKey],
+    }));
+  }
+  return undefined;
+}
+
+function getDeletedSubProperties(
   previousValue: any,
   nextValue: any,
   nextProperty: string
-) {
+): { property: string; value: any }[] | undefined {
   if (!previousValue) return undefined;
   const previousMatch = previousValue[nextProperty];
   if (!previousMatch) return undefined;
@@ -130,7 +146,7 @@ function getSubPropertiesDiff(
       if (data && data.length > 0) {
         subDiff = data;
       }
-      const deletedProperties = getDeletedProperties(
+      const deletedProperties = getDeletedSubProperties(
         previousValue,
         nextValue,
         nextSubProperty
@@ -184,7 +200,14 @@ export function getObjectDiff(
   const diff: ObjectDiff["diff"] = [];
   Object.entries(nextData).forEach(([nextProperty, nextValue]) => {
     const previousValue = prevData[nextProperty];
-
+    if (!!!previousValue) {
+      return diff.push({
+        property: nextProperty,
+        previousValue: undefined,
+        currentValue: nextValue,
+        status: STATUS.ADDED,
+      });
+    }
     if (isObject(nextValue)) {
       const subPropertiesDiff: Subproperties[] = getSubPropertiesDiff(
         previousValue,
@@ -205,6 +228,17 @@ export function getObjectDiff(
       status: getValueStatus(previousValue, nextValue),
     });
   });
+  const deletedProperties = getDeletedMainProperties(prevData, nextData);
+  if (deletedProperties) {
+    deletedProperties.forEach((deletedProperty) => {
+      diff.push({
+        property: deletedProperty.property,
+        previousValue: deletedProperty.value,
+        currentValue: undefined,
+        status: STATUS.DELETED,
+      });
+    });
+  }
   return {
     type: "object",
     status: getObjectStatus(diff),
