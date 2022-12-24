@@ -172,7 +172,7 @@ describe("getObjectDiff", () => {
               member: true,
               hobbies: {
                 football: ["psg", "nantes"],
-                rugby: ["france"],
+                golf: ["st andrews"],
               },
             },
           },
@@ -206,7 +206,7 @@ describe("getObjectDiff", () => {
               member: true,
               hobbies: {
                 football: ["psg", "nantes"],
-                rugby: ["france"],
+                golf: ["st andrews"],
               },
             },
           },
@@ -231,7 +231,7 @@ describe("getObjectDiff", () => {
                 member: true,
                 hobbies: {
                   football: ["psg", "nantes"],
-                  rugby: ["france"],
+                  golf: ["st andrews"],
                 },
               },
               status: "updated",
@@ -250,7 +250,7 @@ describe("getObjectDiff", () => {
                   },
                   currentValue: {
                     football: ["psg", "nantes"],
-                    rugby: ["france"],
+                    golf: ["st andrews"],
                   },
                   status: "updated",
                   subDiff: [
@@ -261,10 +261,16 @@ describe("getObjectDiff", () => {
                       status: "updated",
                     },
                     {
+                      name: "golf",
+                      previousValue: undefined,
+                      currentValue: ["st andrews"],
+                      status: "added",
+                    },
+                    {
                       name: "rugby",
                       previousValue: ["france"],
-                      currentValue: ["france"],
-                      status: "equal",
+                      currentValue: undefined,
+                      status: "deleted",
                     },
                   ],
                 },
