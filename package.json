@@ -1,18 +1,39 @@
 {
   "name": "data-diff",
   "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
+  "description": "Data Diff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
+  "main": "src/index.ts",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "declaration": true,
+  "files": [
+    "dist"
+  ],
+  "author": "DoneDeal0",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DoneDeal0/data-diff"
+  },
+  "keywords": [
+    "deep-diff",
+    "data diff",
+    "object",
+    "diff",
+    "deep diff",
+    "comparison",
+    "compare"
+  ],
   "scripts": {
+    "build": "tsup --dts --format esm,cjs",
     "test": "jest"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
     "@types/jest": "^29.2.4",
     "jest": "^29.3.1",
-    "mkdirp": "^1.0.4",
-    "rimraf": "^3.0.2",
     "ts-jest": "^29.0.3",
+    "tsup": "^6.5.0",
     "typescript": "^4.9.4"
   }
 }
