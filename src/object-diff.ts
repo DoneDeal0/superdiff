@@ -84,10 +84,11 @@ function getPropertyStatus(subPropertiesDiff: Subproperties[]): DiffStatus {
     : STATUS.EQUAL;
 }
 
-function getDeletedMainProperties(
-  previousValue: Record<string, any>,
+function getDeletedProperties(
+  previousValue: Record<string, any> | undefined,
   nextValue: Record<string, any>
 ): { property: string; value: any }[] | undefined {
+  if (!previousValue) return undefined;
   const prevKeys = Object.keys(previousValue);
   const nextKeys = Object.keys(nextValue);
   const deletedKeys = prevKeys.filter((prevKey) => !nextKeys.includes(prevKey));
@@ -100,34 +101,26 @@ function getDeletedMainProperties(
   return undefined;
 }
 
-function getDeletedSubProperties(
-  previousValue: any,
-  nextValue: any,
-  nextProperty: string
-): { property: string; value: any }[] | undefined {
-  if (!previousValue) return undefined;
-  const previousMatch = previousValue[nextProperty];
-  if (!previousMatch) return undefined;
-  const nextMatch = nextValue[nextProperty];
-  const nextKeys = isObject(nextMatch) ? Object.keys(nextMatch) : [];
-  const prevKeys = isObject(previousMatch) ? Object.keys(previousMatch) : [];
-  const deletedKeys = prevKeys.filter(
-    (previousKey) => !nextKeys.includes(previousKey)
-  );
-  const result = deletedKeys.map((deletedKey) => ({
-    property: deletedKey,
-    value: previousMatch[deletedKey],
-  }));
-  if (result.length > 0) return result;
-  return undefined;
-}
-
 function getSubPropertiesDiff(
   previousValue: Record<string, any> | undefined,
   nextValue: Record<string, any>
 ): Subproperties[] {
   const subPropertiesDiff: Subproperties[] = [];
   let subDiff: Subproperties[];
+  const deletedMainSubProperties = getDeletedProperties(
+    previousValue,
+    nextValue
+  );
+  if (deletedMainSubProperties) {
+    deletedMainSubProperties.forEach((deletedProperty) => {
+      subPropertiesDiff.push({
+        name: deletedProperty.property,
+        previousValue: deletedProperty.value,
+        currentValue: undefined,
+        status: STATUS.DELETED,
+      });
+    });
+  }
   Object.entries(nextValue).forEach(([nextSubProperty, nextSubValue]) => {
     const previousMatch = getPreviousMatch(previousValue, nextSubProperty);
     if (!!!previousMatch && !!nextSubProperty) {
@@ -145,26 +138,6 @@ function getSubPropertiesDiff(
       );
       if (data && data.length > 0) {
         subDiff = data;
-      }
-      const deletedProperties = getDeletedSubProperties(
-        previousValue,
-        nextValue,
-        nextSubProperty
-      );
-      if (deletedProperties) {
-        deletedProperties.forEach((deletedProperty) => {
-          const deletedData = {
-            name: deletedProperty.property,
-            previousValue: deletedProperty.value,
-            currentValue: undefined,
-            status: STATUS.DELETED,
-          };
-          if (subDiff) {
-            subDiff.push(deletedData);
-          } else {
-            subDiff = [deletedData];
-          }
-        });
       }
     }
     if (previousMatch) {
@@ -228,7 +201,7 @@ export function getObjectDiff(
       status: getValueStatus(previousValue, nextValue),
     });
   });
-  const deletedProperties = getDeletedMainProperties(prevData, nextData);
+  const deletedProperties = getDeletedProperties(prevData, nextData);
   if (deletedProperties) {
     deletedProperties.forEach((deletedProperty) => {
       diff.push({

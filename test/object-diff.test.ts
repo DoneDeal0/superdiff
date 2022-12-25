@@ -91,7 +91,7 @@ describe("getObjectDiff", () => {
             name: "joe",
             member: false,
             hobbies: ["golf", "chess"],
-            age: 66,
+            nickname: "super joe",
           },
         }
       )
@@ -123,10 +123,16 @@ describe("getObjectDiff", () => {
             name: "joe",
             member: false,
             hobbies: ["golf", "chess"],
-            age: 66,
+            nickname: "super joe",
           },
           status: "updated",
           subPropertiesDiff: [
+            {
+              name: "age",
+              previousValue: 66,
+              currentValue: undefined,
+              status: "deleted",
+            },
             {
               name: "name",
               previousValue: "joe",
@@ -146,10 +152,10 @@ describe("getObjectDiff", () => {
               status: "updated",
             },
             {
-              name: "age",
-              previousValue: 66,
-              currentValue: 66,
-              status: "equal",
+              name: "nickname",
+              previousValue: undefined,
+              currentValue: "super joe",
+              status: "added",
             },
           ],
         },
@@ -269,6 +275,12 @@ describe("getObjectDiff", () => {
                   status: "updated",
                   subDiff: [
                     {
+                      name: "rugby",
+                      previousValue: ["france"],
+                      currentValue: undefined,
+                      status: "deleted",
+                    },
+                    {
                       name: "football",
                       previousValue: ["psg"],
                       currentValue: ["psg", "nantes"],
@@ -279,12 +291,6 @@ describe("getObjectDiff", () => {
                       previousValue: undefined,
                       currentValue: ["st andrews"],
                       status: "added",
-                    },
-                    {
-                      name: "rugby",
-                      previousValue: ["france"],
-                      currentValue: undefined,
-                      status: "deleted",
                     },
                   ],
                 },
