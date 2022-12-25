@@ -1,7 +1,7 @@
 {
-  "name": "data-diff",
+  "name": "superdiff",
   "version": "1.0.0",
-  "description": "Data Diff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
+  "description": "SuperDiff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
   "main": "src/index.ts",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DoneDeal0/data-diff"
+    "url": "git+https://github.com/DoneDeal0/superdiff"
   },
   "keywords": [
     "deep-diff",
