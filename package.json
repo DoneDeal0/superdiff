@@ -16,11 +16,17 @@
     "url": "git+https://github.com/DoneDeal0/superdiff"
   },
   "keywords": [
-    "deep-diff",
     "data diff",
+    "comparison",
+    "comparison-tool",
+    "object-comparison",
+    "array-comparison",
+    "object-diff",
+    "objectdifference",
+    "object-difference",
     "object",
     "diff",
-    "deep diff",
+    "deep-diff",
     "comparison",
     "compare"
   ],

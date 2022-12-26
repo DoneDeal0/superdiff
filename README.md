@@ -6,7 +6,7 @@ This library compares two arrays or objects and return a complete diff of their 
 
 ## WHY YOU SHOULD USE THIS LIB
 
-All other existing solutions return a weird diff format which often require an additionnal parsing. They are also limited to object comparison. Some even have CPU spikes issues. 👎
+All other existing solutions return a weird diff format which often require an additionnal parsing. They are also limited to object comparison. 👎
 
 **Superdiff** gives you a complete diff for both array <u>and</u> objects with a very readable format. Last but not least, it's battled tested. Import. Enjoy. 👍
 
@@ -38,8 +38,6 @@ const objectB = {
   }
 ```
 
-**Deep-Diff**
-
 **Deep-Diff** output:
 
 ```js
@@ -58,7 +56,7 @@ const objectB = {
  }
 ]
 
-````
+```
 
 **SuperDiff** output:
 
@@ -125,10 +123,14 @@ const objectB = {
 
 ### getObjectDiff()
 
-compare two objects and return a diff for each value and their potential subvalues:
+```js
+import { getObjectDiff } from "superdiff";
+```
+
+Compares two objects and return a diff for each value and their potential subvalues:
 
 - property name
-- status: added, deleted, equal, updated
+- status: `added`, `deleted`, `equal`, `updated`
 - previous value, current value
 - supports deeply nested objects with any kind of values
 
@@ -137,57 +139,69 @@ format:
 ```ts
 type ObjectDiff = {
   type: "object";
-   status: "added" | "deleted" | "equal" | "moved" | "updated";
+  status: "added" | "deleted" | "equal" | "moved" | "updated";
   diff: {
     property: string;
     previousValue: any;
     currentValue: any;
-     status: "added" | "deleted" | "equal" | "moved" | "updated";
+    status: "added" | "deleted" | "equal" | "moved" | "updated";
     subPropertiesDiff?: {
-        name: string;
-        previousValue: any;
-        currentValue: any;
-        status: "added" | "deleted" | "equal" | "moved" | "updated";
-        // subDiff is a recursive diff in case of nested subproperties
-        subDiff?: Subproperties[];
-      }[];
+      name: string;
+      previousValue: any;
+      currentValue: any;
+      status: "added" | "deleted" | "equal" | "moved" | "updated";
+      // subDiff is a recursive diff in case of nested subproperties
+      subDiff?: Subproperties[];
+    }[];
   }[];
-}
+};
 ```
 
 ### getListDiff()
 
-compare two arrays and return a diff for each value:
+```js
+import { getListDiff } from "superdiff";
+```
 
-- index change: previous index, current index, index difference
-- status: added, deleted, equal, moved, updated
-- previous value, current value
+Compares two arrays and return a diff for each value:
+
+- index change: `prevIndex`, `newIndex`, `indexDiff`
+- status: `added`, `deleted`, `equal`, `moved`, `updated`
+- value
 - supports array of primitive values and objects
-- ⚠️ doesn't support yet duplicated values comparison (but will soon)
+- ⚠️ doesn't support duplicated values comparison yet (but will soon)
 
 format:
 
 ```ts
 type ListDiff = {
   type: "list";
-  status: "added" | "deleted" | "equal" | "moved" | "updated";
+  status: "added" | "deleted" | "equal" | "moved" | "updated";
   diff: {
     value: any;
     prevIndex: number | null;
     newIndex: number | null;
     indexDiff: number | null;
-    status: "added" | "deleted" | "equal" | "moved" | "updated";
+    status: "added" | "deleted" | "equal" | "moved" | "updated";
   }[];
 };
 ```
 
 ### isEqual()
 
-check if two values are equal.
+```js
+import { isEqual } from "superdiff";
+```
+
+Checks if two values are equal.
 
 ### isObject()
 
-check if a value is an object.
+```js
+import { isObject } from "superdiff";
+```
+
+Checks if a value is an object.
 
 ## EXAMPLES
 
@@ -376,4 +390,5 @@ More examples are availble in the tests of the source code.
 DoneDeal0
 
 ## CONTRIBUTING
+
 Pull requests are welcome!
