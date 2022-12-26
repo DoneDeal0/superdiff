@@ -1,6 +1,6 @@
 {
-  "name": "superdiff",
-  "version": "1.0.0",
+  "name": "@donedeal0/superdiff",
+  "version": "1.0.1",
   "description": "SuperDiff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
   "main": "src/index.ts",
   "module": "dist/index.js",
@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "build": "tsup --dts --format esm,cjs",
+    "publish": "npm publish --access=public",
     "test": "jest"
   },
   "devDependencies": {

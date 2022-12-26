@@ -124,7 +124,7 @@ const objectB = {
 ### getObjectDiff()
 
 ```js
-import { getObjectDiff } from "superdiff";
+import { getObjectDiff } from "@donedeal0/superdiff";
 ```
 
 Compares two objects and return a diff for each value and their potential subvalues:
@@ -160,7 +160,7 @@ type ObjectDiff = {
 ### getListDiff()
 
 ```js
-import { getListDiff } from "superdiff";
+import { getListDiff } from "@donedeal0/superdiff";
 ```
 
 Compares two arrays and return a diff for each value:
@@ -190,7 +190,7 @@ type ListDiff = {
 ### isEqual()
 
 ```js
-import { isEqual } from "superdiff";
+import { isEqual } from "@donedeal0/superdiff";
 ```
 
 Checks if two values are equal.
@@ -198,7 +198,7 @@ Checks if two values are equal.
 ### isObject()
 
 ```js
-import { isObject } from "superdiff";
+import { isObject } from "@donedeal0/superdiff";
 ```
 
 Checks if a value is an object.
