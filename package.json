@@ -1,8 +1,8 @@
 {
   "name": "@donedeal0/superdiff",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "SuperDiff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "declaration": true,
