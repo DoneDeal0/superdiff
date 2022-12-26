@@ -1,3 +1,5 @@
+<img width="722" alt="superdiff-logo" src="https://user-images.githubusercontent.com/43271780/209532864-24d7449e-1185-4810-9423-be5df1fe877f.png">
+
 # SUPERDIFF
 
 This library compares two arrays or objects and return a complete diff of their differences.
@@ -38,7 +40,6 @@ const objectB = {
 
 **Deep-Diff**
 
-````js
 **Deep-Diff** output:
 
 ```js
@@ -133,7 +134,7 @@ compare two objects and return a diff for each value and their potential subvalu
 
 format:
 
-```
+```ts
 type ObjectDiff = {
   type: "object";
    status: "added" | "deleted" | "equal" | "moved" | "updated";
@@ -166,7 +167,7 @@ compare two arrays and return a diff for each value:
 
 format:
 
-```
+```ts
 type ListDiff = {
   type: "list";
   status: "added" | "deleted" | "equal" | "moved" | "updated";
@@ -370,6 +371,9 @@ false;
 
 More examples are availble in the tests of the source code.
 
-##CREDITS
+## CREDITS
 
 DoneDeal0
+
+## CONTRIBUTING
+Pull requests are welcome!
