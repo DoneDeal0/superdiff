@@ -6,9 +6,14 @@ This library compares two arrays or objects and return a complete diff of their 
 
 ## WHY YOU SHOULD USE THIS LIB
 
-All other existing solutions return a weird diff format which often require an additionnal parsing. They are also limited to object comparison. 👎
+All other existing solutions return a weird diff format which often require an additional parsing. They are also slow and limited to object comparison. 👎
 
-**Superdiff** gives you a complete diff for both array <u>and</u> objects with a very readable format. Last but not least, it's battled tested. Import. Enjoy. 👍
+**Superdiff** gives you a complete diff for both array <u>and</u> objects with a very readable format. Last but not least, it's battled tested and super fast. Import. Enjoy. 👍
+
+Benchmark for 10k objects:
+
+- **Superdiff**: 256 ops/sec ⚡
+- **Deep-diff**: 35.98 ops/sec 🐢
 
 ## DIFF FORMAT COMPARISON
 
