@@ -10,10 +10,14 @@ All other existing solutions return a weird diff format which often require an a
 
 **Superdiff** gives you a complete diff for both array <u>and</u> objects with a very readable format. Last but not least, it's battled tested and super fast. Import. Enjoy. 👍
 
-Benchmark for 10k objects:
+**Benchmark**:
 
-- **Superdiff**: 256 ops/sec ⚡
-- **Deep-diff**: 35.98 ops/sec 🐢
+| Objects   | Deep-diff 🐢 | Superdiff ⚡ |
+| --------- | ------------ | ------------ |
+| 1.000     | 10.47ms      | 5.73ms       |
+| 10.000    | 43.05ms      | 18.60ms      |
+| 100.000   | 289.71ms     | 50.96ms      |
+| 1.000.000 | 2786.70ms    | 389.78ms     |
 
 ## DIFF FORMAT COMPARISON
 
