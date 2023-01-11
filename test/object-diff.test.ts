@@ -301,4 +301,102 @@ describe("getObjectDiff", () => {
       ],
     });
   });
+  it("detects changed between two objects BUT doesn't care about array order as long as all values are preserved", () => {
+    expect(
+      getObjectDiff(
+        {
+          id: 54,
+          type: "sport",
+          user: {
+            name: "joe",
+            member: true,
+            hobbies: ["golf", "football"],
+            age: 66,
+          },
+        },
+        {
+          id: 54,
+          country: "us",
+          user: {
+            name: "joe",
+            member: false,
+            hobbies: ["football", "golf"],
+            nickname: "super joe",
+          },
+        },
+        { discardArrayOrder: true }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "updated",
+      diff: [
+        {
+          property: "id",
+          previousValue: 54,
+          currentValue: 54,
+          status: "equal",
+        },
+        {
+          property: "country",
+          previousValue: undefined,
+          currentValue: "us",
+          status: "added",
+        },
+        {
+          property: "user",
+          previousValue: {
+            name: "joe",
+            member: true,
+            hobbies: ["golf", "football"],
+            age: 66,
+          },
+          currentValue: {
+            name: "joe",
+            member: false,
+            hobbies: ["football", "golf"],
+            nickname: "super joe",
+          },
+          status: "updated",
+          subPropertiesDiff: [
+            {
+              name: "age",
+              previousValue: 66,
+              currentValue: undefined,
+              status: "deleted",
+            },
+            {
+              name: "name",
+              previousValue: "joe",
+              currentValue: "joe",
+              status: "equal",
+            },
+            {
+              name: "member",
+              previousValue: true,
+              currentValue: false,
+              status: "updated",
+            },
+            {
+              name: "hobbies",
+              previousValue: ["golf", "football"],
+              currentValue: ["football", "golf"],
+              status: "equal",
+            },
+            {
+              name: "nickname",
+              previousValue: undefined,
+              currentValue: "super joe",
+              status: "added",
+            },
+          ],
+        },
+        {
+          property: "type",
+          previousValue: "sport",
+          currentValue: undefined,
+          status: "deleted",
+        },
+      ],
+    });
+  });
 });

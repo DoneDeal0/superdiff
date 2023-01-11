@@ -9,6 +9,7 @@ export const STATUS: Record<string, DiffStatus> = {
 export type DiffStatus = "added" | "equal" | "moved" | "deleted" | "updated";
 export type ObjectData = Record<string, any> | undefined | null;
 export type ListData = any;
+export type Options = { discardArrayOrder?: boolean };
 
 export type ListDiff = {
   type: "list";

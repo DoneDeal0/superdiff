@@ -1,8 +1,19 @@
-export function isEqual(a: any, b: any): boolean {
+import { Options } from "./model";
+
+export function isEqual(
+  a: any,
+  b: any,
+  options: Options = { discardArrayOrder: false }
+): boolean {
   if (typeof a !== typeof b) return false;
   if (Array.isArray(a)) {
     if (a.length !== b.length) {
       return false;
+    }
+    if (options.discardArrayOrder) {
+      return a.every((v) =>
+        b.some((nextV: any) => JSON.stringify(nextV) === JSON.stringify(v))
+      );
     }
     return a.every((v, i) => JSON.stringify(v) === JSON.stringify(b[i]));
   }

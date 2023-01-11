@@ -4,6 +4,7 @@ import {
   DiffStatus,
   STATUS,
   Subproperties,
+  Options,
 } from "./model";
 import { isObject, isEqual } from "./utils";
 
@@ -60,19 +61,24 @@ function formatSingleObjectDiff(
 
 function getPreviousMatch(
   previousValue: any | undefined,
-  nextSubProperty: any
+  nextSubProperty: any,
+  options?: Options
 ): any | undefined {
   if (!previousValue) {
     return undefined;
   }
   const previousMatch = Object.entries(previousValue).find(([subPreviousKey]) =>
-    isEqual(subPreviousKey, nextSubProperty)
+    isEqual(subPreviousKey, nextSubProperty, options)
   );
   return previousMatch ? previousMatch[1] : undefined;
 }
 
-function getValueStatus(previousValue: any, nextValue: any): DiffStatus {
-  if (isEqual(previousValue, nextValue)) {
+function getValueStatus(
+  previousValue: any,
+  nextValue: any,
+  options?: Options
+): DiffStatus {
+  if (isEqual(previousValue, nextValue, options)) {
     return STATUS.EQUAL;
   }
   return STATUS.UPDATED;
@@ -103,7 +109,8 @@ function getDeletedProperties(
 
 function getSubPropertiesDiff(
   previousValue: Record<string, any> | undefined,
-  nextValue: Record<string, any>
+  nextValue: Record<string, any>,
+  options?: Options
 ): Subproperties[] {
   const subPropertiesDiff: Subproperties[] = [];
   let subDiff: Subproperties[];
@@ -122,7 +129,11 @@ function getSubPropertiesDiff(
     });
   }
   Object.entries(nextValue).forEach(([nextSubProperty, nextSubValue]) => {
-    const previousMatch = getPreviousMatch(previousValue, nextSubProperty);
+    const previousMatch = getPreviousMatch(
+      previousValue,
+      nextSubProperty,
+      options
+    );
     if (!!!previousMatch && !!nextSubProperty) {
       return subPropertiesDiff.push({
         name: nextSubProperty,
@@ -134,7 +145,8 @@ function getSubPropertiesDiff(
     if (isObject(nextSubValue)) {
       const data: Subproperties[] = getSubPropertiesDiff(
         previousMatch,
-        nextSubValue
+        nextSubValue,
+        options
       );
       if (data && data.length > 0) {
         subDiff = data;
@@ -145,7 +157,7 @@ function getSubPropertiesDiff(
         name: nextSubProperty,
         previousValue: previousMatch,
         currentValue: nextSubValue,
-        status: getValueStatus(previousMatch, nextSubValue),
+        status: getValueStatus(previousMatch, nextSubValue, options),
         ...(!!subDiff && { subDiff }),
       });
     }
@@ -155,7 +167,8 @@ function getSubPropertiesDiff(
 
 export function getObjectDiff(
   prevData: ObjectData,
-  nextData: ObjectData
+  nextData: ObjectData,
+  options?: Options
 ): ObjectDiff {
   if (!prevData && !nextData) {
     return {
@@ -184,7 +197,8 @@ export function getObjectDiff(
     if (isObject(nextValue)) {
       const subPropertiesDiff: Subproperties[] = getSubPropertiesDiff(
         previousValue,
-        nextValue
+        nextValue,
+        options
       );
       return diff.push({
         property: nextProperty,
@@ -198,7 +212,7 @@ export function getObjectDiff(
       property: nextProperty,
       previousValue,
       currentValue: nextValue,
-      status: getValueStatus(previousValue, nextValue),
+      status: getValueStatus(previousValue, nextValue, options),
     });
   });
   const deletedProperties = getDeletedProperties(prevData, nextData);

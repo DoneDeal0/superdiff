@@ -394,9 +394,34 @@ false;
 
 More examples are availble in the tests of the source code.
 
+<hr/>
+
+### OPTIONS
+
+`getObjectDiff()` and `isEqual()` accept a facultative `options` parameter:
+
+```ts
+{
+  discardArrayOrder?: boolean // false by default
+}
+```
+
+If `discardArrayOrder` is set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
+
 ## CREDITS
 
 DoneDeal0
+
+## SUPPORT
+
+If you use Superdiff, please show your support by buying me coffee:
+https://www.buymeacoffee.com/donedeal0
+
+<br/>
+<a href="https://www.buymeacoffee.com/donedeal0" target="_blank">
+<img src="https://user-images.githubusercontent.com/43271780/178990049-46b05704-1344-4d55-a5a7-7265724edc5c.png"/>
+</a>
+<br/>
 
 ## CONTRIBUTING
 
