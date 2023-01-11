@@ -40,6 +40,66 @@ describe("isEqual", () => {
     ).toBeFalsy();
     expect(isEqual(["psg"], ["psg", "nantes"])).toBeFalsy();
   });
+  it("return true if discardArrayOrder option is activated and arrays contains the same values regardless of their positions", () => {
+    expect(
+      isEqual(["hello", "world"], ["world", "hello"], {
+        discardArrayOrder: true,
+      })
+    ).toBeTruthy();
+    expect(
+      isEqual([44, 45, "world"], [45, "world", 44], { discardArrayOrder: true })
+    ).toBeTruthy();
+    expect(
+      isEqual(
+        [
+          { name: "joe", age: 88 },
+          { name: "nina", isCool: true },
+        ],
+        [
+          { name: "nina", isCool: true },
+          { name: "joe", age: 88 },
+        ],
+        {
+          discardArrayOrder: true,
+        }
+      )
+    ).toBeTruthy();
+    expect(
+      isEqual([true, 55, "hello"], ["hello", 55, true], {
+        discardArrayOrder: true,
+      })
+    ).toBeTruthy();
+  });
+  it("return false if discardArrayOrder option is activated but the arrays don't contain the same values", () => {
+    expect(
+      isEqual(["hello"], ["world", "hello"], {
+        discardArrayOrder: true,
+      })
+    ).toBeFalsy();
+    expect(
+      isEqual([44, 47, "world"], [45, "world", 44], { discardArrayOrder: true })
+    ).toBeFalsy();
+    expect(
+      isEqual(
+        [
+          { name: "joey", age: 88 },
+          { name: "nina", isCool: true },
+        ],
+        [
+          { name: "nina", isCool: true },
+          { name: "joe", age: 88 },
+        ],
+        {
+          discardArrayOrder: true,
+        }
+      )
+    ).toBeFalsy();
+    expect(
+      isEqual([false, 55, "hello"], ["hello", 55, true], {
+        discardArrayOrder: true,
+      })
+    ).toBeFalsy();
+  });
 });
 
 describe("isObject", () => {

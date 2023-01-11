@@ -6,4 +6,5 @@ export default defineConfig({
   clean: true,
   treeshake: true,
   shims: true,
+  minify: true,
 });
