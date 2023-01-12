@@ -154,6 +154,7 @@ type ObjectDiff = {
     previousValue: any;
     currentValue: any;
     status: "added" | "deleted" | "equal" | "moved" | "updated";
+    // only appears if some subproperties have been added/deleted/updated
     subPropertiesDiff?: {
       name: string;
       previousValue: any;

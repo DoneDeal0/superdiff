@@ -134,12 +134,17 @@ function getSubPropertiesDiff(
       nextSubProperty,
       options
     );
-    if (!!!previousMatch && !!nextSubProperty) {
+    if (!!!previousMatch) {
       return subPropertiesDiff.push({
         name: nextSubProperty,
-        previousValue: undefined,
+        previousValue: previousMatch,
         currentValue: nextSubValue,
-        status: STATUS.ADDED,
+        status:
+          !previousValue || !(nextSubProperty in previousValue)
+            ? STATUS.ADDED
+            : previousMatch === nextSubValue
+            ? STATUS.EQUAL
+            : STATUS.UPDATED,
       });
     }
     if (isObject(nextSubValue)) {
@@ -189,9 +194,13 @@ export function getObjectDiff(
     if (!!!previousValue) {
       return diff.push({
         property: nextProperty,
-        previousValue: undefined,
+        previousValue,
         currentValue: nextValue,
-        status: STATUS.ADDED,
+        status: !(nextProperty in prevData)
+          ? STATUS.ADDED
+          : previousValue === nextValue
+          ? STATUS.EQUAL
+          : STATUS.UPDATED,
       });
     }
     if (isObject(nextValue)) {
@@ -200,12 +209,13 @@ export function getObjectDiff(
         nextValue,
         options
       );
+      const subPropertyStatus = getPropertyStatus(subPropertiesDiff);
       return diff.push({
         property: nextProperty,
         previousValue,
         currentValue: nextValue,
-        status: getPropertyStatus(subPropertiesDiff),
-        subPropertiesDiff,
+        status: subPropertyStatus,
+        ...(subPropertyStatus !== STATUS.EQUAL && { subPropertiesDiff }),
       });
     }
     return diff.push({
