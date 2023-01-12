@@ -71,6 +71,69 @@ describe("getObjectDiff", () => {
       ],
     });
   });
+  it("consider objects as equal if no changes are detected", () => {
+    expect(
+      getObjectDiff(
+        {
+          age: 66,
+          member: false,
+          promoCode: null,
+          city: undefined,
+          hobbies: ["golf", "football"],
+          options: { vegan: undefined, phone: null },
+        },
+        {
+          age: 66,
+          member: false,
+          promoCode: null,
+          city: undefined,
+          hobbies: ["golf", "football"],
+          options: { vegan: undefined, phone: null },
+        }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "equal",
+      diff: [
+        {
+          property: "age",
+          previousValue: 66,
+          currentValue: 66,
+          status: "equal",
+        },
+        {
+          property: "member",
+          previousValue: false,
+          currentValue: false,
+          status: "equal",
+        },
+        {
+          property: "promoCode",
+          previousValue: null,
+          currentValue: null,
+          status: "equal",
+        },
+        {
+          property: "city",
+          previousValue: undefined,
+          currentValue: undefined,
+          status: "equal",
+        },
+        {
+          property: "hobbies",
+          previousValue: ["golf", "football"],
+          currentValue: ["golf", "football"],
+          status: "equal",
+        },
+        {
+          property: "options",
+          previousValue: { vegan: undefined, phone: null },
+          currentValue: { vegan: undefined, phone: null },
+          status: "equal",
+        },
+      ],
+    });
+  });
   it("detects changed between two objects", () => {
     expect(
       getObjectDiff(
@@ -301,7 +364,7 @@ describe("getObjectDiff", () => {
       ],
     });
   });
-  it("detects changed between two objects BUT doesn't care about array order as long as all values are preserved", () => {
+  it("detects changed between two objects BUT doesn't care about array order as long as all values are preserved when discardArrayOrder option is activated", () => {
     expect(
       getObjectDiff(
         {
