@@ -42,10 +42,15 @@ export const getListDiff = (
     return formatSingleListDiff(prevList as ListData, STATUS.DELETED);
   }
   const diff: ListDiff["diff"] = [];
+  const prevIndexMatches: number[] = [];
   nextList.forEach((nextValue, i) => {
-    const prevIndex = prevList.findIndex((prevValue) =>
-      isEqual(prevValue, nextValue)
+    const prevIndex = prevList.findIndex(
+      (prevValue, prevIdx) =>
+        isEqual(prevValue, nextValue) && !prevIndexMatches.includes(prevIdx)
     );
+    if (prevIndex > -1) {
+      prevIndexMatches.push(prevIndex);
+    }
     const indexDiff = prevIndex === -1 ? null : i - prevIndex;
     if (indexDiff === 0) {
       return diff.push({
@@ -75,7 +80,7 @@ export const getListDiff = (
   });
 
   prevList.forEach((prevValue, i) => {
-    if (!nextList.some((nextValue) => isEqual(nextValue, prevValue))) {
+    if (!prevIndexMatches.includes(i)) {
       return diff.splice(i, 0, {
         value: prevValue,
         prevIndex: i,
