@@ -84,7 +84,7 @@ describe("getListDiff", () => {
       ],
     });
   });
-  it("detects changed values in a string list", () => {
+  it("detects changes between string lists", () => {
     expect(
       getListDiff(
         ["mbappe", "mendes", "verratti", "ruiz"],
@@ -132,7 +132,7 @@ describe("getListDiff", () => {
       ],
     });
   });
-  it("detects changed values in a number list", () => {
+  it("detects changes between number lists", () => {
     expect(getListDiff([54, 234, 76, 0], [54, 200, 0])).toStrictEqual({
       type: "list",
       status: "updated",
@@ -175,7 +175,7 @@ describe("getListDiff", () => {
       ],
     });
   });
-  it("detects changed values in an object list", () => {
+  it("detects changes between object lists", () => {
     expect(
       getListDiff(
         [
@@ -220,6 +220,175 @@ describe("getListDiff", () => {
           newIndex: 2,
           indexDiff: 1,
           status: "moved",
+        },
+      ],
+    });
+  });
+  it("detects changes between lists containing duplicated values", () => {
+    expect(
+      getListDiff(["mbappe", "messi"], ["mbappe", "mbappe", "messi"])
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: "mbappe",
+          prevIndex: 0,
+          newIndex: 0,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: "mbappe",
+          prevIndex: null,
+          newIndex: 1,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "messi",
+          prevIndex: 1,
+          newIndex: 2,
+          indexDiff: 1,
+          status: "moved",
+        },
+      ],
+    });
+    expect(
+      getListDiff(
+        ["mbappe", "messi", "messi", "mbappe"],
+        ["mbappe", "messi", "messi"]
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: "mbappe",
+          prevIndex: 0,
+          newIndex: 0,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: "messi",
+          prevIndex: 1,
+          newIndex: 1,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: "messi",
+          prevIndex: 2,
+          newIndex: 2,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: "mbappe",
+          prevIndex: 3,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+      ],
+    });
+    expect(
+      getListDiff(
+        [
+          false,
+          true,
+          true,
+          undefined,
+          "hello",
+          { name: "joe", age: 88 },
+          false,
+          13,
+        ],
+        [
+          false,
+          false,
+          true,
+          undefined,
+          "hello",
+          { name: "joe", age: 88 },
+          false,
+          { name: "joe", age: 88 },
+        ]
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: false,
+          prevIndex: 0,
+          newIndex: 0,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: false,
+          prevIndex: 6,
+          newIndex: 1,
+          indexDiff: -5,
+          status: "moved",
+        },
+        {
+          value: true,
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: true,
+          prevIndex: 1,
+          newIndex: 2,
+          indexDiff: 1,
+          status: "moved",
+        },
+        {
+          value: undefined,
+          prevIndex: 3,
+          newIndex: 3,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: "hello",
+          prevIndex: 4,
+          newIndex: 4,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: { name: "joe", age: 88 },
+          prevIndex: 5,
+          newIndex: 5,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: 13,
+          prevIndex: 7,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: false,
+          prevIndex: null,
+          newIndex: 6,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: { name: "joe", age: 88 },
+          prevIndex: null,
+          newIndex: 7,
+          indexDiff: null,
+          status: "added",
         },
       ],
     });

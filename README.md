@@ -178,8 +178,8 @@ Compares two arrays and return a diff for each value:
 - index change: `prevIndex`, `newIndex`, `indexDiff`
 - status: `added`, `deleted`, `equal`, `moved`, `updated`
 - value
-- supports array of primitive values and objects
-- ⚠️ doesn't support duplicated values comparison yet (but will soon)
+- supports arrays of primitive values and objects
+- supports arrays with duplicated values
 
 format:
 
