@@ -393,4 +393,64 @@ describe("getListDiff", () => {
       ],
     });
   });
+  it("showOnly added and deleted values", () => {
+    expect(
+      getListDiff(
+        [
+          false,
+          true,
+          true,
+          undefined,
+          "hello",
+          { name: "joe", age: 88 },
+          false,
+          13,
+        ],
+        [
+          false,
+          false,
+          true,
+          undefined,
+          "hello",
+          { name: "joe", age: 88 },
+          false,
+          { name: "joe", age: 88 },
+        ],
+        { showOnly: ["added", "deleted"] }
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: true,
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: 13,
+          prevIndex: 7,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: false,
+          prevIndex: null,
+          newIndex: 6,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: { name: "joe", age: 88 },
+          prevIndex: null,
+          newIndex: 7,
+          indexDiff: null,
+          status: "added",
+        },
+      ],
+    });
+  });
 });

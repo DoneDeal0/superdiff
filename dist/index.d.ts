@@ -2,41 +2,48 @@ type DiffStatus = "added" | "equal" | "moved" | "deleted" | "updated";
 type ObjectData = Record<string, any> | undefined | null;
 type ListData = any;
 type Options = {
-    discardArrayOrder?: boolean;
+  ignoreArrayOrder?: boolean;
 };
 type ListDiff = {
-    type: "list";
+  type: "list";
+  status: DiffStatus;
+  diff: {
+    value: ListData;
+    prevIndex: number | null;
+    newIndex: number | null;
+    indexDiff: number | null;
     status: DiffStatus;
-    diff: {
-        value: ListData;
-        prevIndex: number | null;
-        newIndex: number | null;
-        indexDiff: number | null;
-        status: DiffStatus;
-    }[];
+  }[];
 };
-type Subproperties = {
-    name: string;
+type SubProperties = {
+  name: string;
+  previousValue: any;
+  currentValue: any;
+  status: DiffStatus;
+  subDiff?: SubProperties[];
+};
+type ObjectDiff = {
+  type: "object";
+  status: DiffStatus;
+  diff: {
+    property: string;
     previousValue: any;
     currentValue: any;
     status: DiffStatus;
-    subDiff?: Subproperties[];
-};
-type ObjectDiff = {
-    type: "object";
-    status: DiffStatus;
-    diff: {
-        property: string;
-        previousValue: any;
-        currentValue: any;
-        status: DiffStatus;
-        subPropertiesDiff?: Subproperties[];
-    }[];
+    subPropertiesDiff?: SubProperties[];
+  }[];
 };
 
-declare function getObjectDiff(prevData: ObjectData, nextData: ObjectData, options?: Options): ObjectDiff;
+declare function getObjectDiff(
+  prevData: ObjectData,
+  nextData: ObjectData,
+  options?: Options
+): ObjectDiff;
 
-declare const getListDiff: (prevList: ListData[] | undefined | null, nextList: ListData[] | undefined | null) => ListDiff;
+declare const getListDiff: (
+  prevList: ListData[] | undefined | null,
+  nextList: ListData[] | undefined | null
+) => ListDiff;
 
 declare function isEqual(a: any, b: any, options?: Options): boolean;
 declare function isObject(value: any): value is Record<string, any>;

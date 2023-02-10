@@ -97,25 +97,25 @@ const objectB = {
 +         status: "updated",
           subPropertiesDiff: [
             {
-              name: "name",
+              property: "name",
               previousValue: "joe",
               currentValue: "joe",
               status: "equal",
             },
 +           {
-+             name: "member",
++             property: "member",
 +             previousValue: true,
 +             currentValue: false,
 +             status: "updated",
 +           },
 +           {
-+             name: "hobbies",
++             property: "hobbies",
 +             previousValue: ["golf", "football"],
 +             currentValue: ["golf", "chess"],
 +             status: "updated",
 +           },
             {
-              name: "age",
+              property: "age",
               previousValue: 66,
               currentValue: 66,
               status: "equal",
@@ -156,16 +156,36 @@ type ObjectDiff = {
     status: "added" | "deleted" | "equal" | "moved" | "updated";
     // only appears if some subproperties have been added/deleted/updated
     subPropertiesDiff?: {
-      name: string;
+      property: string;
       previousValue: any;
       currentValue: any;
       status: "added" | "deleted" | "equal" | "moved" | "updated";
       // subDiff is a recursive diff in case of nested subproperties
-      subDiff?: Subproperties[];
+      subDiff?: SubProperties[];
     }[];
   }[];
 };
 ```
+
+**Options**
+
+```ts
+{
+  ignoreArrayOrder?: boolean // false by default,
+  showOnly?: {
+    statuses: ("added" | "deleted" | "updated" | "equal")[], // [] by default
+    granularity?: "basic" | "deep" // basic by default
+  }
+}
+```
+
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
+- `showOnly`: gives you the option to only return the values whose status interest you. It has two parameters:
+
+  - `statuses`: status you want to see in the output (ex: `["added", "equal"]`)
+    - `granularity`:
+      - `basic` only returns the main properties whose status match your request, without taking into account their eventual subproperties.
+      - `deep` return main properties whose status match your request but also their relevant subproperties.
 
 ### getListDiff()
 
@@ -197,6 +217,16 @@ type ListDiff = {
 };
 ```
 
+**Options**
+
+```ts
+{
+  showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
+}
+```
+
+- `showOnly` gives you the option to only return the values whose status interest you (ex: `["added", "equal"]`).
+
 ### isEqual()
 
 ```js
@@ -204,6 +234,16 @@ import { isEqual } from "@donedeal0/superdiff";
 ```
 
 Checks if two values are equal.
+
+**Options**
+
+```ts
+{
+  ignoreArrayOrder?: boolean // false by default,
+}
+```
+
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
 
 ### isObject()
 
@@ -329,25 +369,25 @@ output
 +         status: "updated",
           subPropertiesDiff: [
             {
-              name: "name",
+              property: "name",
               previousValue: "joe",
               currentValue: "joe",
               status: "equal",
             },
 +           {
-+             name: "member",
++             property: "member",
 +             previousValue: true,
 +             currentValue: false,
 +             status: "updated",
 +           },
 +           {
-+             name: "hobbies",
++             property: "hobbies",
 +             previousValue: ["golf", "football"],
 +             currentValue: ["golf", "chess"],
 +             status: "updated",
 +           },
             {
-              name: "age",
+              property: "age",
               previousValue: 66,
               currentValue: 66,
               status: "equal",
@@ -397,25 +437,13 @@ More examples are availble in the tests of the source code.
 
 <hr/>
 
-### OPTIONS
-
-`getObjectDiff()` and `isEqual()` accept a facultative `options` parameter:
-
-```ts
-{
-  discardArrayOrder?: boolean // false by default
-}
-```
-
-If `discardArrayOrder` is set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
-
 ## CREDITS
 
 DoneDeal0
 
 ## SUPPORT
 
-If you use Superdiff, please show your support by buying me coffee:
+If you or your company use Superdiff, please show your support by buying me coffee:
 https://www.buymeacoffee.com/donedeal0
 
 <br/>

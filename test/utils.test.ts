@@ -40,14 +40,14 @@ describe("isEqual", () => {
     ).toBeFalsy();
     expect(isEqual(["psg"], ["psg", "nantes"])).toBeFalsy();
   });
-  it("return true if discardArrayOrder option is activated and arrays contains the same values regardless of their positions", () => {
+  it("return true if ignoreArrayOrder option is activated and arrays contains the same values regardless of their positions", () => {
     expect(
       isEqual(["hello", "world"], ["world", "hello"], {
-        discardArrayOrder: true,
+        ignoreArrayOrder: true,
       })
     ).toBeTruthy();
     expect(
-      isEqual([44, 45, "world"], [45, "world", 44], { discardArrayOrder: true })
+      isEqual([44, 45, "world"], [45, "world", 44], { ignoreArrayOrder: true })
     ).toBeTruthy();
     expect(
       isEqual(
@@ -60,24 +60,24 @@ describe("isEqual", () => {
           { name: "joe", age: 88 },
         ],
         {
-          discardArrayOrder: true,
+          ignoreArrayOrder: true,
         }
       )
     ).toBeTruthy();
     expect(
       isEqual([true, 55, "hello"], ["hello", 55, true], {
-        discardArrayOrder: true,
+        ignoreArrayOrder: true,
       })
     ).toBeTruthy();
   });
-  it("return false if discardArrayOrder option is activated but the arrays don't contain the same values", () => {
+  it("return false if ignoreArrayOrder option is activated but the arrays don't contain the same values", () => {
     expect(
       isEqual(["hello"], ["world", "hello"], {
-        discardArrayOrder: true,
+        ignoreArrayOrder: true,
       })
     ).toBeFalsy();
     expect(
-      isEqual([44, 47, "world"], [45, "world", 44], { discardArrayOrder: true })
+      isEqual([44, 47, "world"], [45, "world", 44], { ignoreArrayOrder: true })
     ).toBeFalsy();
     expect(
       isEqual(
@@ -90,13 +90,13 @@ describe("isEqual", () => {
           { name: "joe", age: 88 },
         ],
         {
-          discardArrayOrder: true,
+          ignoreArrayOrder: true,
         }
       )
     ).toBeFalsy();
     expect(
       isEqual([false, 55, "hello"], ["hello", 55, true], {
-        discardArrayOrder: true,
+        ignoreArrayOrder: true,
       })
     ).toBeFalsy();
   });

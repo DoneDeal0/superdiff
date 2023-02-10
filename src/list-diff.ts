@@ -1,45 +1,59 @@
-import { STATUS, ListDiff, ListData, DiffStatus } from "./model";
+import {
+  LIST_STATUS,
+  ListDiff,
+  ListData,
+  ListDiffStatus,
+  ListOptions,
+} from "./model";
 import { isEqual } from "./utils";
+
+function getLeanDiff(
+  diff: ListDiff["diff"],
+  showOnly = [] as ListOptions["showOnly"]
+): ListDiff["diff"] {
+  return diff.filter((value) => showOnly?.includes(value.status));
+}
 
 function formatSingleListDiff(
   listData: ListData[],
-  status: DiffStatus
+  status: ListDiffStatus
 ): ListDiff {
   return {
     type: "list",
     status,
     diff: listData.map((data: ListData, i) => ({
       value: data,
-      prevIndex: status === STATUS.ADDED ? null : i,
-      newIndex: status === STATUS.ADDED ? i : null,
+      prevIndex: status === LIST_STATUS.ADDED ? null : i,
+      newIndex: status === LIST_STATUS.ADDED ? i : null,
       indexDiff: null,
       status,
     })),
   };
 }
 
-function getListStatus(listDiff: ListDiff["diff"]): DiffStatus {
-  return listDiff.some((value) => value.status !== STATUS.EQUAL)
-    ? STATUS.UPDATED
-    : STATUS.EQUAL;
+function getListStatus(listDiff: ListDiff["diff"]): ListDiffStatus {
+  return listDiff.some((value) => value.status !== LIST_STATUS.EQUAL)
+    ? LIST_STATUS.UPDATED
+    : LIST_STATUS.EQUAL;
 }
 
 export const getListDiff = (
   prevList: ListData[] | undefined | null,
-  nextList: ListData[] | undefined | null
+  nextList: ListData[] | undefined | null,
+  options: ListOptions = { showOnly: [] }
 ): ListDiff => {
   if (!prevList && !nextList) {
     return {
       type: "list",
-      status: STATUS.EQUAL,
+      status: LIST_STATUS.EQUAL,
       diff: [],
     };
   }
   if (!prevList) {
-    return formatSingleListDiff(nextList as ListData, STATUS.ADDED);
+    return formatSingleListDiff(nextList as ListData, LIST_STATUS.ADDED);
   }
   if (!nextList) {
-    return formatSingleListDiff(prevList as ListData, STATUS.DELETED);
+    return formatSingleListDiff(prevList as ListData, LIST_STATUS.DELETED);
   }
   const diff: ListDiff["diff"] = [];
   const prevIndexMatches: number[] = [];
@@ -58,7 +72,7 @@ export const getListDiff = (
         prevIndex,
         newIndex: i,
         indexDiff,
-        status: STATUS.EQUAL,
+        status: LIST_STATUS.EQUAL,
       });
     }
     if (prevIndex === -1) {
@@ -67,7 +81,7 @@ export const getListDiff = (
         prevIndex: null,
         newIndex: i,
         indexDiff,
-        status: STATUS.ADDED,
+        status: LIST_STATUS.ADDED,
       });
     }
     return diff.push({
@@ -75,7 +89,7 @@ export const getListDiff = (
       prevIndex,
       newIndex: i,
       indexDiff,
-      status: STATUS.MOVED,
+      status: LIST_STATUS.MOVED,
     });
   });
 
@@ -86,10 +100,17 @@ export const getListDiff = (
         prevIndex: i,
         newIndex: null,
         indexDiff: null,
-        status: STATUS.DELETED,
+        status: LIST_STATUS.DELETED,
       });
     }
   });
+  if (options.showOnly && options?.showOnly?.length > 0) {
+    return {
+      type: "list",
+      status: getListStatus(diff),
+      diff: getLeanDiff(diff, options.showOnly),
+    };
+  }
   return {
     type: "list",
     status: getListStatus(diff),
