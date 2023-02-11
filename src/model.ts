@@ -10,6 +10,11 @@ export const LIST_STATUS: Record<string, ListDiffStatus> = {
   MOVED: "moved",
 };
 
+export const GRANULARITY: Record<string, "basic" | "deep"> = {
+  BASIC: "basic",
+  DEEP: "deep",
+};
+
 export type ListDiffStatus =
   | "added"
   | "equal"
@@ -30,7 +35,8 @@ export type ListStatusTuple = readonly [
   "added",
   "equal",
   "deleted",
-  "moved" | "updated"
+  "moved",
+  "updated"
 ];
 
 export type isEqualOptions = {
@@ -41,7 +47,7 @@ export type ObjectOptions = {
   ignoreArrayOrder?: boolean;
   showOnly?: {
     statuses: Array<ObjectStatusTuple[number]>;
-    granularity?: "basic" | "deep";
+    granularity?: typeof GRANULARITY[keyof typeof GRANULARITY];
   };
 };
 

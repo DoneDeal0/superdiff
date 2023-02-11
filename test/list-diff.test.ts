@@ -453,4 +453,60 @@ describe("getListDiff", () => {
       ],
     });
   });
+  it("returns an empty diff if no property match the required statuses output", () => {
+    expect(getListDiff(null, null)).toStrictEqual({
+      type: "list",
+      status: "equal",
+      diff: [],
+    });
+    expect(
+      getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null, {
+        showOnly: ["moved", "updated"],
+      })
+    ).toStrictEqual({
+      type: "list",
+      status: "deleted",
+      diff: [],
+    });
+  });
+  it("returns all values if their status match the required statuses", () => {
+    expect(
+      getListDiff(null, ["mbappe", "mendes", "verratti", "ruiz"], {
+        showOnly: ["added"],
+      })
+    ).toStrictEqual({
+      type: "list",
+      status: "added",
+      diff: [
+        {
+          value: "mbappe",
+          prevIndex: null,
+          newIndex: 0,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "mendes",
+          prevIndex: null,
+          newIndex: 1,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "verratti",
+          prevIndex: null,
+          newIndex: 2,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "ruiz",
+          prevIndex: null,
+          newIndex: 3,
+          indexDiff: null,
+          status: "added",
+        },
+      ],
+    });
+  });
 });

@@ -1,23 +1,24 @@
 import {
+  GRANULARITY,
+  STATUS,
   ObjectData,
   ObjectDiff,
-  STATUS,
-  SubProperties,
-  ObjectOptions,
   ObjectDiffStatus,
+  ObjectOptions,
+  SubProperties,
 } from "./model";
-import { isObject, isEqual } from "./utils";
+import { isEqual, isObject } from "./utils";
 
 function getLeanDiff(
   diff: ObjectDiff["diff"],
-  showOnly: ObjectOptions["showOnly"] = { statuses: [], granularity: "basic" }
+  showOnly: ObjectOptions["showOnly"] = {
+    statuses: [],
+    granularity: GRANULARITY.BASIC,
+  }
 ): ObjectDiff["diff"] {
   const { statuses, granularity } = showOnly;
   return diff.reduce((acc, value) => {
-    if (statuses.includes(value.status)) {
-      return [...acc, value];
-    }
-    if (granularity === "deep" && value.subPropertiesDiff) {
+    if (granularity === GRANULARITY.DEEP && value.subPropertiesDiff) {
       const cleanSubPropertiesDiff = getLeanDiff(
         value.subPropertiesDiff,
         showOnly
@@ -30,12 +31,15 @@ function getLeanDiff(
       }
     }
     // @ts-ignore
-    if (granularity === "deep" && value.subDiff) {
+    if (granularity === GRANULARITY.DEEP && value.subDiff) {
       // @ts-ignore
       const cleanSubDiff = getLeanDiff(value.subDiff, showOnly);
       if (cleanSubDiff.length > 0) {
         return [...acc, { ...value, subDiff: cleanSubDiff }];
       }
+    }
+    if (statuses.includes(value.status)) {
+      return [...acc, value];
     }
     return acc;
   }, [] as ObjectDiff["diff"]);
@@ -49,7 +53,11 @@ function getObjectStatus(diff: ObjectDiff["diff"]): ObjectDiffStatus {
 
 function formatSingleObjectDiff(
   data: ObjectData,
-  status: ObjectDiffStatus
+  status: ObjectDiffStatus,
+  options: ObjectOptions = {
+    ignoreArrayOrder: false,
+    showOnly: { statuses: [], granularity: GRANULARITY.BASIC },
+  }
 ): ObjectDiff {
   if (!data) {
     return {
@@ -85,6 +93,13 @@ function formatSingleObjectDiff(
       status,
     });
   });
+  if (options.showOnly && options.showOnly.statuses.length > 0) {
+    return {
+      type: "object",
+      status,
+      diff: getLeanDiff(diff, options.showOnly),
+    };
+  }
   return {
     type: "object",
     status,
@@ -210,7 +225,7 @@ export function getObjectDiff(
   nextData: ObjectData,
   options: ObjectOptions = {
     ignoreArrayOrder: false,
-    showOnly: { statuses: [], granularity: "basic" },
+    showOnly: { statuses: [], granularity: GRANULARITY.BASIC },
   }
 ): ObjectDiff {
   if (!prevData && !nextData) {
@@ -221,10 +236,10 @@ export function getObjectDiff(
     };
   }
   if (!prevData) {
-    return formatSingleObjectDiff(nextData, STATUS.ADDED);
+    return formatSingleObjectDiff(nextData, STATUS.ADDED, options);
   }
   if (!nextData) {
-    return formatSingleObjectDiff(prevData, STATUS.DELETED);
+    return formatSingleObjectDiff(prevData, STATUS.DELETED, options);
   }
   const diff: ObjectDiff["diff"] = [];
   Object.entries(nextData).forEach(([nextProperty, nextValue]) => {

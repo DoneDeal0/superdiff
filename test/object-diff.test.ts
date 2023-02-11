@@ -462,7 +462,7 @@ describe("getObjectDiff", () => {
       ],
     });
   });
-  it("showOnly main added values", () => {
+  it("shows only main added values", () => {
     expect(
       getObjectDiff(
         {
@@ -500,7 +500,7 @@ describe("getObjectDiff", () => {
       ],
     });
   });
-  it("showOnly added and deleted values in depth", () => {
+  it("shows only added and deleted values in nested objects", () => {
     expect(
       getObjectDiff(
         {
@@ -568,6 +568,290 @@ describe("getObjectDiff", () => {
         {
           property: "type",
           previousValue: "sport",
+          currentValue: undefined,
+          status: "deleted",
+        },
+      ],
+    });
+  });
+  it("shows only updated values in deeply nested objects", () => {
+    expect(
+      getObjectDiff(
+        {
+          id: 54,
+          user: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg"],
+                rugby: ["france"],
+              },
+            },
+          },
+        },
+        {
+          id: 54,
+          user: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                golf: ["st andrews"],
+              },
+            },
+          },
+        },
+        {
+          showOnly: {
+            statuses: ["updated"],
+            granularity: "deep",
+          },
+        }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "updated",
+      diff: [
+        {
+          property: "user",
+          previousValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg"],
+                rugby: ["france"],
+              },
+            },
+          },
+          currentValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                golf: ["st andrews"],
+              },
+            },
+          },
+          status: "updated",
+          subPropertiesDiff: [
+            {
+              property: "data",
+              previousValue: {
+                member: true,
+                hobbies: {
+                  football: ["psg"],
+                  rugby: ["france"],
+                },
+              },
+              currentValue: {
+                member: true,
+                hobbies: {
+                  football: ["psg", "nantes"],
+                  golf: ["st andrews"],
+                },
+              },
+              status: "updated",
+              subDiff: [
+                {
+                  property: "hobbies",
+                  previousValue: {
+                    football: ["psg"],
+                    rugby: ["france"],
+                  },
+                  currentValue: {
+                    football: ["psg", "nantes"],
+                    golf: ["st andrews"],
+                  },
+                  status: "updated",
+                  subDiff: [
+                    {
+                      property: "football",
+                      previousValue: ["psg"],
+                      currentValue: ["psg", "nantes"],
+                      status: "updated",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+  it("shows only added values in deeply nested objects", () => {
+    expect(
+      getObjectDiff(
+        {
+          id: 54,
+          user: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                rugby: ["france"],
+              },
+            },
+          },
+        },
+        {
+          id: 54,
+          user: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                golf: ["st andrews"],
+              },
+            },
+          },
+        },
+        {
+          showOnly: {
+            statuses: ["added"],
+            granularity: "deep",
+          },
+        }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "updated",
+      diff: [
+        {
+          property: "user",
+          previousValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                rugby: ["france"],
+              },
+            },
+          },
+          currentValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                golf: ["st andrews"],
+              },
+            },
+          },
+          status: "updated",
+          subPropertiesDiff: [
+            {
+              property: "data",
+              previousValue: {
+                member: true,
+                hobbies: {
+                  rugby: ["france"],
+                },
+              },
+              currentValue: {
+                member: true,
+                hobbies: {
+                  football: ["psg", "nantes"],
+                  golf: ["st andrews"],
+                },
+              },
+              status: "updated",
+              subDiff: [
+                {
+                  property: "hobbies",
+                  previousValue: {
+                    rugby: ["france"],
+                  },
+                  currentValue: {
+                    football: ["psg", "nantes"],
+                    golf: ["st andrews"],
+                  },
+                  status: "updated",
+                  subDiff: [
+                    {
+                      property: "football",
+                      previousValue: undefined,
+                      currentValue: ["psg", "nantes"],
+                      status: "added",
+                    },
+                    {
+                      property: "golf",
+                      previousValue: undefined,
+                      currentValue: ["st andrews"],
+                      status: "added",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  });
+  it("returns an empty diff if no property match the required statuses output", () => {
+    expect(
+      getObjectDiff(
+        null,
+        {
+          name: "joe",
+          age: 54,
+          hobbies: ["golf", "football"],
+        },
+        { showOnly: { statuses: ["deleted"], granularity: "deep" } }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "added",
+      diff: [],
+    });
+  });
+  expect(
+    getObjectDiff(
+      {
+        name: "joe",
+        age: 54,
+        hobbies: ["golf", "football"],
+      },
+      null,
+      { showOnly: { statuses: ["added"], granularity: "deep" } }
+    )
+  ).toStrictEqual({
+    type: "object",
+    status: "deleted",
+    diff: [],
+  });
+  it("returns all values if their status match the required statuses", () => {
+    expect(
+      getObjectDiff(
+        { name: "joe", age: 54, hobbies: ["golf", "football"] },
+        null,
+        { showOnly: { statuses: ["deleted"] } }
+      )
+    ).toStrictEqual({
+      type: "object",
+      status: "deleted",
+      diff: [
+        {
+          property: "name",
+          previousValue: "joe",
+          currentValue: undefined,
+          status: "deleted",
+        },
+        {
+          property: "age",
+          previousValue: 54,
+          currentValue: undefined,
+          status: "deleted",
+        },
+        {
+          property: "hobbies",
+          previousValue: ["golf", "football"],
           currentValue: undefined,
           status: "deleted",
         },

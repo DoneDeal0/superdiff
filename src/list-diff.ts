@@ -1,7 +1,7 @@
 import {
   LIST_STATUS,
-  ListDiff,
   ListData,
+  ListDiff,
   ListDiffStatus,
   ListOptions,
 } from "./model";
@@ -16,18 +16,27 @@ function getLeanDiff(
 
 function formatSingleListDiff(
   listData: ListData[],
-  status: ListDiffStatus
+  status: ListDiffStatus,
+  options: ListOptions = { showOnly: [] }
 ): ListDiff {
+  const diff = listData.map((data: ListData, i) => ({
+    value: data,
+    prevIndex: status === LIST_STATUS.ADDED ? null : i,
+    newIndex: status === LIST_STATUS.ADDED ? i : null,
+    indexDiff: null,
+    status,
+  }));
+  if (options.showOnly && options.showOnly.length > 0) {
+    return {
+      type: "list",
+      status,
+      diff: diff.filter((value) => options.showOnly?.includes(value.status)),
+    };
+  }
   return {
     type: "list",
     status,
-    diff: listData.map((data: ListData, i) => ({
-      value: data,
-      prevIndex: status === LIST_STATUS.ADDED ? null : i,
-      newIndex: status === LIST_STATUS.ADDED ? i : null,
-      indexDiff: null,
-      status,
-    })),
+    diff,
   };
 }
 
@@ -50,10 +59,18 @@ export const getListDiff = (
     };
   }
   if (!prevList) {
-    return formatSingleListDiff(nextList as ListData, LIST_STATUS.ADDED);
+    return formatSingleListDiff(
+      nextList as ListData,
+      LIST_STATUS.ADDED,
+      options
+    );
   }
   if (!nextList) {
-    return formatSingleListDiff(prevList as ListData, LIST_STATUS.DELETED);
+    return formatSingleListDiff(
+      prevList as ListData,
+      LIST_STATUS.DELETED,
+      options
+    );
   }
   const diff: ListDiff["diff"] = [];
   const prevIndexMatches: number[] = [];
