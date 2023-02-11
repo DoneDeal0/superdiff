@@ -393,4 +393,120 @@ describe("getListDiff", () => {
       ],
     });
   });
+  it("showOnly added and deleted values", () => {
+    expect(
+      getListDiff(
+        [
+          false,
+          true,
+          true,
+          undefined,
+          "hello",
+          { name: "joe", age: 88 },
+          false,
+          13,
+        ],
+        [
+          false,
+          false,
+          true,
+          undefined,
+          "hello",
+          { name: "joe", age: 88 },
+          false,
+          { name: "joe", age: 88 },
+        ],
+        { showOnly: ["added", "deleted"] }
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: true,
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: 13,
+          prevIndex: 7,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: false,
+          prevIndex: null,
+          newIndex: 6,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: { name: "joe", age: 88 },
+          prevIndex: null,
+          newIndex: 7,
+          indexDiff: null,
+          status: "added",
+        },
+      ],
+    });
+  });
+  it("returns an empty diff if no property match the required statuses output", () => {
+    expect(getListDiff(null, null)).toStrictEqual({
+      type: "list",
+      status: "equal",
+      diff: [],
+    });
+    expect(
+      getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null, {
+        showOnly: ["moved", "updated"],
+      })
+    ).toStrictEqual({
+      type: "list",
+      status: "deleted",
+      diff: [],
+    });
+  });
+  it("returns all values if their status match the required statuses", () => {
+    expect(
+      getListDiff(null, ["mbappe", "mendes", "verratti", "ruiz"], {
+        showOnly: ["added"],
+      })
+    ).toStrictEqual({
+      type: "list",
+      status: "added",
+      diff: [
+        {
+          value: "mbappe",
+          prevIndex: null,
+          newIndex: 0,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "mendes",
+          prevIndex: null,
+          newIndex: 1,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "verratti",
+          prevIndex: null,
+          newIndex: 2,
+          indexDiff: null,
+          status: "added",
+        },
+        {
+          value: "ruiz",
+          prevIndex: null,
+          newIndex: 3,
+          indexDiff: null,
+          status: "added",
+        },
+      ],
+    });
+  });
 });

@@ -6,18 +6,9 @@ This library compares two arrays or objects and return a complete diff of their 
 
 ## WHY YOU SHOULD USE THIS LIB
 
-All other existing solutions return a weird diff format which often require an additional parsing. They are also slow and limited to object comparison. 👎
+All other existing solutions return a weird diff format which often require an additional parsing. They are also limited to object comparison. 👎
 
 **Superdiff** gives you a complete diff for both array <u>and</u> objects with a very readable format. Last but not least, it's battled tested and super fast. Import. Enjoy. 👍
-
-**Benchmark**:
-
-| Objects   | Deep-diff 🐢 | Superdiff ⚡ |
-| --------- | ------------ | ------------ |
-| 1.000     | 10.47ms      | 5.73ms       |
-| 10.000    | 43.05ms      | 18.60ms      |
-| 100.000   | 289.71ms     | 50.96ms      |
-| 1.000.000 | 2786.70ms    | 389.78ms     |
 
 ## DIFF FORMAT COMPARISON
 
@@ -51,20 +42,19 @@ const objectB = {
 
 ```js
 [
- DiffEdit {
-   kind: 'E',
-   path: [ 'user', 'member' ],
-   lhs: true,
-   rhs: false
- },
- DiffEdit {
-   kind: 'E',
-   path: [ 'user', 'hobbies', 1 ],
-   lhs: 'football',
-   rhs: 'chess'
- }
-]
-
+  {
+    kind: "E",
+    path: ["user", "member"],
+    lhs: true,
+    rhs: false,
+  },
+  {
+    kind: "E",
+    path: ["user", "hobbies", 1],
+    lhs: "football",
+    rhs: "chess",
+  },
+];
 ```
 
 **SuperDiff** output:
@@ -97,25 +87,25 @@ const objectB = {
 +         status: "updated",
           subPropertiesDiff: [
             {
-              name: "name",
+              property: "name",
               previousValue: "joe",
               currentValue: "joe",
               status: "equal",
             },
 +           {
-+             name: "member",
++             property: "member",
 +             previousValue: true,
 +             currentValue: false,
 +             status: "updated",
 +           },
 +           {
-+             name: "hobbies",
++             property: "hobbies",
 +             previousValue: ["golf", "football"],
 +             currentValue: ["golf", "chess"],
 +             status: "updated",
 +           },
             {
-              name: "age",
+              property: "age",
               previousValue: 66,
               currentValue: 66,
               status: "equal",
@@ -148,24 +138,46 @@ format:
 ```ts
 type ObjectDiff = {
   type: "object";
-  status: "added" | "deleted" | "equal" | "moved" | "updated";
+  status: "added" | "deleted" | "equal" | "updated";
   diff: {
     property: string;
     previousValue: any;
     currentValue: any;
-    status: "added" | "deleted" | "equal" | "moved" | "updated";
+    status: "added" | "deleted" | "equal" | "updated";
     // only appears if some subproperties have been added/deleted/updated
     subPropertiesDiff?: {
-      name: string;
+      property: string;
       previousValue: any;
       currentValue: any;
-      status: "added" | "deleted" | "equal" | "moved" | "updated";
+      status: "added" | "deleted" | "equal" | "updated";
       // subDiff is a recursive diff in case of nested subproperties
-      subDiff?: Subproperties[];
+      subDiff?: SubProperties[];
     }[];
   }[];
 };
 ```
+
+**Options**
+
+You can add a third `options` parameter to `getObjectDiff`.
+
+```ts
+{
+  ignoreArrayOrder?: boolean // false by default,
+  showOnly?: {
+    statuses: ("added" | "deleted" | "updated" | "equal")[], // [] by default
+    granularity?: "basic" | "deep" // "basic" by default
+  }
+}
+```
+
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
+- `showOnly`: only returns the values whose status interest you. It has two parameters:
+
+  - `statuses`: status you want to see in the output (ex: `["added", "equal"]`)
+    - `granularity`:
+      - `basic` only returns the main properties whose status match your request.
+      - `deep` can return main properties if some of their subproperties' status match your request. The subproperties will be filtered accordingly.
 
 ### getListDiff()
 
@@ -197,6 +209,18 @@ type ListDiff = {
 };
 ```
 
+**Options**
+
+You can add a third `options` parameter to `getListDiff`.
+
+```ts
+{
+  showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
+}
+```
+
+- `showOnly` gives you the option to only return the values whose status interest you (ex: `["added", "equal"]`).
+
 ### isEqual()
 
 ```js
@@ -204,6 +228,18 @@ import { isEqual } from "@donedeal0/superdiff";
 ```
 
 Checks if two values are equal.
+
+**Options**
+
+You can add a third `options` parameter to `isEqual`.
+
+```ts
+{
+  ignoreArrayOrder?: boolean // false by default,
+}
+```
+
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
 
 ### isObject()
 
@@ -329,25 +365,25 @@ output
 +         status: "updated",
           subPropertiesDiff: [
             {
-              name: "name",
+              property: "name",
               previousValue: "joe",
               currentValue: "joe",
               status: "equal",
             },
 +           {
-+             name: "member",
++             property: "member",
 +             previousValue: true,
 +             currentValue: false,
 +             status: "updated",
 +           },
 +           {
-+             name: "hobbies",
++             property: "hobbies",
 +             previousValue: ["golf", "football"],
 +             currentValue: ["golf", "chess"],
 +             status: "updated",
 +           },
             {
-              name: "age",
+              property: "age",
               previousValue: 66,
               currentValue: 66,
               status: "equal",
@@ -393,21 +429,9 @@ output
 false;
 ```
 
-More examples are availble in the tests of the source code.
+More examples are available in the tests of the source code.
 
 <hr/>
-
-### OPTIONS
-
-`getObjectDiff()` and `isEqual()` accept a facultative `options` parameter:
-
-```ts
-{
-  discardArrayOrder?: boolean // false by default
-}
-```
-
-If `discardArrayOrder` is set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
 
 ## CREDITS
 
@@ -415,7 +439,7 @@ DoneDeal0
 
 ## SUPPORT
 
-If you use Superdiff, please show your support by buying me coffee:
+If you or your company use Superdiff, please show your support by buying me a coffee:
 https://www.buymeacoffee.com/donedeal0
 
 <br/>
