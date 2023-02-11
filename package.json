@@ -1,6 +1,6 @@
 {
   "name": "@donedeal0/superdiff",
-  "version": "1.0.9",
+  "version": "1.0.8",
   "description": "SuperDiff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
   "main": "dist/index.js",
   "module": "dist/index.js",
