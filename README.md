@@ -4,6 +4,8 @@
 
 This library compares two arrays or objects and return a complete diff of their differences.
 
+[![Superdiff CI](https://github.com/DoneDeal0/superdiff/actions/workflows/superdiff.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/superdiff.yml)
+
 ## WHY YOU SHOULD USE THIS LIB
 
 All other existing solutions return a weird diff format which often require an additional parsing. They are also limited to object comparison. 👎
