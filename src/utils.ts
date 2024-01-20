@@ -1,5 +1,11 @@
 import { isEqualOptions } from "./model";
 
+/**
+ * Returns true if two data are equal
+ * @param {any} a - The original data.
+ * @param {any} b- The data to compare.
+ * @returns boolean
+ */
 export function isEqual(
   a: any,
   b: any,
@@ -23,6 +29,11 @@ export function isEqual(
   return a === b;
 }
 
+/**
+ * Returns true if the provided value is an object
+ * @param {any} value - The data to check.
+ * @returns value is Record<string, any>
+ */
 export function isObject(value: any): value is Record<string, any> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }

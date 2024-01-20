@@ -47,12 +47,13 @@ export type ObjectOptions = {
   ignoreArrayOrder?: boolean;
   showOnly?: {
     statuses: Array<ObjectStatusTuple[number]>;
-    granularity?: typeof GRANULARITY[keyof typeof GRANULARITY];
+    granularity?: (typeof GRANULARITY)[keyof typeof GRANULARITY];
   };
 };
 
 export type ListOptions = {
   showOnly?: Array<ListStatusTuple[number]>;
+  referenceProperty?: string;
 };
 
 export type ListDiff = {

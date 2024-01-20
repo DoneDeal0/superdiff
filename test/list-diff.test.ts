@@ -509,4 +509,82 @@ describe("getListDiff", () => {
       ],
     });
   });
+  it("consider object updated if a reference property is given and this property hasn't changed", () => {
+    expect(
+      getListDiff(
+        [
+          "hello",
+          { id: 37, isCool: true, hobbies: ["golf", "ski"] },
+          { id: 38, isCool: false, hobbies: ["football"] },
+          undefined,
+          { id: 8, age: 77 },
+          { id: 55, character: { strength: 66 } },
+        ],
+        [
+          { id: 8, age: 77 },
+          { id: 37, isCool: false, hobbies: ["golf", "ski"] },
+          { id: 38, isCool: false, hobbies: ["football"] },
+          undefined,
+          { id: 99, character: { strength: 69 } },
+        ],
+        {
+          referenceProperty: "id",
+        }
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: "hello",
+          prevIndex: 0,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: { id: 8, age: 77 },
+          prevIndex: 4,
+          newIndex: 0,
+          indexDiff: -4,
+          status: "moved",
+        },
+        {
+          value: { id: 37, isCool: false, hobbies: ["golf", "ski"] },
+          prevIndex: 1,
+          newIndex: 1,
+          indexDiff: 0,
+          status: "updated",
+        },
+        {
+          value: { id: 38, isCool: false, hobbies: ["football"] },
+          prevIndex: 2,
+          newIndex: 2,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: undefined,
+          prevIndex: 3,
+          newIndex: 3,
+          indexDiff: 0,
+          status: "equal",
+        },
+        {
+          value: { id: 55, character: { strength: 66 } },
+          prevIndex: 5,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: { id: 99, character: { strength: 69 } },
+          prevIndex: null,
+          newIndex: 4,
+          indexDiff: null,
+          status: "added",
+        },
+      ],
+    });
+  });
 });

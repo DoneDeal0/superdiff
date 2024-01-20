@@ -220,6 +220,12 @@ function getSubPropertiesDiff(
   return subPropertiesDiff;
 }
 
+/**
+ * Returns the diff between two objects
+ * @param {Record<string, any>} prevData - The original object.
+ * @param {Record<string, any>} nextData - The new object.
+ * @returns ObjectDiff
+ */
 export function getObjectDiff(
   prevData: ObjectData,
   nextData: ObjectData,

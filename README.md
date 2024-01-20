@@ -2,15 +2,15 @@
 
 # SUPERDIFF
 
-This library compares two arrays or objects and return a complete diff of their differences.
+This library compares two arrays or objects and returns a full diff of their differences.
 
 [![Superdiff CI](https://github.com/DoneDeal0/superdiff/actions/workflows/superdiff.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/superdiff.yml)
 
-## WHY YOU SHOULD USE THIS LIB
+## WHY YOU SHOULD USE THIS LIBRARY
 
-All other existing solutions return a weird diff format which often require an additional parsing. They are also limited to object comparison. 👎
+All other existing solutions return a strange diff format that often requires additional parsing. They are also limited to object comparison. 👎
 
-**Superdiff** gives you a complete diff for both array <u>and</u> objects with a very readable format. Last but not least, it's battled tested and super fast. Import. Enjoy. 👍
+**Superdiff** gives you a complete diff for both array <u>and</u> objects in a very readable format. Last but not least, it's battle-tested and super fast. Import. Enjoy. 👍
 
 ## DIFF FORMAT COMPARISON
 
@@ -173,13 +173,13 @@ You can add a third `options` parameter to `getObjectDiff`.
 }
 ```
 
-- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
-- `showOnly`: only returns the values whose status interest you. It has two parameters:
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
+- `showOnly`: returns only the values whose status you are interested in. It takes two parameters:
 
-  - `statuses`: status you want to see in the output (ex: `["added", "equal"]`)
+  - `statuses`: status you want to see in the output (e.g. `["added", "equal"]`)
     - `granularity`:
-      - `basic` only returns the main properties whose status match your request.
-      - `deep` can return main properties if some of their subproperties' status match your request. The subproperties will be filtered accordingly.
+      - `basic` returns only the main properties whose status matches your query.
+      - `deep` can return main properties if some of their subproperties' status match your request. The subproperties are filtered accordingly.
 
 ### getListDiff()
 
@@ -187,13 +187,13 @@ You can add a third `options` parameter to `getObjectDiff`.
 import { getListDiff } from "@donedeal0/superdiff";
 ```
 
-Compares two arrays and return a diff for each value:
+Compares two arrays and returns a diff for each value:
 
 - index change: `prevIndex`, `newIndex`, `indexDiff`
 - status: `added`, `deleted`, `equal`, `moved`, `updated`
 - value
 - supports arrays of primitive values and objects
-- supports arrays with duplicated values
+- supports arrays with duplicate values
 
 format:
 
@@ -218,10 +218,12 @@ You can add a third `options` parameter to `getListDiff`.
 ```ts
 {
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
+  referenceProperty?: string; // "" by default
 }
 ```
 
-- `showOnly` gives you the option to only return the values whose status interest you (ex: `["added", "equal"]`).
+- `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
+- `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
 
 ### isEqual()
 
@@ -229,7 +231,7 @@ You can add a third `options` parameter to `getListDiff`.
 import { isEqual } from "@donedeal0/superdiff";
 ```
 
-Checks if two values are equal.
+Tests whether two values are equal.
 
 **Options**
 
@@ -241,7 +243,7 @@ You can add a third `options` parameter to `isEqual`.
 }
 ```
 
-- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be considered as `equal`, because the two arrays have the same value, just not in the same order.
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
 
 ### isObject()
 
@@ -249,7 +251,7 @@ You can add a third `options` parameter to `isEqual`.
 import { isObject } from "@donedeal0/superdiff";
 ```
 
-Checks if a value is an object.
+Tests whether a value is an object.
 
 ## EXAMPLES
 
@@ -431,7 +433,7 @@ output
 false;
 ```
 
-More examples are available in the tests of the source code.
+More examples are available in the source code tests.
 
 <hr/>
 
