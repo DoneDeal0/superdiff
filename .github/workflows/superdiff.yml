@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 18.x]
+        node-version: [18.x]
 
     steps:
       - uses: actions/checkout@v3
@@ -20,16 +20,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "yarn"
+          cache: "npm"
       - name: Install dependencies
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: install
+        run: npm install
       - name: Build app
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: build
+        run: npm run build
       - name: Test app
-        uses: borales/actions-yarn@v4
-        with:
-          cmd: test
+        run: npm test
