@@ -29,6 +29,7 @@ type ObjectOptions = {
 type ListOptions = {
     showOnly?: Array<ListStatusTuple[number]>;
     referenceProperty?: string;
+    considerMoveAsUpdate?: boolean;
 };
 type ListDiff = {
     type: "list";
@@ -64,6 +65,11 @@ type ObjectDiff = {
  * Returns the diff between two objects
  * @param {Record<string, any>} prevData - The original object.
  * @param {Record<string, any>} nextData - The new object.
+ *  * @param {ListOptions} options - Options to refine your output.
+    - `showOnly`: returns only the values whose status you are interested in. It takes two parameters: `statuses` and `granularity`
+       `statuses` are the status you want to see in the output (e.g. `["added", "equal"]`)
+      `granularity` can be either `basic` (to return only the main properties whose status matches your query) or `deep` (to return the main properties if some of their subproperties' status match your request. The subproperties are filtered accordingly).
+    - `ignoreArrayOrder` if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
  * @returns ObjectDiff
  */
 declare function getObjectDiff(prevData: ObjectData, nextData: ObjectData, options?: ObjectOptions): ObjectDiff;
@@ -72,6 +78,9 @@ declare function getObjectDiff(prevData: ObjectData, nextData: ObjectData, optio
  * Returns the diff between two arrays
  * @param {Array<T>} prevList - The original array.
  * @param {Array<T>} nextList - The new array.
+ * @param {ListOptions} options - Options to refine your output.
+    - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
+    - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
  * @returns ListDiff
  */
 declare const getListDiff: <T>(prevList: T[] | null | undefined, nextList: T[] | null | undefined, options?: ListOptions) => ListDiff;

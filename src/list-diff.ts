@@ -60,12 +60,19 @@ function isReferencedObject(
  * Returns the diff between two arrays
  * @param {Array<T>} prevList - The original array.
  * @param {Array<T>} nextList - The new array.
+ * @param {ListOptions} options - Options to refine your output.
+    - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
+    - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
  * @returns ListDiff
  */
 export const getListDiff = <T>(
   prevList: T[] | undefined | null,
   nextList: T[] | undefined | null,
-  options: ListOptions = { showOnly: [], referenceProperty: undefined }
+  options: ListOptions = {
+    showOnly: [],
+    referenceProperty: undefined,
+    considerMoveAsUpdate: false,
+  }
 ): ListDiff => {
   if (!prevList && !nextList) {
     return {
@@ -132,7 +139,9 @@ export const getListDiff = <T>(
       prevIndex,
       newIndex: i,
       indexDiff,
-      status: LIST_STATUS.MOVED,
+      status: options.considerMoveAsUpdate
+        ? LIST_STATUS.UPDATED
+        : LIST_STATUS.MOVED,
     });
   });
 
