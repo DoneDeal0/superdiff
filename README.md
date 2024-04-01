@@ -12,6 +12,19 @@ All other existing solutions return a strange diff format that often requires ad
 
 **Superdiff** gives you a complete diff for both array <u>and</u> objects in a very readable format. Last but not least, it's battle-tested and super fast. Import. Enjoy. 👍
 
+## DONORS
+
+I am grateful to the generous donors of **Superdiff**!
+
+
+ <div style="display: flex;>
+           
+<a href="https://github.com/AlexisAnzieu" target="_blank"><img alt="AlexisAnzieu" src="https://github.com/DoneDeal0/superdiff/assets/43271780/8e9fb627-36ec-479d-87d4-3ca2cb2a796c" width="72px" height="72px"/></a>
+<a href="https://github.com/omonk" target="_blank"><img alt="omonk" src="https://github.com/DoneDeal0/superdiff/assets/43271780/6c040ab4-f6eb-49bf-a737-d138264abbd7" width="72px" height="72px"/></a>
+<a href="https://github.com/sneko" target="_blank"><img alt="sneko" src="https://github.com/DoneDeal0/superdiff/assets/43271780/2caaa70b-9586-44d6-8b3a-3755bba7b1ca" width="72px" height="72px"/></a>
+
+ </div>
+
 ## DIFF FORMAT COMPARISON
 
 Let's compare the diff format of **Superdiff** and **Deep-diff**, the most popular diff lib on npm:
@@ -443,12 +456,12 @@ DoneDeal0
 
 ## SUPPORT
 
-If you or your company use Superdiff, please show your support by buying me a coffee:
-https://www.buymeacoffee.com/donedeal0
+If you or your company use Superdiff, please show your support by sponsoring it! Your name and company logo will be featured on the `README.md`.
+https://github.com/sponsors/DoneDeal0
 
 <br/>
-<a href="https://www.buymeacoffee.com/donedeal0" target="_blank">
-<img src="https://user-images.githubusercontent.com/43271780/178990049-46b05704-1344-4d55-a5a7-7265724edc5c.png"/>
+<a href="https://github.com/sponsors/DoneDeal0" target="_blank">
+<img alt="sponsor" src="https://github.com/DoneDeal0/superdiff/assets/43271780/21deb4f3-fee3-4bf9-a945-ed0b77c6f82f"/>
 </a>
 <br/>
 
