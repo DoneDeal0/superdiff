@@ -456,8 +456,7 @@ DoneDeal0
 
 ## SUPPORT
 
-If you or your company use Superdiff, please show your support by sponsoring it! Your name and company logo will be featured on the `README.md`.
-https://github.com/sponsors/DoneDeal0
+If you or your company uses **Superdiff**, please show your support by becoming a sponsor! Your name and company logo will be displayed on the `README.md`. https://github.com/sponsors/DoneDeal0
 
 <br/>
 <a href="https://github.com/sponsors/DoneDeal0" target="_blank">
