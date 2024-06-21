@@ -3,7 +3,8 @@ import { isEqualOptions } from "./model";
 /**
  * Returns true if two data are equal
  * @param {any} a - The original data.
- * @param {any} b- The data to compare.
+ * @param {any} b - The data to compare.
+ * @param {isEqualOptions} options - The options to compare the data.
  * @returns boolean
  */
 export function isEqual(
@@ -12,7 +13,7 @@ export function isEqual(
   options: isEqualOptions = { ignoreArrayOrder: false }
 ): boolean {
   if (typeof a !== typeof b) return false;
-  if (Array.isArray(a)) {
+  if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) {
       return false;
     }
