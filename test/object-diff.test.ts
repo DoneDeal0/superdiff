@@ -858,4 +858,86 @@ describe("getObjectDiff", () => {
       ],
     });
   });
+  it("detects changes when comparing an array value property to a non-array value property", () => {
+    expect(
+        getObjectDiff(
+            {
+              name: "joe",
+              age: 55,
+              hobbies: ["golf", "football"]
+            },
+            {
+              name: "joe",
+              age: 55,
+              hobbies: null
+            }))
+        .toStrictEqual({
+          type: "object",
+          status: "updated",
+          diff: [
+            {
+              currentValue: "joe",
+              previousValue: "joe",
+              property: "name",
+              status: "equal",
+            },
+            {
+              currentValue: 55,
+              previousValue: 55,
+              property: "age",
+              status: "equal",
+            },
+            {
+              currentValue: null,
+              previousValue: [
+                "golf",
+                "football",
+              ],
+              property: "hobbies",
+              status: "updated",
+            }
+          ]
+        })
+  })
+  it("detects changes when comparing a non-array value property to an array value property", () => {
+    expect(
+        getObjectDiff(
+            {
+              name: "joe",
+              age: 55,
+              hobbies: null
+            },
+            {
+              name: "joe",
+              age: 55,
+              hobbies: ["golf", "football"]
+            }))
+        .toStrictEqual({
+          type: "object",
+          status: "updated",
+          diff: [
+            {
+              currentValue: "joe",
+              previousValue: "joe",
+              property: "name",
+              status: "equal",
+            },
+            {
+              currentValue: 55,
+              previousValue: 55,
+              property: "age",
+              status: "equal",
+            },
+            {
+              currentValue: [
+                "golf",
+                "football",
+              ],
+              previousValue: null,
+              property: "hobbies",
+              status: "updated",
+            }
+          ]
+        })
+  });
 });
