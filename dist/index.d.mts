@@ -60,6 +60,7 @@ type ObjectDiff = {
         subPropertiesDiff?: SubProperties[];
     }[];
 };
+type DataDiff = ListDiff | ObjectDiff;
 
 /**
  * Returns the diff between two objects
@@ -99,4 +100,4 @@ declare function isEqual(a: any, b: any, options?: isEqualOptions): boolean;
  */
 declare function isObject(value: any): value is Record<string, any>;
 
-export { getListDiff, getObjectDiff, isEqual, isObject };
+export { type DataDiff, type ListData, type ListDiff, type ListDiffStatus, type ListOptions, type ListStatusTuple, type ObjectData, type ObjectDiff, type ObjectDiffStatus, type ObjectOptions, type ObjectStatusTuple, type SubProperties, getListDiff, getObjectDiff, isEqual, type isEqualOptions, isObject };
