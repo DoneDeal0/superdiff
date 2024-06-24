@@ -39,6 +39,8 @@ describe("isEqual", () => {
       )
     ).toBeFalsy();
     expect(isEqual(["psg"], ["psg", "nantes"])).toBeFalsy();
+    expect(isEqual(null, ["hello", "world"])).toBeFalsy();
+    expect(isEqual(["hello", "world"], null)).toBeFalsy();
   });
   it("return true if ignoreArrayOrder option is activated and arrays contains the same values regardless of their positions", () => {
     expect(

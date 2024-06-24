@@ -88,7 +88,8 @@ declare const getListDiff: <T>(prevList: T[] | null | undefined, nextList: T[] |
 /**
  * Returns true if two data are equal
  * @param {any} a - The original data.
- * @param {any} b- The data to compare.
+ * @param {any} b - The data to compare.
+ * @param {isEqualOptions} options - The options to compare the data.
  * @returns boolean
  */
 declare function isEqual(a: any, b: any, options?: isEqualOptions): boolean;
