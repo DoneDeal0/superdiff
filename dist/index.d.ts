@@ -1,3 +1,5 @@
+declare const STATUS: Record<string, ObjectDiffStatus>;
+declare const LIST_STATUS: Record<string, ListDiffStatus>;
 declare const GRANULARITY: Record<string, "basic" | "deep">;
 type ListDiffStatus = "added" | "equal" | "moved" | "deleted" | "updated";
 type ObjectDiffStatus = "added" | "equal" | "deleted" | "updated";
@@ -89,7 +91,8 @@ declare const getListDiff: <T>(prevList: T[] | null | undefined, nextList: T[] |
 /**
  * Returns true if two data are equal
  * @param {any} a - The original data.
- * @param {any} b- The data to compare.
+ * @param {any} b - The data to compare.
+ * @param {isEqualOptions} options - The options to compare the data.
  * @returns boolean
  */
 declare function isEqual(a: any, b: any, options?: isEqualOptions): boolean;
@@ -100,4 +103,4 @@ declare function isEqual(a: any, b: any, options?: isEqualOptions): boolean;
  */
 declare function isObject(value: any): value is Record<string, any>;
 
-export { type DataDiff, type ListData, type ListDiff, type ListDiffStatus, type ListOptions, type ListStatusTuple, type ObjectData, type ObjectDiff, type ObjectDiffStatus, type ObjectOptions, type ObjectStatusTuple, type SubProperties, getListDiff, getObjectDiff, isEqual, type isEqualOptions, isObject };
+export { type DataDiff, GRANULARITY, LIST_STATUS, type ListData, type ListDiff, type ListDiffStatus, type ListOptions, type ListStatusTuple, type ObjectData, type ObjectDiff, type ObjectDiffStatus, type ObjectOptions, type ObjectStatusTuple, STATUS, type SubProperties, getListDiff, getObjectDiff, isEqual, type isEqualOptions, isObject };
