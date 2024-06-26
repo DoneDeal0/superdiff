@@ -1,3 +1,5 @@
+declare const STATUS: Record<string, ObjectDiffStatus>;
+declare const LIST_STATUS: Record<string, ListDiffStatus>;
 declare const GRANULARITY: Record<string, "basic" | "deep">;
 type ListDiffStatus = "added" | "equal" | "moved" | "deleted" | "updated";
 type ObjectDiffStatus = "added" | "equal" | "deleted" | "updated";
@@ -60,6 +62,7 @@ type ObjectDiff = {
         subPropertiesDiff?: SubProperties[];
     }[];
 };
+type DataDiff = ListDiff | ObjectDiff;
 
 /**
  * Returns the diff between two objects
@@ -100,4 +103,4 @@ declare function isEqual(a: any, b: any, options?: isEqualOptions): boolean;
  */
 declare function isObject(value: any): value is Record<string, any>;
 
-export { getListDiff, getObjectDiff, isEqual, isObject };
+export { type DataDiff, GRANULARITY, LIST_STATUS, type ListData, type ListDiff, type ListDiffStatus, type ListOptions, type ListStatusTuple, type ObjectData, type ObjectDiff, type ObjectDiffStatus, type ObjectOptions, type ObjectStatusTuple, STATUS, type SubProperties, getListDiff, getObjectDiff, isEqual, type isEqualOptions, isObject };
