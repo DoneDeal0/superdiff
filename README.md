@@ -8,7 +8,6 @@ This library compares two arrays or objects and returns a full diff of their dif
 ![NPM Downloads](https://img.shields.io/npm/dy/%40donedeal0%2Fsuperdiff?logo=npm)
 ![GitHub Tag](https://img.shields.io/github/v/tag/DoneDeal0/superdiff?label=latest%20release)
 
-
 ## WHY YOU SHOULD USE THIS LIBRARY
 
 All other existing solutions return a strange diff format that often requires additional parsing. They are also limited to object comparison. 👎
@@ -18,7 +17,6 @@ All other existing solutions return a strange diff format that often requires ad
 ## DONORS
 
 I am grateful to the generous donors of **Superdiff**!
-
 
  <div style="display: flex;>
            
@@ -235,11 +233,13 @@ You can add a third `options` parameter to `getListDiff`.
 {
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
   referenceProperty?: string; // "" by default
+  ignoreArrayOrder?: boolean // false by default,
 }
 ```
 
 - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
 - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
 
 ### isEqual()
 

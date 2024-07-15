@@ -697,4 +697,95 @@ describe("getListDiff", () => {
       ],
     });
   });
+  it("consider moved values as equal if they have not changed and ignoreArrayOrder option is true", () => {
+    expect(
+      getListDiff(
+        [
+          { id: 3, name: "nina", hobbies: ["swiming"] },
+          { id: 1, name: "joe", hobbies: ["golf", "fishing"] },
+          { id: 2, name: "jack", hobbies: ["coding"] },
+        ],
+        [
+          { id: 1, name: "joe", hobbies: ["golf", "fishing"] },
+          { id: 2, name: "jack", hobbies: ["coding"] },
+          { id: 3, name: "nina", hobbies: ["swiming"] },
+        ],
+        {
+          ignoreArrayOrder: true,
+        }
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "equal",
+      diff: [
+        {
+          value: { id: 1, name: "joe", hobbies: ["golf", "fishing"] },
+          prevIndex: 1,
+          newIndex: 0,
+          indexDiff: -1,
+          status: "equal",
+        },
+        {
+          value: { id: 2, name: "jack", hobbies: ["coding"] },
+          prevIndex: 2,
+          newIndex: 1,
+          indexDiff: -1,
+          status: "equal",
+        },
+        {
+          value: { id: 3, name: "nina", hobbies: ["swiming"] },
+          prevIndex: 0,
+          newIndex: 2,
+          indexDiff: 2,
+          status: "equal",
+        },
+      ],
+    });
+  });
+  it("consider moved values as updated if they have changed and ignoreArrayOrder option is true", () => {
+    expect(
+      getListDiff(
+        [
+          { id: 3, name: "nina", hobbies: ["swiming"] },
+          { id: 1, name: "joseph", hobbies: ["golf", "fishing"] },
+          { id: 2, name: "jack", hobbies: ["coding"] },
+        ],
+        [
+          { id: 1, name: "joe", hobbies: ["golf", "fishing"] },
+          { id: 2, name: "jack", hobbies: ["coding"] },
+          { id: 3, name: "nina", hobbies: ["swiming"] },
+        ],
+        {
+          ignoreArrayOrder: true,
+          referenceProperty: "id",
+        }
+      )
+    ).toStrictEqual({
+      type: "list",
+      status: "updated",
+      diff: [
+        {
+          value: { id: 1, name: "joe", hobbies: ["golf", "fishing"] },
+          prevIndex: 1,
+          newIndex: 0,
+          indexDiff: -1,
+          status: "updated",
+        },
+        {
+          value: { id: 2, name: "jack", hobbies: ["coding"] },
+          prevIndex: 2,
+          newIndex: 1,
+          indexDiff: -1,
+          status: "equal",
+        },
+        {
+          value: { id: 3, name: "nina", hobbies: ["swiming"] },
+          prevIndex: 0,
+          newIndex: 2,
+          indexDiff: 2,
+          status: "equal",
+        },
+      ],
+    });
+  });
 });
