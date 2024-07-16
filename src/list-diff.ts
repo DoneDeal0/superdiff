@@ -1,10 +1,4 @@
-import {
-  LIST_STATUS,
-  ListData,
-  ListDiff,
-  ListDiffStatus,
-  ListOptions,
-} from "./model";
+import { LIST_STATUS, ListDiff, ListDiffStatus, ListOptions } from "./model";
 import { isEqual, isObject } from "./utils";
 
 function getLeanDiff(
@@ -72,6 +66,7 @@ export const getListDiff = <T>(
     showOnly: [],
     referenceProperty: undefined,
     considerMoveAsUpdate: false,
+    ignoreArrayOrder: false,
   }
 ): ListDiff => {
   if (!prevList && !nextList) {
@@ -110,7 +105,7 @@ export const getListDiff = <T>(
       prevIndexMatches.push(prevIndex);
     }
     const indexDiff = prevIndex === -1 ? null : i - prevIndex;
-    if (indexDiff === 0) {
+    if (indexDiff === 0 || options.ignoreArrayOrder) {
       let nextStatus = LIST_STATUS.EQUAL;
       if (isReferencedObject(nextValue, options.referenceProperty)) {
         if (!isEqual(prevList[prevIndex], nextValue)) {

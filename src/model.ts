@@ -55,6 +55,7 @@ export type ListOptions = {
   showOnly?: Array<ListStatusTuple[number]>;
   referenceProperty?: string;
   considerMoveAsUpdate?: boolean;
+  ignoreArrayOrder?: boolean;
 };
 
 export type ListDiff = {
