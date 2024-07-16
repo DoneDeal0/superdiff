@@ -32,6 +32,7 @@ type ListOptions = {
     showOnly?: Array<ListStatusTuple[number]>;
     referenceProperty?: string;
     considerMoveAsUpdate?: boolean;
+    ignoreArrayOrder?: boolean;
 };
 type ListDiff = {
     type: "list";
