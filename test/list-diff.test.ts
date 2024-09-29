@@ -1,4 +1,5 @@
 import { getListDiff } from "../src/list-diff";
+import { LIST_STATUS } from "../src/models/list";
 
 describe("getListDiff", () => {
   it("returns an empty diff if no lists are provided", () => {
@@ -416,7 +417,7 @@ describe("getListDiff", () => {
           false,
           { name: "joe", age: 88 },
         ],
-        { showOnly: ["added", "deleted"] },
+        { showOnly: [LIST_STATUS.ADDED, LIST_STATUS.DELETED] },
       ),
     ).toStrictEqual({
       type: "list",
@@ -461,7 +462,7 @@ describe("getListDiff", () => {
     });
     expect(
       getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null, {
-        showOnly: ["moved", "updated"],
+        showOnly: [LIST_STATUS.MOVED, LIST_STATUS.UPDATED],
       }),
     ).toStrictEqual({
       type: "list",
@@ -472,7 +473,7 @@ describe("getListDiff", () => {
   it("returns all values if their status match the required statuses", () => {
     expect(
       getListDiff(null, ["mbappe", "mendes", "verratti", "ruiz"], {
-        showOnly: ["added"],
+        showOnly: [LIST_STATUS.ADDED],
       }),
     ).toStrictEqual({
       type: "list",
