@@ -1,3 +1,4 @@
+import { GRANULARITY, OBJECT_STATUS } from "../src/models/object";
 import { getObjectDiff } from "../src/object-diff";
 
 describe("getObjectDiff", () => {
@@ -189,7 +190,7 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
           status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "age",
               previousValue: 66,
@@ -294,7 +295,7 @@ describe("getObjectDiff", () => {
             },
           },
           status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "name",
               previousValue: "joe",
@@ -318,7 +319,7 @@ describe("getObjectDiff", () => {
                 },
               },
               status: "updated",
-              subDiff: [
+              diff: [
                 {
                   property: "member",
                   previousValue: true,
@@ -336,7 +337,7 @@ describe("getObjectDiff", () => {
                     golf: ["st andrews"],
                   },
                   status: "updated",
-                  subDiff: [
+                  diff: [
                     {
                       property: "rugby",
                       previousValue: ["france"],
@@ -420,7 +421,7 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
           status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "age",
               previousValue: 66,
@@ -485,7 +486,7 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
         },
-        { showOnly: { statuses: ["added"] } },
+        { showOnly: { statuses: [OBJECT_STATUS.ADDED] } },
       ),
     ).toStrictEqual({
       type: "object",
@@ -523,7 +524,12 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
         },
-        { showOnly: { statuses: ["added", "deleted"], granularity: "deep" } },
+        {
+          showOnly: {
+            statuses: [OBJECT_STATUS.ADDED, OBJECT_STATUS.DELETED],
+            granularity: GRANULARITY.DEEP,
+          },
+        },
       ),
     ).toStrictEqual({
       type: "object",
@@ -550,7 +556,7 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
           status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "age",
               previousValue: 66,
@@ -605,8 +611,8 @@ describe("getObjectDiff", () => {
         },
         {
           showOnly: {
-            statuses: ["updated"],
-            granularity: "deep",
+            statuses: [OBJECT_STATUS.UPDATED],
+            granularity: GRANULARITY.DEEP,
           },
         },
       ),
@@ -637,7 +643,7 @@ describe("getObjectDiff", () => {
             },
           },
           status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "data",
               previousValue: {
@@ -655,7 +661,7 @@ describe("getObjectDiff", () => {
                 },
               },
               status: "updated",
-              subDiff: [
+              diff: [
                 {
                   property: "hobbies",
                   previousValue: {
@@ -667,7 +673,7 @@ describe("getObjectDiff", () => {
                     golf: ["st andrews"],
                   },
                   status: "updated",
-                  subDiff: [
+                  diff: [
                     {
                       property: "football",
                       previousValue: ["psg"],
@@ -713,8 +719,8 @@ describe("getObjectDiff", () => {
         },
         {
           showOnly: {
-            statuses: ["added"],
-            granularity: "deep",
+            statuses: [OBJECT_STATUS.ADDED],
+            granularity: GRANULARITY.DEEP,
           },
         },
       ),
@@ -744,7 +750,7 @@ describe("getObjectDiff", () => {
             },
           },
           status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "data",
               previousValue: {
@@ -761,7 +767,7 @@ describe("getObjectDiff", () => {
                 },
               },
               status: "updated",
-              subDiff: [
+              diff: [
                 {
                   property: "hobbies",
                   previousValue: {
@@ -772,7 +778,7 @@ describe("getObjectDiff", () => {
                     golf: ["st andrews"],
                   },
                   status: "updated",
-                  subDiff: [
+                  diff: [
                     {
                       property: "football",
                       previousValue: undefined,
@@ -803,7 +809,12 @@ describe("getObjectDiff", () => {
           age: 54,
           hobbies: ["golf", "football"],
         },
-        { showOnly: { statuses: ["deleted"], granularity: "deep" } },
+        {
+          showOnly: {
+            statuses: [OBJECT_STATUS.DELETED],
+            granularity: GRANULARITY.DEEP,
+          },
+        },
       ),
     ).toStrictEqual({
       type: "object",
@@ -819,7 +830,12 @@ describe("getObjectDiff", () => {
         hobbies: ["golf", "football"],
       },
       null,
-      { showOnly: { statuses: ["added"], granularity: "deep" } },
+      {
+        showOnly: {
+          statuses: [OBJECT_STATUS.ADDED],
+          granularity: GRANULARITY.DEEP,
+        },
+      },
     ),
   ).toStrictEqual({
     type: "object",
@@ -831,7 +847,7 @@ describe("getObjectDiff", () => {
       getObjectDiff(
         { name: "joe", age: 54, hobbies: ["golf", "football"] },
         null,
-        { showOnly: { statuses: ["deleted"] } },
+        { showOnly: { statuses: [OBJECT_STATUS.DELETED] } },
       ),
     ).toStrictEqual({
       type: "object",

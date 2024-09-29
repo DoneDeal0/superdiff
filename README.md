@@ -1,19 +1,26 @@
 <img width="722" alt="superdiff-logo" src="https://user-images.githubusercontent.com/43271780/209532864-24d7449e-1185-4810-9423-be5df1fe877f.png">
 
-# SUPERDIFF
-
-This library compares two arrays or objects and returns a full diff of their differences.
 
 [![CI](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml)
 [![CD](https://github.com/DoneDeal0/superdiff/actions/workflows/cd.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/cd.yml)
 ![NPM Downloads](https://img.shields.io/npm/dy/%40donedeal0%2Fsuperdiff?logo=npm)
 ![GitHub Tag](https://img.shields.io/github/v/tag/DoneDeal0/superdiff?label=latest%20release)
 
+<hr/>
+
+# WHAT IS IT?
+
+This library compares two arrays or objects and returns a full diff of their differences.
+
+<hr/>
+
 ## WHY YOU SHOULD USE THIS LIBRARY
 
-All other existing solutions return a strange diff format that often requires additional parsing. They are also limited to object comparison. 👎
+All other existing solutions return a strange diff format that often requires additional parsing. They are also limited to object comparison.
 
 **Superdiff** gives you a complete diff for both array <u>and</u> objects in a very readable format. Last but not least, it's battle-tested and super fast. Import. Enjoy. 👍
+
+<hr/>
 
 ## DONORS
 
@@ -27,111 +34,7 @@ I am grateful to the generous donors of **Superdiff**!
 
  </div>
 
-## DIFF FORMAT COMPARISON
-
-Let's compare the diff format of **Superdiff** and **Deep-diff**, the most popular diff lib on npm:
-
-input:
-
-```diff
-const objectA = {
-          id: 54,
-          user: {
-            name: "joe",
--           member: true,
--           hobbies: ["golf", "football"],
-            age: 66,
-         },
-  }
-
-const objectB = {
-        id: 54,
-        user: {
-            name: "joe",
-+           member: false,
-+           hobbies: ["golf", "chess"],
-            age: 66,
-        },
-  }
-```
-
-**Deep-Diff** output:
-
-```js
-[
-  {
-    kind: "E",
-    path: ["user", "member"],
-    lhs: true,
-    rhs: false,
-  },
-  {
-    kind: "E",
-    path: ["user", "hobbies", 1],
-    lhs: "football",
-    rhs: "chess",
-  },
-];
-```
-
-**SuperDiff** output:
-
-```diff
-{
-      type: "object",
-+     status: "updated",
-      diff: [
-        {
-          property: "id",
-          previousValue: 54,
-          currentValue: 54,
-          status: "equal",
-        },
-        {
-          property: "user",
-          previousValue: {
-            name: "joe",
-            member: true,
-            hobbies: ["golf", "football"],
-            age: 66,
-          },
-          currentValue: {
-            name: "joe",
-            member: false,
-            hobbies: ["golf", "chess"],
-            age: 66,
-          },
-+         status: "updated",
-          subPropertiesDiff: [
-            {
-              property: "name",
-              previousValue: "joe",
-              currentValue: "joe",
-              status: "equal",
-            },
-+           {
-+             property: "member",
-+             previousValue: true,
-+             currentValue: false,
-+             status: "updated",
-+           },
-+           {
-+             property: "hobbies",
-+             previousValue: ["golf", "football"],
-+             currentValue: ["golf", "chess"],
-+             status: "updated",
-+           },
-            {
-              property: "age",
-              previousValue: 66,
-              currentValue: 66,
-              status: "equal",
-            },
-          ],
-        },
-      ],
-    }
-```
+ <hr/>
 
 ## FEATURES
 
@@ -158,17 +61,17 @@ type ObjectDiff = {
   status: "added" | "deleted" | "equal" | "updated";
   diff: {
     property: string;
-    previousValue: any;
-    currentValue: any;
+    previousValue: unknown;
+    currentValue: unknow;
     status: "added" | "deleted" | "equal" | "updated";
     // only appears if some subproperties have been added/deleted/updated
-    subPropertiesDiff?: {
+    diff?: {
       property: string;
-      previousValue: any;
-      currentValue: any;
+      previousValue: unknown;
+      currentValue: unknown;
       status: "added" | "deleted" | "equal" | "updated";
-      // subDiff is a recursive diff in case of nested subproperties
-      subDiff?: SubProperties[];
+      // recursive diff in case of subproperties
+      diff?: SubDiff[];
     }[];
   }[];
 };
@@ -217,7 +120,7 @@ type ListDiff = {
   type: "list";
   status: "added" | "deleted" | "equal" | "moved" | "updated";
   diff: {
-    value: any;
+    value: unknown;
     prevIndex: number | null;
     newIndex: number | null;
     indexDiff: number | null;
@@ -269,6 +172,8 @@ import { isObject } from "@donedeal0/superdiff";
 ```
 
 Tests whether a value is an object.
+
+<hr/>
 
 ## EXAMPLES
 
@@ -384,7 +289,7 @@ output
             age: 66,
           },
 +         status: "updated",
-          subPropertiesDiff: [
+          diff: [
             {
               property: "name",
               previousValue: "joe",

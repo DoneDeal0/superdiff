@@ -1,17 +1,22 @@
-import { LIST_STATUS, ListDiff, ListDiffStatus, ListOptions } from "./model";
+import {
+  DEFAULT_LIST_DIFF_OPTIONS,
+  LIST_STATUS,
+  ListDiff,
+  ListDiffOptions,
+} from "./models/list";
 import { isEqual, isObject } from "./utils";
 
 function getLeanDiff(
   diff: ListDiff["diff"],
-  showOnly = [] as ListOptions["showOnly"],
+  showOnly = [] as ListDiffOptions["showOnly"],
 ): ListDiff["diff"] {
   return diff.filter((value) => showOnly?.includes(value.status));
 }
 
 function formatSingleListDiff<T>(
   listData: T[],
-  status: ListDiffStatus,
-  options: ListOptions = { showOnly: [] },
+  status: LIST_STATUS,
+  options: ListDiffOptions = { showOnly: [] },
 ): ListDiff {
   const diff = listData.map((data, i) => ({
     value: data,
@@ -34,16 +39,16 @@ function formatSingleListDiff<T>(
   };
 }
 
-function getListStatus(listDiff: ListDiff["diff"]): ListDiffStatus {
+function getListStatus(listDiff: ListDiff["diff"]): LIST_STATUS {
   return listDiff.some((value) => value.status !== LIST_STATUS.EQUAL)
     ? LIST_STATUS.UPDATED
     : LIST_STATUS.EQUAL;
 }
 
 function isReferencedObject(
-  value: any,
-  referenceProperty: ListOptions["referenceProperty"],
-): value is Record<string, any> {
+  value: unknown,
+  referenceProperty: ListDiffOptions["referenceProperty"],
+): value is Record<string, unknown> {
   if (isObject(value) && !!referenceProperty) {
     return Object.hasOwn(value, referenceProperty);
   }
@@ -62,12 +67,7 @@ function isReferencedObject(
 export const getListDiff = <T>(
   prevList: T[] | undefined | null,
   nextList: T[] | undefined | null,
-  options: ListOptions = {
-    showOnly: [],
-    referenceProperty: undefined,
-    considerMoveAsUpdate: false,
-    ignoreArrayOrder: false,
-  },
+  options: ListDiffOptions = DEFAULT_LIST_DIFF_OPTIONS,
 ): ListDiff => {
   if (!prevList && !nextList) {
     return {
