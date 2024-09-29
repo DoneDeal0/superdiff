@@ -16,8 +16,8 @@ describe("isEqual", () => {
         [
           { name: "joe", age: 99 },
           { name: "nina", age: 23 },
-        ]
-      )
+        ],
+      ),
     ).toBeTruthy();
   });
   it("return false if data are different", () => {
@@ -35,8 +35,8 @@ describe("isEqual", () => {
         [
           { name: "joe", age: 98 },
           { name: "nina", age: 23 },
-        ]
-      )
+        ],
+      ),
     ).toBeFalsy();
     expect(isEqual(["psg"], ["psg", "nantes"])).toBeFalsy();
     expect(isEqual(null, ["hello", "world"])).toBeFalsy();
@@ -46,10 +46,10 @@ describe("isEqual", () => {
     expect(
       isEqual(["hello", "world"], ["world", "hello"], {
         ignoreArrayOrder: true,
-      })
+      }),
     ).toBeTruthy();
     expect(
-      isEqual([44, 45, "world"], [45, "world", 44], { ignoreArrayOrder: true })
+      isEqual([44, 45, "world"], [45, "world", 44], { ignoreArrayOrder: true }),
     ).toBeTruthy();
     expect(
       isEqual(
@@ -63,23 +63,23 @@ describe("isEqual", () => {
         ],
         {
           ignoreArrayOrder: true,
-        }
-      )
+        },
+      ),
     ).toBeTruthy();
     expect(
       isEqual([true, 55, "hello"], ["hello", 55, true], {
         ignoreArrayOrder: true,
-      })
+      }),
     ).toBeTruthy();
   });
   it("return false if ignoreArrayOrder option is activated but the arrays don't contain the same values", () => {
     expect(
       isEqual(["hello"], ["world", "hello"], {
         ignoreArrayOrder: true,
-      })
+      }),
     ).toBeFalsy();
     expect(
-      isEqual([44, 47, "world"], [45, "world", 44], { ignoreArrayOrder: true })
+      isEqual([44, 47, "world"], [45, "world", 44], { ignoreArrayOrder: true }),
     ).toBeFalsy();
     expect(
       isEqual(
@@ -93,13 +93,13 @@ describe("isEqual", () => {
         ],
         {
           ignoreArrayOrder: true,
-        }
-      )
+        },
+      ),
     ).toBeFalsy();
     expect(
       isEqual([false, 55, "hello"], ["hello", 55, true], {
         ignoreArrayOrder: true,
-      })
+      }),
     ).toBeFalsy();
   });
 });

@@ -10,7 +10,7 @@ import { isEqualOptions } from "./model";
 export function isEqual(
   a: any,
   b: any,
-  options: isEqualOptions = { ignoreArrayOrder: false }
+  options: isEqualOptions = { ignoreArrayOrder: false },
 ): boolean {
   if (typeof a !== typeof b) return false;
   if (Array.isArray(a) && Array.isArray(b)) {
@@ -19,7 +19,7 @@ export function isEqual(
     }
     if (options.ignoreArrayOrder) {
       return a.every((v) =>
-        b.some((nextV: any) => JSON.stringify(nextV) === JSON.stringify(v))
+        b.some((nextV: any) => JSON.stringify(nextV) === JSON.stringify(v)),
       );
     }
     return a.every((v, i) => JSON.stringify(v) === JSON.stringify(b[i]));

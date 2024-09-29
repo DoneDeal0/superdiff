@@ -14,35 +14,38 @@ function getLeanDiff(
   showOnly: ObjectOptions["showOnly"] = {
     statuses: [],
     granularity: GRANULARITY.BASIC,
-  }
+  },
 ): ObjectDiff["diff"] {
   const { statuses, granularity } = showOnly;
-  return diff.reduce((acc, value) => {
-    if (granularity === GRANULARITY.DEEP && value.subPropertiesDiff) {
-      const cleanSubPropertiesDiff = getLeanDiff(
-        value.subPropertiesDiff,
-        showOnly
-      );
-      if (cleanSubPropertiesDiff.length > 0) {
-        return [
-          ...acc,
-          { ...value, subPropertiesDiff: cleanSubPropertiesDiff },
-        ];
+  return diff.reduce(
+    (acc, value) => {
+      if (granularity === GRANULARITY.DEEP && value.subPropertiesDiff) {
+        const cleanSubPropertiesDiff = getLeanDiff(
+          value.subPropertiesDiff,
+          showOnly,
+        );
+        if (cleanSubPropertiesDiff.length > 0) {
+          return [
+            ...acc,
+            { ...value, subPropertiesDiff: cleanSubPropertiesDiff },
+          ];
+        }
       }
-    }
-    // @ts-ignore
-    if (granularity === GRANULARITY.DEEP && value.subDiff) {
       // @ts-ignore
-      const cleanSubDiff = getLeanDiff(value.subDiff, showOnly);
-      if (cleanSubDiff.length > 0) {
-        return [...acc, { ...value, subDiff: cleanSubDiff }];
+      if (granularity === GRANULARITY.DEEP && value.subDiff) {
+        // @ts-ignore
+        const cleanSubDiff = getLeanDiff(value.subDiff, showOnly);
+        if (cleanSubDiff.length > 0) {
+          return [...acc, { ...value, subDiff: cleanSubDiff }];
+        }
       }
-    }
-    if (statuses.includes(value.status)) {
-      return [...acc, value];
-    }
-    return acc;
-  }, [] as ObjectDiff["diff"]);
+      if (statuses.includes(value.status)) {
+        return [...acc, value];
+      }
+      return acc;
+    },
+    [] as ObjectDiff["diff"],
+  );
 }
 
 function getObjectStatus(diff: ObjectDiff["diff"]): ObjectDiffStatus {
@@ -57,7 +60,7 @@ function formatSingleObjectDiff(
   options: ObjectOptions = {
     ignoreArrayOrder: false,
     showOnly: { statuses: [], granularity: GRANULARITY.BASIC },
-  }
+  },
 ): ObjectDiff {
   if (!data) {
     return {
@@ -110,13 +113,13 @@ function formatSingleObjectDiff(
 function getPreviousMatch(
   previousValue: any | undefined,
   nextSubProperty: any,
-  options?: ObjectOptions
+  options?: ObjectOptions,
 ): any | undefined {
   if (!previousValue) {
     return undefined;
   }
   const previousMatch = Object.entries(previousValue).find(([subPreviousKey]) =>
-    isEqual(subPreviousKey, nextSubProperty, options)
+    isEqual(subPreviousKey, nextSubProperty, options),
   );
   return previousMatch ? previousMatch[1] : undefined;
 }
@@ -124,7 +127,7 @@ function getPreviousMatch(
 function getValueStatus(
   previousValue: any,
   nextValue: any,
-  options?: ObjectOptions
+  options?: ObjectOptions,
 ): ObjectDiffStatus {
   if (isEqual(previousValue, nextValue, options)) {
     return STATUS.EQUAL;
@@ -133,7 +136,7 @@ function getValueStatus(
 }
 
 function getPropertyStatus(
-  subPropertiesDiff: SubProperties[]
+  subPropertiesDiff: SubProperties[],
 ): ObjectDiffStatus {
   return subPropertiesDiff.some((property) => property.status !== STATUS.EQUAL)
     ? STATUS.UPDATED
@@ -142,7 +145,7 @@ function getPropertyStatus(
 
 function getDeletedProperties(
   previousValue: Record<string, any> | undefined,
-  nextValue: Record<string, any>
+  nextValue: Record<string, any>,
 ): { property: string; value: any }[] | undefined {
   if (!previousValue) return undefined;
   const prevKeys = Object.keys(previousValue);
@@ -160,13 +163,13 @@ function getDeletedProperties(
 function getSubPropertiesDiff(
   previousValue: Record<string, any> | undefined,
   nextValue: Record<string, any>,
-  options?: ObjectOptions
+  options?: ObjectOptions,
 ): SubProperties[] {
   const subPropertiesDiff: SubProperties[] = [];
   let subDiff: SubProperties[];
   const deletedMainSubProperties = getDeletedProperties(
     previousValue,
-    nextValue
+    nextValue,
   );
   if (deletedMainSubProperties) {
     deletedMainSubProperties.forEach((deletedProperty) => {
@@ -182,9 +185,9 @@ function getSubPropertiesDiff(
     const previousMatch = getPreviousMatch(
       previousValue,
       nextSubProperty,
-      options
+      options,
     );
-    if (!!!previousMatch) {
+    if (!previousMatch) {
       return subPropertiesDiff.push({
         property: nextSubProperty,
         previousValue: previousMatch,
@@ -193,15 +196,15 @@ function getSubPropertiesDiff(
           !previousValue || !(nextSubProperty in previousValue)
             ? STATUS.ADDED
             : previousMatch === nextSubValue
-            ? STATUS.EQUAL
-            : STATUS.UPDATED,
+              ? STATUS.EQUAL
+              : STATUS.UPDATED,
       });
     }
     if (isObject(nextSubValue)) {
       const data: SubProperties[] = getSubPropertiesDiff(
         previousMatch,
         nextSubValue,
-        options
+        options,
       );
       if (data && data.length > 0) {
         subDiff = data;
@@ -237,7 +240,7 @@ export function getObjectDiff(
   options: ObjectOptions = {
     ignoreArrayOrder: false,
     showOnly: { statuses: [], granularity: GRANULARITY.BASIC },
-  }
+  },
 ): ObjectDiff {
   if (!prevData && !nextData) {
     return {
@@ -255,7 +258,7 @@ export function getObjectDiff(
   const diff: ObjectDiff["diff"] = [];
   Object.entries(nextData).forEach(([nextProperty, nextValue]) => {
     const previousValue = prevData[nextProperty];
-    if (!!!previousValue) {
+    if (!previousValue) {
       return diff.push({
         property: nextProperty,
         previousValue,
@@ -263,15 +266,15 @@ export function getObjectDiff(
         status: !(nextProperty in prevData)
           ? STATUS.ADDED
           : previousValue === nextValue
-          ? STATUS.EQUAL
-          : STATUS.UPDATED,
+            ? STATUS.EQUAL
+            : STATUS.UPDATED,
       });
     }
     if (isObject(nextValue)) {
       const subPropertiesDiff: SubProperties[] = getSubPropertiesDiff(
         previousValue,
         nextValue,
-        options
+        options,
       );
       const subPropertyStatus = getPropertyStatus(subPropertiesDiff);
       return diff.push({

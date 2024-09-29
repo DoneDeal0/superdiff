@@ -1,0 +1,1 @@
+npm run test && npm run tsc && npm run lint

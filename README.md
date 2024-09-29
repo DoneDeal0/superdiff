@@ -425,7 +425,7 @@ isEqual(
   [
     { name: "joe", age: 98 },
     { name: "nina", age: 23 },
-  ]
+  ],
 );
 ```
 

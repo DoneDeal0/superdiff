@@ -87,7 +87,7 @@ declare function getObjectDiff(prevData: ObjectData, nextData: ObjectData, optio
     - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
  * @returns ListDiff
  */
-declare const getListDiff: <T>(prevList: T[] | null | undefined, nextList: T[] | null | undefined, options?: ListOptions) => ListDiff;
+declare const getListDiff: <T>(prevList: T[] | undefined | null, nextList: T[] | undefined | null, options?: ListOptions) => ListDiff;
 
 /**
  * Returns true if two data are equal

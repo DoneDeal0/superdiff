@@ -10,7 +10,7 @@ describe("getListDiff", () => {
   });
   it("consider previous list as completely deleted if no next list is provided", () => {
     expect(
-      getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null)
+      getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null),
     ).toStrictEqual({
       type: "list",
       status: "deleted",
@@ -48,7 +48,7 @@ describe("getListDiff", () => {
   });
   it("consider next list as completely added if no previous list is provided", () => {
     expect(
-      getListDiff(null, ["mbappe", "mendes", "verratti", "ruiz"])
+      getListDiff(null, ["mbappe", "mendes", "verratti", "ruiz"]),
     ).toStrictEqual({
       type: "list",
       status: "added",
@@ -88,8 +88,8 @@ describe("getListDiff", () => {
     expect(
       getListDiff(
         ["mbappe", "mendes", "verratti", "ruiz"],
-        ["mbappe", "messi", "ruiz"]
-      )
+        ["mbappe", "messi", "ruiz"],
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -187,8 +187,8 @@ describe("getListDiff", () => {
           { name: "paul", age: 32 },
           { name: "joe", age: 88 },
           { name: "nina", age: 23 },
-        ]
-      )
+        ],
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -226,7 +226,7 @@ describe("getListDiff", () => {
   });
   it("detects changes between lists containing duplicated values", () => {
     expect(
-      getListDiff(["mbappe", "messi"], ["mbappe", "mbappe", "messi"])
+      getListDiff(["mbappe", "messi"], ["mbappe", "mbappe", "messi"]),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -257,8 +257,8 @@ describe("getListDiff", () => {
     expect(
       getListDiff(
         ["mbappe", "messi", "messi", "mbappe"],
-        ["mbappe", "messi", "messi"]
-      )
+        ["mbappe", "messi", "messi"],
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -314,8 +314,8 @@ describe("getListDiff", () => {
           { name: "joe", age: 88 },
           false,
           { name: "joe", age: 88 },
-        ]
-      )
+        ],
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -416,8 +416,8 @@ describe("getListDiff", () => {
           false,
           { name: "joe", age: 88 },
         ],
-        { showOnly: ["added", "deleted"] }
-      )
+        { showOnly: ["added", "deleted"] },
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -462,7 +462,7 @@ describe("getListDiff", () => {
     expect(
       getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null, {
         showOnly: ["moved", "updated"],
-      })
+      }),
     ).toStrictEqual({
       type: "list",
       status: "deleted",
@@ -473,7 +473,7 @@ describe("getListDiff", () => {
     expect(
       getListDiff(null, ["mbappe", "mendes", "verratti", "ruiz"], {
         showOnly: ["added"],
-      })
+      }),
     ).toStrictEqual({
       type: "list",
       status: "added",
@@ -529,8 +529,8 @@ describe("getListDiff", () => {
         ],
         {
           referenceProperty: "id",
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -591,7 +591,7 @@ describe("getListDiff", () => {
     expect(
       getListDiff(["mbappe", "messi"], ["mbappe", "mbappe", "messi"], {
         considerMoveAsUpdate: true,
-      })
+      }),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -639,8 +639,8 @@ describe("getListDiff", () => {
         {
           referenceProperty: "id",
           considerMoveAsUpdate: true,
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",
@@ -712,8 +712,8 @@ describe("getListDiff", () => {
         ],
         {
           ignoreArrayOrder: true,
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "list",
       status: "equal",
@@ -758,8 +758,8 @@ describe("getListDiff", () => {
         {
           ignoreArrayOrder: true,
           referenceProperty: "id",
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "list",
       status: "updated",

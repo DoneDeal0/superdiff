@@ -29,14 +29,14 @@ export type ObjectStatusTuple = readonly [
   "added",
   "equal",
   "deleted",
-  "updated"
+  "updated",
 ];
 export type ListStatusTuple = readonly [
   "added",
   "equal",
   "deleted",
   "moved",
-  "updated"
+  "updated",
 ];
 
 export type isEqualOptions = {

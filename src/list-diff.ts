@@ -3,7 +3,7 @@ import { isEqual, isObject } from "./utils";
 
 function getLeanDiff(
   diff: ListDiff["diff"],
-  showOnly = [] as ListOptions["showOnly"]
+  showOnly = [] as ListOptions["showOnly"],
 ): ListDiff["diff"] {
   return diff.filter((value) => showOnly?.includes(value.status));
 }
@@ -11,7 +11,7 @@ function getLeanDiff(
 function formatSingleListDiff<T>(
   listData: T[],
   status: ListDiffStatus,
-  options: ListOptions = { showOnly: [] }
+  options: ListOptions = { showOnly: [] },
 ): ListDiff {
   const diff = listData.map((data, i) => ({
     value: data,
@@ -42,7 +42,7 @@ function getListStatus(listDiff: ListDiff["diff"]): ListDiffStatus {
 
 function isReferencedObject(
   value: any,
-  referenceProperty: ListOptions["referenceProperty"]
+  referenceProperty: ListOptions["referenceProperty"],
 ): value is Record<string, any> {
   if (isObject(value) && !!referenceProperty) {
     return Object.hasOwn(value, referenceProperty);
@@ -67,7 +67,7 @@ export const getListDiff = <T>(
     referenceProperty: undefined,
     considerMoveAsUpdate: false,
     ignoreArrayOrder: false,
-  }
+  },
 ): ListDiff => {
   if (!prevList && !nextList) {
     return {
@@ -91,7 +91,7 @@ export const getListDiff = <T>(
           return (
             isEqual(
               prevValue[options.referenceProperty as string],
-              nextValue[options.referenceProperty as string]
+              nextValue[options.referenceProperty as string],
             ) && !prevIndexMatches.includes(prevIdx)
           );
         }

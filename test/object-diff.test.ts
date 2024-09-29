@@ -12,8 +12,8 @@ describe("getObjectDiff", () => {
     expect(
       getObjectDiff(
         { name: "joe", age: 54, hobbies: ["golf", "football"] },
-        null
-      )
+        null,
+      ),
     ).toStrictEqual({
       type: "object",
       status: "deleted",
@@ -45,7 +45,7 @@ describe("getObjectDiff", () => {
         name: "joe",
         age: 54,
         hobbies: ["golf", "football"],
-      })
+      }),
     ).toStrictEqual({
       type: "object",
       status: "added",
@@ -89,8 +89,8 @@ describe("getObjectDiff", () => {
           city: undefined,
           hobbies: ["golf", "football"],
           options: { vegan: undefined, phone: null },
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "equal",
@@ -156,8 +156,8 @@ describe("getObjectDiff", () => {
             hobbies: ["golf", "chess"],
             nickname: "super joe",
           },
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -259,8 +259,8 @@ describe("getObjectDiff", () => {
               },
             },
           },
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -387,8 +387,8 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
         },
-        { ignoreArrayOrder: true }
-      )
+        { ignoreArrayOrder: true },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -485,8 +485,8 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
         },
-        { showOnly: { statuses: ["added"] } }
-      )
+        { showOnly: { statuses: ["added"] } },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -523,8 +523,8 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
         },
-        { showOnly: { statuses: ["added", "deleted"], granularity: "deep" } }
-      )
+        { showOnly: { statuses: ["added", "deleted"], granularity: "deep" } },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -608,8 +608,8 @@ describe("getObjectDiff", () => {
             statuses: ["updated"],
             granularity: "deep",
           },
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -716,8 +716,8 @@ describe("getObjectDiff", () => {
             statuses: ["added"],
             granularity: "deep",
           },
-        }
-      )
+        },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "updated",
@@ -803,8 +803,8 @@ describe("getObjectDiff", () => {
           age: 54,
           hobbies: ["golf", "football"],
         },
-        { showOnly: { statuses: ["deleted"], granularity: "deep" } }
-      )
+        { showOnly: { statuses: ["deleted"], granularity: "deep" } },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "added",
@@ -819,8 +819,8 @@ describe("getObjectDiff", () => {
         hobbies: ["golf", "football"],
       },
       null,
-      { showOnly: { statuses: ["added"], granularity: "deep" } }
-    )
+      { showOnly: { statuses: ["added"], granularity: "deep" } },
+    ),
   ).toStrictEqual({
     type: "object",
     status: "deleted",
@@ -831,8 +831,8 @@ describe("getObjectDiff", () => {
       getObjectDiff(
         { name: "joe", age: 54, hobbies: ["golf", "football"] },
         null,
-        { showOnly: { statuses: ["deleted"] } }
-      )
+        { showOnly: { statuses: ["deleted"] } },
+      ),
     ).toStrictEqual({
       type: "object",
       status: "deleted",
@@ -860,84 +860,80 @@ describe("getObjectDiff", () => {
   });
   it("detects changes when comparing an array value property to a non-array value property", () => {
     expect(
-        getObjectDiff(
-            {
-              name: "joe",
-              age: 55,
-              hobbies: ["golf", "football"]
-            },
-            {
-              name: "joe",
-              age: 55,
-              hobbies: null
-            }))
-        .toStrictEqual({
-          type: "object",
+      getObjectDiff(
+        {
+          name: "joe",
+          age: 55,
+          hobbies: ["golf", "football"],
+        },
+        {
+          name: "joe",
+          age: 55,
+          hobbies: null,
+        },
+      ),
+    ).toStrictEqual({
+      type: "object",
+      status: "updated",
+      diff: [
+        {
+          currentValue: "joe",
+          previousValue: "joe",
+          property: "name",
+          status: "equal",
+        },
+        {
+          currentValue: 55,
+          previousValue: 55,
+          property: "age",
+          status: "equal",
+        },
+        {
+          currentValue: null,
+          previousValue: ["golf", "football"],
+          property: "hobbies",
           status: "updated",
-          diff: [
-            {
-              currentValue: "joe",
-              previousValue: "joe",
-              property: "name",
-              status: "equal",
-            },
-            {
-              currentValue: 55,
-              previousValue: 55,
-              property: "age",
-              status: "equal",
-            },
-            {
-              currentValue: null,
-              previousValue: [
-                "golf",
-                "football",
-              ],
-              property: "hobbies",
-              status: "updated",
-            }
-          ]
-        })
-  })
+        },
+      ],
+    });
+  });
   it("detects changes when comparing a non-array value property to an array value property", () => {
     expect(
-        getObjectDiff(
-            {
-              name: "joe",
-              age: 55,
-              hobbies: null
-            },
-            {
-              name: "joe",
-              age: 55,
-              hobbies: ["golf", "football"]
-            }))
-        .toStrictEqual({
-          type: "object",
+      getObjectDiff(
+        {
+          name: "joe",
+          age: 55,
+          hobbies: null,
+        },
+        {
+          name: "joe",
+          age: 55,
+          hobbies: ["golf", "football"],
+        },
+      ),
+    ).toStrictEqual({
+      type: "object",
+      status: "updated",
+      diff: [
+        {
+          currentValue: "joe",
+          previousValue: "joe",
+          property: "name",
+          status: "equal",
+        },
+        {
+          currentValue: 55,
+          previousValue: 55,
+          property: "age",
+          status: "equal",
+        },
+        {
+          currentValue: ["golf", "football"],
+          previousValue: null,
+          property: "hobbies",
           status: "updated",
-          diff: [
-            {
-              currentValue: "joe",
-              previousValue: "joe",
-              property: "name",
-              status: "equal",
-            },
-            {
-              currentValue: 55,
-              previousValue: 55,
-              property: "age",
-              status: "equal",
-            },
-            {
-              currentValue: [
-                "golf",
-                "football",
-              ],
-              previousValue: null,
-              property: "hobbies",
-              status: "updated",
-            }
-          ]
-        })
+        },
+      ],
+    });
   });
 });
