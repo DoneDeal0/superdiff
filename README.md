@@ -4,7 +4,8 @@
 
 This library compares two arrays or objects and returns a full diff of their differences.
 
-[![Superdiff CI](https://github.com/DoneDeal0/superdiff/actions/workflows/superdiff.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/superdiff.yml)
+[![CI](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml)
+[![CD](https://github.com/DoneDeal0/superdiff/actions/workflows/cd.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/cd.yml)
 ![NPM Downloads](https://img.shields.io/npm/dy/%40donedeal0%2Fsuperdiff?logo=npm)
 ![GitHub Tag](https://img.shields.io/github/v/tag/DoneDeal0/superdiff?label=latest%20release)
 
