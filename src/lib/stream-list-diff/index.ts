@@ -6,7 +6,7 @@ import {
   StreamReferences,
 } from "@models/stream";
 import { LIST_STATUS } from "@models/list";
-import { isEqual, isObject } from "@lib/utils";
+import { isObject } from "@lib/utils";
 import { Emitter, EventEmitter, StreamEvent } from "./emitter";
 
 function outputDiffChunk<T extends Record<string, unknown>>(
@@ -31,6 +31,8 @@ function outputDiffChunk<T extends Record<string, unknown>>(
         const output = chunks;
         chunks = [];
         return emitter.emit(StreamEvent.Data, output);
+      } else {
+        return;
       }
     }
     return emitter.emit(StreamEvent.Data, [chunk]);
@@ -73,56 +75,53 @@ function isValidChunkSize(
   chunksSize: ListStreamOptions["chunksSize"],
 ): boolean {
   if (!chunksSize) return true;
-  const x = String(Math.sign(chunksSize));
-  return x !== "-1" && x !== "NaN";
+  const sign = String(Math.sign(chunksSize));
+  return sign !== "-1" && sign !== "NaN";
 }
 
 function isDataValid<T extends Record<string, unknown>>(
   data: T,
   referenceProperty: ReferenceProperty<T>,
-  emitter: Emitter<T>,
   listType: "prevList" | "nextList",
-): boolean {
+): { isValid: boolean; message?: string } {
   if (!isObject(data)) {
-    emitter.emit(
-      StreamEvent.Error,
-      new Error(
-        `Your ${listType} must only contain valid objects. Found ${data}`,
-      ),
-    );
-    return false;
+    return {
+      isValid: false,
+      message: `Your ${listType} must only contain valid objects. Found '${data}'`,
+    };
   }
   if (!Object.hasOwn(data, referenceProperty)) {
-    emitter.emit(
-      StreamEvent.Error,
-      new Error(
-        `The reference property ${String(referenceProperty)} is not available in all the objects of your ${listType}.`,
-      ),
-    );
-    return false;
+    return {
+      isValid: false,
+      message: `The reference property '${String(referenceProperty)}' is not available in all the objects of your ${listType}.`,
+    };
   }
-  return true;
+  return {
+    isValid: true,
+    message: "",
+  };
 }
 
 function getDiffChunks<T extends Record<string, unknown>>(
-  prevList: T[],
-  nextList: T[],
+  prevList: T[] = [],
+  nextList: T[] = [],
   referenceProperty: ReferenceProperty<T>,
   emitter: Emitter<T>,
   options: ListStreamOptions = DEFAULT_LIST_STREAM_OPTIONS,
-) {
+): void {
   if (!isValidChunkSize(options?.chunksSize)) {
     return emitter.emit(
       StreamEvent.Error,
       new Error(
-        `The chunk size can't be negative. You entered the value ${options.chunksSize}`,
+        `The chunk size can't be negative. You entered the value '${options.chunksSize}'`,
       ),
     );
   }
-  if (!prevList && !nextList) {
-    return [];
+  if (prevList.length === 0 && nextList.length === 0) {
+    return emitter.emit(StreamEvent.Finish);
   }
-  if (!prevList) {
+  const handleDiffChunk = outputDiffChunk<T>(emitter);
+  if (prevList.length === 0) {
     const nextDiff = formatSingleListStreamDiff(
       nextList as T[],
       false,
@@ -136,11 +135,12 @@ function getDiffChunks<T extends Record<string, unknown>>(
       );
       emitter.emit(StreamEvent.Finish);
     }
-    return nextDiff?.forEach((data, i) =>
+    nextDiff?.forEach((data, i) =>
       handleDiffChunk(data, i === nextDiff.length - 1, options),
     );
+    return emitter.emit(StreamEvent.Finish);
   }
-  if (!nextList) {
+  if (nextList.length === 0) {
     const prevDiff = formatSingleListStreamDiff(
       prevList as T[],
       true,
@@ -154,17 +154,22 @@ function getDiffChunks<T extends Record<string, unknown>>(
       );
       emitter.emit(StreamEvent.Finish);
     }
-    return prevDiff?.forEach((data, i) =>
+    prevDiff?.forEach((data, i) =>
       handleDiffChunk(data, i === prevDiff.length - 1, options),
     );
+    return emitter.emit(StreamEvent.Finish);
   }
   const listsReferences: StreamReferences<T> = new Map();
-  const handleDiffChunk = outputDiffChunk<T>(emitter);
   for (let i = 0; i < prevList.length; i++) {
     const data = prevList[i];
     if (data) {
-      const isValid = isDataValid(data, referenceProperty, emitter, "prevList");
+      const { isValid, message } = isDataValid(
+        data,
+        referenceProperty,
+        "prevList",
+      );
       if (!isValid) {
+        emitter.emit(StreamEvent.Error, new Error(message));
         emitter.emit(StreamEvent.Finish);
         break;
       }
@@ -176,10 +181,15 @@ function getDiffChunks<T extends Record<string, unknown>>(
   }
 
   for (let i = 0; i < nextList.length; i++) {
-    const data = prevList[i];
+    const data = nextList[i];
     if (data) {
-      const isValid = isDataValid(data, referenceProperty, emitter, "nextList");
+      const { isValid, message } = isDataValid(
+        data,
+        referenceProperty,
+        "nextList",
+      );
       if (!isValid) {
+        emitter.emit(StreamEvent.Error, new Error(message));
         emitter.emit(StreamEvent.Finish);
         break;
       }
@@ -207,10 +217,11 @@ function getDiffChunks<T extends Record<string, unknown>>(
 
   let streamedChunks = 0;
   const totalChunks = listsReferences.size;
+
   for (const data of listsReferences.values()) {
     streamedChunks++;
     const isLastChunk = totalChunks === streamedChunks;
-    if (!data.nextIndex) {
+    if (typeof data.nextIndex === "undefined") {
       handleDiffChunk(
         {
           previousValue: prevList[data.prevIndex],
@@ -226,17 +237,17 @@ function getDiffChunks<T extends Record<string, unknown>>(
     } else {
       const prevData = prevList[data.prevIndex];
       const nextData = nextList[data.nextIndex];
-      const isDataEqual = isEqual(prevData, nextData);
-      const indexDiff = data.prevIndex - data.nextIndex;
+      const isDataEqual = JSON.stringify(prevData) === JSON.stringify(nextData);
+      const indexDiff = data.nextIndex - data.prevIndex;
       if (isDataEqual) {
         if (indexDiff === 0) {
           handleDiffChunk(
             {
               previousValue: prevList[data.prevIndex],
               currentValue: nextList[data.nextIndex],
-              prevIndex: null,
+              prevIndex: data.prevIndex,
               newIndex: data.nextIndex,
-              indexDiff: null,
+              indexDiff: 0,
               status: LIST_STATUS.EQUAL,
             },
             isLastChunk,
@@ -274,6 +285,7 @@ function getDiffChunks<T extends Record<string, unknown>>(
       }
     }
   }
+
   return emitter.emit(StreamEvent.Finish);
 }
 
