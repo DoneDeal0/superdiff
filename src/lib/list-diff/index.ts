@@ -3,8 +3,8 @@ import {
   LIST_STATUS,
   ListDiff,
   ListDiffOptions,
-} from "./models/list";
-import { isEqual, isObject } from "./utils";
+} from "@models/list";
+import { isEqual, isObject } from "@lib/utils";
 
 function getLeanDiff(
   diff: ListDiff["diff"],

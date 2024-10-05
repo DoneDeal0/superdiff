@@ -1,5 +1,5 @@
-import { getListDiff } from "../src/list-diff";
-import { LIST_STATUS } from "../src/models/list";
+import { getListDiff } from ".";
+import { LIST_STATUS } from "@models/list";
 
 describe("getListDiff", () => {
   it("returns an empty diff if no lists are provided", () => {

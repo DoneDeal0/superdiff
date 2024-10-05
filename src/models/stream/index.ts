@@ -1,4 +1,4 @@
-import { LIST_STATUS } from "./list";
+import { LIST_STATUS } from "@models/list";
 
 export type StreamListsDiff<T extends Record<string, unknown>> = {
   currentValue: T | null;

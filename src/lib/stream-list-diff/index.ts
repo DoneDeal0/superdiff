@@ -4,9 +4,9 @@ import {
   ReferenceProperty,
   StreamListsDiff,
   StreamReferences,
-} from "../models/stream";
-import { LIST_STATUS } from "../models/list";
-import { isEqual } from "../utils";
+} from "@models/stream";
+import { LIST_STATUS } from "@models/list";
+import { isEqual } from "@lib/utils";
 import { EventEmitter, StreamEvent } from "./emitter";
 
 function outputDiffChunk<T extends Record<string, unknown>>(

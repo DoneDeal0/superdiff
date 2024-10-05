@@ -6,8 +6,8 @@ import {
   ObjectDiffOptions,
   Diff,
   DEFAULT_OBJECT_DIFF_OPTIONS,
-} from "./models/object";
-import { isEqual, isObject } from "./utils";
+} from "@models/object";
+import { isEqual, isObject } from "@lib/utils";
 
 function getLeanDiff(
   diff: ObjectDiff["diff"],
