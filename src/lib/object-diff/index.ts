@@ -209,7 +209,7 @@ function getSubPropertiesDiff(
  * Returns the diff between two objects
  * @param {ObjectData} prevData - The original object.
  * @param {ObjectData} nextData - The new object.
- *  * @param {ObjectOptions} options - Options to refine your output.
+ * @param {ObjectOptions} options - Options to refine your output.
     - `showOnly`: returns only the values whose status you are interested in. It takes two parameters: `statuses` and `granularity`
        `statuses` are the status you want to see in the output (e.g. `["added", "equal"]`)
       `granularity` can be either `basic` (to return only the main properties whose status matches your query) or `deep` (to return the main properties if some of their subproperties' status match your request. The subproperties are filtered accordingly).
