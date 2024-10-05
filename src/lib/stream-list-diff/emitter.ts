@@ -1,3 +1,5 @@
+import { StreamListsDiff } from "@models/stream";
+
 type Listener<T extends unknown[]> = (...args: T) => void;
 
 export enum StreamEvent {
@@ -5,23 +7,27 @@ export enum StreamEvent {
   Finish = "finish",
   Error = "error",
 }
-export class EventEmitter {
+
+export type Emitter<T extends Record<string, unknown>> = EventEmitter<{
+  data: [StreamListsDiff<T>[]];
+  error: [Error];
+  finish: [];
+}>;
+
+export class EventEmitter<Events extends Record<string, unknown[]>> {
   private events: Record<string, Listener<unknown[]>[]> = {};
 
-  on<T extends unknown[]>(
-    event: `${StreamEvent}`,
-    listener: Listener<T>,
-  ): this {
-    if (!this.events[event]) {
-      this.events[event] = [];
+  on<E extends keyof Events>(event: E, listener: Listener<Events[E]>): this {
+    if (!this.events[event as string]) {
+      this.events[event as string] = [];
     }
-    this.events[event].push(listener as Listener<unknown[]>);
+    this.events[event as string].push(listener as Listener<unknown[]>);
     return this;
   }
 
-  emit<T extends unknown[]>(event: `${StreamEvent}`, ...args: T): void {
-    if (this.events[event]) {
-      this.events[event].forEach((listener) => listener(...args));
+  emit<E extends keyof Events>(event: E, ...args: Events[E]): void {
+    if (this.events[event as string]) {
+      this.events[event as string].forEach((listener) => listener(...args));
     }
   }
 }
