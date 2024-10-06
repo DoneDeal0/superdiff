@@ -1,5 +1,5 @@
-import { GRANULARITY, OBJECT_STATUS } from "../src/models/object";
-import { getObjectDiff } from "../src/object-diff";
+import { GRANULARITY, OBJECT_STATUS } from "@models/object";
+import { getObjectDiff } from ".";
 
 describe("getObjectDiff", () => {
   it("returns an empty diff if no objects are provided", () => {

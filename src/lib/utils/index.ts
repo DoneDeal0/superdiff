@@ -1,4 +1,4 @@
-import { isEqualOptions } from "./models/utils";
+import { isEqualOptions } from "@models/utils";
 
 /**
  * Returns true if two data are equal

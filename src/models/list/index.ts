@@ -6,8 +6,6 @@ export enum LIST_STATUS {
   MOVED = "moved",
 }
 
-export type ListData = unknown;
-
 export type ListDiffOptions = {
   showOnly?: `${LIST_STATUS}`[];
   referenceProperty?: string;
@@ -26,7 +24,7 @@ export type ListDiff = {
   type: "list";
   status: LIST_STATUS;
   diff: {
-    value: ListData;
+    value: unknown;
     prevIndex: number | null;
     newIndex: number | null;
     indexDiff: number | null;

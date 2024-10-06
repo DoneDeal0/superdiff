@@ -1,4 +1,4 @@
-import { isEqual, isObject } from "../src/utils";
+import { isEqual, isObject } from ".";
 
 describe("isEqual", () => {
   it("return true if data are the same", () => {
