@@ -17,7 +17,7 @@ export type StreamReferences<T extends Record<string, unknown>> = Map<
 >;
 
 export type ListStreamOptions = {
-  chunksSize?: number; // 0 by default. If 0, stream will be live
+  chunksSize?: number; // 0 by default.
   showOnly?: `${LIST_STATUS}`[];
   considerMoveAsUpdate?: boolean;
 };

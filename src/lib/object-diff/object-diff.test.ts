@@ -1,4 +1,4 @@
-import { GRANULARITY, OBJECT_STATUS } from "../../models/object";
+import { GRANULARITY, OBJECT_STATUS } from "@models/object";
 import { getObjectDiff } from ".";
 
 describe("getObjectDiff", () => {

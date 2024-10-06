@@ -18,7 +18,9 @@ This library compares two arrays or objects and returns a full diff of their dif
 
 All other existing solutions return a strange diff format that often requires additional parsing. They are also limited to object comparison.
 
-**Superdiff** gives you a complete diff for both array <u>and</u> objects in a very readable format. Last but not least, it's battle-tested, has zero dependencies, and is super fast. Import. Enjoy. 👍
+**Superdiff** gives you a complete diff for both array <u>and</u> objects in a very readable format. Last but not least, it's battle-tested, has zero dependencies, and is super fast. 
+
+Import. Enjoy. 👍
 
 <hr/>
 
@@ -38,17 +40,21 @@ I am grateful to the generous donors of **Superdiff**!
 
 ## FEATURES
 
-**Superdiff** exports 4 functions:
+**Superdiff** exports 5 functions:
 
 ```ts
-// Compares two objects and return a diff for each value and their potential subvalues
+// Returns a complete diff of two objects
 getObjectDiff(prevObject, nextObject)
-// Compares two arrays and returns a diff for each value
+
+// Returns a complete diff of two arrays
 getListDiff(prevList, nextList)
+
 // Streams the diff of two object lists, ideal for large lists and maximum performance
 streamListDiff(prevList, nextList, referenceProperty)
+
 // Checks whether two values are equal 
 isEqual(dataA, dataB)
+
 // Checks whether a value is an object
 isObject(data)
 ```
@@ -62,9 +68,9 @@ import { getObjectDiff } from "@donedeal0/superdiff";
 
 Compares two objects and return a diff for each value and their potential subvalues. Supports deeply nested objects with any kind of values.
 
-**Format**
+#### FORMAT
 
-input
+**Input**
 
 ```ts
 prevData: Record<string, unknown>;
@@ -78,8 +84,8 @@ options?: {
 }
 ```
 
-- `prevData`: the original object
-- `nextData`: the new object
+- `prevData`: the original object.
+- `nextData`: the new object.
 - `options`
   - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
   - `showOnly`: returns only the values whose status you are interested in. It takes two parameters:
@@ -89,7 +95,7 @@ options?: {
         - `basic` returns only the main properties whose status matches your query.
         - `deep` can return main properties if some of their subproperties' status match your request. The subproperties are filtered accordingly.
 
-output 
+**Output**
 
 ```ts
 type ObjectDiff = {
@@ -107,9 +113,9 @@ type Diff = {
   diff?: Diff[];
 };
 ```
-**Usage**
+#### USAGE
 
-input
+**Input**
 
 ```diff
 getObjectDiff(
@@ -134,7 +140,7 @@ getObjectDiff(
 );
 ```
 
-output
+**Output**
 
 ```diff
 {
@@ -202,9 +208,9 @@ import { getListDiff } from "@donedeal0/superdiff";
 
 Compares two arrays and returns a diff for each entry. Supports duplicate values, primitive values and objects.
 
-**Format**
+#### FORMAT
 
-input
+**Input**
 
 ```ts
   prevList: T[];
@@ -216,15 +222,15 @@ input
     considerMoveAsUpdate?: boolean // false by default
   }
 ```
-- `prevList`: the original list
-- `nextList`: the new list
+- `prevList`: the original list.
+- `nextList`: the new list.
 - `options`
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
   - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
   - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
-  - `considerMoveAsUpdate`: if set to `true` the `moved` value will be considered as `updated`.
+  - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
 
-output
+**Output**
 
 ```ts
 type ListDiff = {
@@ -239,9 +245,9 @@ type ListDiff = {
   }[];
 };
 ```
-**Usage**
+#### USAGE
 
-input
+**Input**
 
 ```diff
 getListDiff(
@@ -250,7 +256,7 @@ getListDiff(
 );
 ```
 
-output
+**Output**
 
 ```diff
 {
@@ -297,7 +303,7 @@ output
 ```
 <hr/>
 
-### streamListDiff()
+### streamListDiff() 
 
 ```js
 import { streamListDiff } from "@donedeal0/superdiff";
@@ -305,16 +311,16 @@ import { streamListDiff } from "@donedeal0/superdiff";
 
 Streams the diff of two object lists, ideal for large lists and maximum performance.
 
-**Format**
+#### FORMAT
 
-input
+**Input**
 
 ```ts
- prevList: T[],
- nextList: T[],
- referenceProperty: ReferenceProperty<T>,
+ prevList: Record<string, unknown>[],
+ nextList: Record<string, unknown>[],
+ referenceProperty: keyof Record<string, unknown>,
  options: {
-  showOnly?: returns only the values whose status you are interested in. (e.g. `["added", "equal"]`), // [] by default
+  showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
   chunksSize?: number, // // 0 by default
   considerMoveAsUpdate? boolean; // false by default
 }
@@ -324,13 +330,32 @@ input
 - `nextList`: the new object list.
 - `referenceProperty`: a common property in all the objects of your lists (e.g. `id`).
 - `options`
-  - `chunksSize` the number of object diffs returned by each stream chunk. If set to `0`, each stream will return a single object diff. If set to `10` each stream will return 10 object diffs.
+  - `chunksSize` the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff by chunk, `10` = 10 object diffs by chunk).
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-  - `considerMoveAsUpdate`: if set to `true` the `moved` value will be considered as `updated`.
+  - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
 
-output
+**Output**
+
+The objects diff are grouped in arrays - called `chunks` - and are consumed thanks to an event listener. You have access to 3 events: 
+  - `data`: to be notified when a new chunk of object diffs is available.
+  - `finish`: to be notified when the stream is complete.
+  - `error`: to be notified of an error during the stream.
 
 ```ts
+interface StreamListener<T extends Record<string, unknown>> {
+  on<E extends keyof EmitterEvents<T>>(
+    event: E,
+    listener: Listener<EmitterEvents<T>[E]>,
+  ): this;
+}
+
+type EmitterEvents<T extends Record<string, unknown>> = {
+  data: [StreamListDiff<T>[]];
+  error: [Error];
+  finish: [];
+};
+
+
 type StreamListDiff<T extends Record<string, unknown>> = {
   currentValue: T | null;
   previousValue: T | null;
@@ -341,9 +366,9 @@ type StreamListDiff<T extends Record<string, unknown>> = {
 };
 ```
 
-**Usage**
+#### USAGE
 
-input
+**Input**
 
 ```diff
 const diff = streamListDiff(
@@ -362,7 +387,7 @@ const diff = streamListDiff(
     );
 ```
  
-output
+**Output**
 
 ```diff
 diff.on("data", (chunk) => {
@@ -407,7 +432,7 @@ diff.on("data", (chunk) => {
 });
 
 diff.on("finish", () => console.log("The full diff is available"))
-diff.on("error", (err)=> console.log(err))
+diff.on("error", (err) => console.log(err))
 ```
 <hr/>
 
@@ -419,19 +444,22 @@ import { isEqual } from "@donedeal0/superdiff";
 
 Checks whether two values are equal.
 
-**Options**
+#### FORMAT
 
-You can add a third `options` parameter to `isEqual`.
+**Input**
 
 ```ts
-{
-  ignoreArrayOrder?: boolean // false by default,
-}
+a: unknown,
+b: unknown,
+options: { 
+    ignoreArrayOrder: boolean; // false by default
+     },
 ```
-
+- `a`: the value to compare to the value `b`.
+- `b`: the value that will be compared to the value `a`.
 - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
 
-**Usage**
+#### USAGE
 
 
 ```ts
@@ -447,7 +475,7 @@ isEqual(
 );
 ```
 
-output
+**Output**
 
 ```ts
 false;
@@ -462,15 +490,25 @@ import { isObject } from "@donedeal0/superdiff";
 
 Tests whether a value is an object.
 
-**Usage**
+#### FORMAT
 
-input
+**Input**
+
+```ts
+value: unknown;
+```
+
+- `value`: the value whose type will be checked.
+
+#### USAGE
+
+**Input**
 
 ```ts
 isObject(["hello", "world"]);
 ```
 
-output
+**Output**
 
 ```ts
 false;
@@ -478,7 +516,8 @@ false;
 
 <hr/>
 
-### More examples are available in the source code tests.
+### ℹ️ More examples are available in the source code tests.
+
 
 <hr/>
 
@@ -498,4 +537,4 @@ If you or your company uses **Superdiff**, please show your support by becoming 
 
 ## CONTRIBUTING
 
-Pull requests are welcome!
+Issues and pull requests are welcome!

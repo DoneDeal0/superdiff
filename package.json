@@ -1,6 +1,6 @@
 {
   "name": "@donedeal0/superdiff",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "SuperDiff checks the changes between two objects or arrays. It returns a complete diff with relevant information for each property or piece of data",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -17,6 +17,10 @@
   },
   "bugs": {
     "url": "https://github.com/DoneDeal0/superdiff/issues"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/DoneDeal0"
   },
   "readme": "./README.md",
   "release": {
@@ -57,7 +61,9 @@
     "diff",
     "deep-diff",
     "comparison",
-    "compare"
+    "compare",
+    "stream",
+    "streaming"
   ],
   "scripts": {
     "build": "tsup",
