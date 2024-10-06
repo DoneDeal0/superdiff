@@ -1,6 +1,6 @@
 import { LIST_STATUS } from "@models/list";
 
-export type StreamListsDiff<T extends Record<string, unknown>> = {
+export type StreamListDiff<T extends Record<string, unknown>> = {
   currentValue: T | null;
   previousValue: T | null;
   prevIndex: number | null;

@@ -1,14 +1,14 @@
 import { LIST_STATUS } from "@models/list";
-import { streamListsDiff } from ".";
-import { StreamListsDiff } from "@models/stream";
+import { streamListDiff } from ".";
+import { StreamListDiff } from "@models/stream";
 
-describe("streamListsDiff data", () => {
+describe("streamListDiff data", () => {
   it("emits 'data' event and consider the all the nextList added if no prevList is provided", (done) => {
     const nextList = [
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListsDiff([], nextList, "id", { chunksSize: 2 });
+    const diff = streamListDiff([], nextList, "id", { chunksSize: 2 });
 
     const expectedChunks = [
       {
@@ -43,7 +43,7 @@ describe("streamListsDiff data", () => {
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListsDiff(prevList, [], "id", { chunksSize: 2 });
+    const diff = streamListDiff(prevList, [], "id", { chunksSize: 2 });
 
     const expectedChunks = [
       {
@@ -82,7 +82,7 @@ describe("streamListsDiff data", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     const expectedChunks = [
       [
@@ -153,7 +153,7 @@ describe("streamListsDiff data", () => {
       { id: 9, name: "Item 9" },
       { id: 8, name: "Item 8" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id", { chunksSize: 5 });
+    const diff = streamListDiff(prevList, nextList, "id", { chunksSize: 5 });
 
     const expectedChunks = [
       [
@@ -277,7 +277,7 @@ describe("streamListsDiff data", () => {
       { id: 3, name: "Item 3" },
       { id: 5, name: "Item 5" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id", { chunksSize: 150 });
+    const diff = streamListDiff(prevList, nextList, "id", { chunksSize: 150 });
 
     const expectedChunks = [
       {
@@ -346,7 +346,7 @@ describe("streamListsDiff data", () => {
       { id: 3, name: "Item 3" },
       { id: 5, name: "Item 5" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       considerMoveAsUpdate: true,
     });
@@ -418,7 +418,7 @@ describe("streamListsDiff data", () => {
       { id: 3, name: "Item 3" },
       { id: 5, name: "Item 5" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       showOnly: ["added", "deleted"],
     });
@@ -506,7 +506,7 @@ describe("streamListsDiff data", () => {
       { id: 9, name: "Item 9" },
       { id: 8, name: "Item 8" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id", { chunksSize: 5 });
+    const diff = streamListDiff(prevList, nextList, "id", { chunksSize: 5 });
 
     const expectedChunks = [
       [
@@ -663,9 +663,9 @@ describe("streamListsDiff data", () => {
   });
 });
 
-describe("streamListsDiff finish", () => {
+describe("streamListDiff finish", () => {
   it("emits 'finish' event if no prevList nor nextList is provided", (done) => {
-    const diff = streamListsDiff([], [], "id");
+    const diff = streamListDiff([], [], "id");
     diff.on("finish", () => done());
   });
   it("emits 'finish' event when all the chunks have been processed", (done) => {
@@ -677,12 +677,12 @@ describe("streamListsDiff finish", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListsDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
     diff.on("finish", () => done());
   });
 });
 
-describe("streamListsDiff error", () => {
+describe("streamListDiff error", () => {
   test("emits 'error' event when prevList has invalid data", (done) => {
     const prevList = [
       { id: 1, name: "Item 1" },
@@ -695,7 +695,7 @@ describe("streamListsDiff error", () => {
     ];
 
     // @ts-expect-error prevList is invalid by design for the test
-    const diff = streamListsDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -717,7 +717,7 @@ describe("streamListsDiff error", () => {
     ];
 
     // @ts-expect-error nextList is invalid by design for the test
-    const diff = streamListsDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -734,7 +734,7 @@ describe("streamListsDiff error", () => {
       { id: 2, name: "Item 2" },
     ];
 
-    const diff = streamListsDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -751,7 +751,7 @@ describe("streamListsDiff error", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListsDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -768,7 +768,7 @@ describe("streamListsDiff error", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListsDiff(prevList, nextList, "id", { chunksSize: -3 });
+    const diff = streamListDiff(prevList, nextList, "id", { chunksSize: -3 });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -793,9 +793,9 @@ describe("Performance", () => {
       ...generateLargeList(5000, "next"),
     ];
 
-    const receivedChunks: StreamListsDiff<{ id: string; value: number }>[] = [];
+    const receivedChunks: StreamListDiff<{ id: string; value: number }>[] = [];
     let chunkCount = 0;
-    const diffStream = streamListsDiff(prevList, nextList, "id", {
+    const diffStream = streamListDiff(prevList, nextList, "id", {
       chunksSize: 1000,
     });
 
@@ -835,9 +835,9 @@ describe("Performance", () => {
       ...generateLargeList(50000, "next"),
     ];
 
-    const receivedChunks: StreamListsDiff<{ id: string; value: number }>[] = [];
+    const receivedChunks: StreamListDiff<{ id: string; value: number }>[] = [];
     let chunkCount = 0;
-    const diffStream = streamListsDiff(prevList, nextList, "id", {
+    const diffStream = streamListDiff(prevList, nextList, "id", {
       chunksSize: 10_000,
     });
 
@@ -864,46 +864,4 @@ describe("Performance", () => {
       done();
     });
   });
-  // it("should correctly stream diff for 1.000.000 entries", (done) => {
-  //   const generateLargeList = (size: number, idPrefix: string) => {
-  //     return Array.from({ length: size }, (_, i) => ({
-  //       id: `${idPrefix}-${i}`,
-  //       value: i,
-  //     }));
-  //   };
-  //   const prevList = generateLargeList(1_000_000, "prev");
-  //   const nextList = [
-  //     ...generateLargeList(500_000, "prev"),
-  //     ...generateLargeList(500_000, "next"),
-  //   ];
-
-  //   const receivedChunks: StreamListsDiff<{ id: string; value: number }>[] = [];
-  //   let chunkCount = 0;
-  //   const diffStream = streamListsDiff(prevList, nextList, "id", {
-  //     chunksSize: 100_000,
-  //   });
-
-  //   diffStream.on("data", (chunk) => {
-  //     receivedChunks.push(...chunk);
-  //     chunkCount++;
-  //   });
-
-  //   diffStream.on("finish", () => {
-  //     const deletions = receivedChunks.filter(
-  //       (diff) => diff.status === LIST_STATUS.DELETED,
-  //     );
-  //     const additions = receivedChunks.filter(
-  //       (diff) => diff.status === LIST_STATUS.ADDED,
-  //     );
-  //     const updates = receivedChunks.filter(
-  //       (diff) => diff.status === LIST_STATUS.EQUAL,
-  //     );
-  //     expect(receivedChunks.length).toBe(1_500_000); // 50.000 deletions + 50.000 equal + 50.000 additions
-  //     expect(chunkCount).toBe(15);
-  //     expect(deletions.length).toBe(500000);
-  //     expect(additions.length).toBe(500000);
-  //     expect(updates.length).toBe(500000);
-  //     done();
-  //   });
-  // });
 });

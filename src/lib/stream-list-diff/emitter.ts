@@ -1,4 +1,4 @@
-import { StreamListsDiff } from "@models/stream";
+import { StreamListDiff } from "@models/stream";
 
 type Listener<T extends unknown[]> = (...args: T) => void;
 
@@ -9,7 +9,7 @@ export enum StreamEvent {
 }
 
 export type Emitter<T extends Record<string, unknown>> = EventEmitter<{
-  data: [StreamListsDiff<T>[]];
+  data: [StreamListDiff<T>[]];
   error: [Error];
   finish: [];
 }>;
@@ -33,12 +33,12 @@ export class EventEmitter<Events extends Record<string, unknown[]>> {
 }
 
 export type EmitterEvents<T extends Record<string, unknown>> = {
-  data: [StreamListsDiff<T>[]];
+  data: [StreamListDiff<T>[]];
   error: [Error];
   finish: [];
 };
 
-export interface ReadOnlyEmitter<T extends Record<string, unknown>> {
+export interface StreamListener<T extends Record<string, unknown>> {
   on<E extends keyof EmitterEvents<T>>(
     event: E,
     listener: Listener<EmitterEvents<T>[E]>,

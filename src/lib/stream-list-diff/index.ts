@@ -2,7 +2,7 @@ import {
   DEFAULT_LIST_STREAM_OPTIONS,
   ListStreamOptions,
   ReferenceProperty,
-  StreamListsDiff,
+  StreamListDiff,
   StreamReferences,
 } from "@models/stream";
 import { LIST_STATUS } from "@models/list";
@@ -11,17 +11,17 @@ import {
   Emitter,
   EmitterEvents,
   EventEmitter,
-  ReadOnlyEmitter,
+  StreamListener,
   StreamEvent,
 } from "./emitter";
 
 function outputDiffChunk<T extends Record<string, unknown>>(
   emitter: Emitter<T>,
 ) {
-  let chunks: StreamListsDiff<T>[] = [];
+  let chunks: StreamListDiff<T>[] = [];
 
   return function handleDiffChunk(
-    chunk: StreamListsDiff<T>,
+    chunk: StreamListDiff<T>,
     isLastChunk: boolean,
     options: ListStreamOptions,
   ): void {
@@ -50,9 +50,9 @@ function formatSingleListStreamDiff<T extends Record<string, unknown>>(
   isPrevious: boolean,
   status: LIST_STATUS,
   options: ListStreamOptions,
-): StreamListsDiff<T>[] | null {
+): StreamListDiff<T>[] | null {
   let isValid = true;
-  const diff: StreamListsDiff<T>[] = [];
+  const diff: StreamListDiff<T>[] = [];
   for (let i = 0; i < list.length; i++) {
     const data = list[i];
     if (!isObject(data)) {
@@ -292,7 +292,7 @@ function getDiffChunks<T extends Record<string, unknown>>(
         );
       }
     }
-    listsReferences.delete(key); // to free up memory
+    listsReferences.delete(key);
   }
 
   return emitter.emit(StreamEvent.Finish);
@@ -304,17 +304,17 @@ function getDiffChunks<T extends Record<string, unknown>>(
  * @param {Record<string, unknown>[]} nextList - The new object list.
  * @param {ReferenceProperty<T>} referenceProperty - A common property in all the objects of your lists (e.g. `id`)
  * @param {ListStreamOptions} options - Options to refine your output.
-    - `chunksSize`: the number of object diffs returned by each stream chunk. If set to `0`, each stream will return a single object diff. If set to `10` each stream will return 10 object diffs. (default is `0`)
+    - `chunksSize`: the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff by chunk, `10` = 10 object diffs by chunk).
     - `showOnly`: returns only the values whose status you are interested in. (e.g. `["added", "equal"]`)
     - `considerMoveAsUpdate`: if set to `true` a `moved` object will be considered as `updated`
  * @returns EventEmitter
  */
-export function streamListsDiff<T extends Record<string, unknown>>(
+export function streamListDiff<T extends Record<string, unknown>>(
   prevList: T[],
   nextList: T[],
   referenceProperty: ReferenceProperty<T>,
   options: ListStreamOptions = DEFAULT_LIST_STREAM_OPTIONS,
-): ReadOnlyEmitter<T> {
+): StreamListener<T> {
   const emitter = new EventEmitter<EmitterEvents<T>>();
   setTimeout(() => {
     try {
@@ -323,5 +323,5 @@ export function streamListsDiff<T extends Record<string, unknown>>(
       return emitter.emit(StreamEvent.Error, err as Error);
     }
   }, 0);
-  return emitter as ReadOnlyEmitter<T>;
+  return emitter as StreamListener<T>;
 }
