@@ -31,3 +31,16 @@ export class EventEmitter<Events extends Record<string, unknown[]>> {
     }
   }
 }
+
+export type EmitterEvents<T extends Record<string, unknown>> = {
+  data: [StreamListsDiff<T>[]];
+  error: [Error];
+  finish: [];
+};
+
+export interface ReadOnlyEmitter<T extends Record<string, unknown>> {
+  on<E extends keyof EmitterEvents<T>>(
+    event: E,
+    listener: Listener<EmitterEvents<T>[E]>,
+  ): this;
+}

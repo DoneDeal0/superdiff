@@ -7,7 +7,13 @@ import {
 } from "@models/stream";
 import { LIST_STATUS } from "@models/list";
 import { isObject } from "@lib/utils";
-import { Emitter, EventEmitter, StreamEvent } from "./emitter";
+import {
+  Emitter,
+  EmitterEvents,
+  EventEmitter,
+  ReadOnlyEmitter,
+  StreamEvent,
+} from "./emitter";
 
 function outputDiffChunk<T extends Record<string, unknown>>(
   emitter: Emitter<T>,
@@ -133,7 +139,7 @@ function getDiffChunks<T extends Record<string, unknown>>(
         StreamEvent.Error,
         new Error("Your nextList must only contain valid objects."),
       );
-      emitter.emit(StreamEvent.Finish);
+      return emitter.emit(StreamEvent.Finish);
     }
     nextDiff?.forEach((data, i) =>
       handleDiffChunk(data, i === nextDiff.length - 1, options),
@@ -152,7 +158,7 @@ function getDiffChunks<T extends Record<string, unknown>>(
         StreamEvent.Error,
         new Error("Your prevList must only contain valid objects."),
       );
-      emitter.emit(StreamEvent.Finish);
+      return emitter.emit(StreamEvent.Finish);
     }
     prevDiff?.forEach((data, i) =>
       handleDiffChunk(data, i === prevDiff.length - 1, options),
@@ -179,6 +185,8 @@ function getDiffChunks<T extends Record<string, unknown>>(
       });
     }
   }
+
+  const totalChunks = listsReferences.size;
 
   for (let i = 0; i < nextList.length; i++) {
     const data = nextList[i];
@@ -208,7 +216,7 @@ function getDiffChunks<T extends Record<string, unknown>>(
             indexDiff: null,
             status: LIST_STATUS.ADDED,
           },
-          i === nextList.length - 1,
+          totalChunks > 0 ? false : i === nextList.length - 1,
           options,
         );
       }
@@ -216,11 +224,11 @@ function getDiffChunks<T extends Record<string, unknown>>(
   }
 
   let streamedChunks = 0;
-  const totalChunks = listsReferences.size;
 
-  for (const data of listsReferences.values()) {
+  for (const [key, data] of listsReferences.entries()) {
     streamedChunks++;
     const isLastChunk = totalChunks === streamedChunks;
+
     if (typeof data.nextIndex === "undefined") {
       handleDiffChunk(
         {
@@ -284,6 +292,7 @@ function getDiffChunks<T extends Record<string, unknown>>(
         );
       }
     }
+    listsReferences.delete(key); // to free up memory
   }
 
   return emitter.emit(StreamEvent.Finish);
@@ -305,12 +314,8 @@ export function streamListsDiff<T extends Record<string, unknown>>(
   nextList: T[],
   referenceProperty: ReferenceProperty<T>,
   options: ListStreamOptions = DEFAULT_LIST_STREAM_OPTIONS,
-): Emitter<T> {
-  const emitter = new EventEmitter<{
-    data: [StreamListsDiff<T>[]];
-    error: [Error];
-    finish: [];
-  }>();
+): ReadOnlyEmitter<T> {
+  const emitter = new EventEmitter<EmitterEvents<T>>();
   setTimeout(() => {
     try {
       getDiffChunks(prevList, nextList, referenceProperty, emitter, options);
@@ -318,5 +323,5 @@ export function streamListsDiff<T extends Record<string, unknown>>(
       return emitter.emit(StreamEvent.Error, err as Error);
     }
   }, 0);
-  return emitter;
+  return emitter as ReadOnlyEmitter<T>;
 }
