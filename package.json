@@ -63,7 +63,9 @@
     "comparison",
     "compare",
     "stream",
-    "streaming"
+    "streaming",
+    "isequal",
+    "chunks"
   ],
   "scripts": {
     "build": "tsup",
