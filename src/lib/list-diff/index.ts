@@ -83,26 +83,26 @@ export const getListDiff = <T>(
     return formatSingleListDiff(prevList as T[], LIST_STATUS.DELETED, options);
   }
   const diff: ListDiff["diff"] = [];
-  const prevIndexMatches: number[] = [];
+  const prevIndexMatches = new Set<number>();
+
   nextList.forEach((nextValue, i) => {
     const prevIndex = prevList.findIndex((prevValue, prevIdx) => {
+      if (prevIndexMatches.has(prevIdx)) {
+        return false;
+      }
       if (isReferencedObject(prevValue, options.referenceProperty)) {
         if (isObject(nextValue)) {
-          return (
-            isEqual(
-              prevValue[options.referenceProperty as string],
-              nextValue[options.referenceProperty as string],
-            ) && !prevIndexMatches.includes(prevIdx)
+          return isEqual(
+            prevValue[options.referenceProperty as string],
+            nextValue[options.referenceProperty as string],
           );
         }
         return false;
       }
-      return (
-        isEqual(prevValue, nextValue) && !prevIndexMatches.includes(prevIdx)
-      );
+      return isEqual(prevValue, nextValue);
     });
     if (prevIndex > -1) {
-      prevIndexMatches.push(prevIndex);
+      prevIndexMatches.add(prevIndex);
     }
     const indexDiff = prevIndex === -1 ? null : i - prevIndex;
     if (indexDiff === 0 || options.ignoreArrayOrder) {
@@ -141,8 +141,8 @@ export const getListDiff = <T>(
   });
 
   prevList.forEach((prevValue, i) => {
-    if (!prevIndexMatches.includes(i)) {
-      return diff.splice(i, 0, {
+    if (!prevIndexMatches.has(i)) {
+      return diff.push({
         value: prevValue,
         prevIndex: i,
         newIndex: null,
