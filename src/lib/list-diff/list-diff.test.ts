@@ -103,20 +103,6 @@ describe("getListDiff", () => {
           status: "equal",
         },
         {
-          value: "mendes",
-          prevIndex: 1,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
-          value: "verratti",
-          prevIndex: 2,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: "messi",
           prevIndex: null,
           newIndex: 1,
@@ -129,6 +115,20 @@ describe("getListDiff", () => {
           newIndex: 2,
           indexDiff: -1,
           status: "moved",
+        },
+        {
+          value: "mendes",
+          prevIndex: 1,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: "verratti",
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -146,20 +146,6 @@ describe("getListDiff", () => {
           status: "equal",
         },
         {
-          value: 234,
-          prevIndex: 1,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
-          value: 76,
-          prevIndex: 2,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: 200,
           prevIndex: null,
           newIndex: 1,
@@ -172,6 +158,20 @@ describe("getListDiff", () => {
           newIndex: 2,
           indexDiff: -1,
           status: "moved",
+        },
+        {
+          value: 234,
+          prevIndex: 1,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: 76,
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -195,13 +195,6 @@ describe("getListDiff", () => {
       status: "updated",
       diff: [
         {
-          value: { name: "joe", age: 87 },
-          prevIndex: 0,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: { name: "paul", age: 32 },
           prevIndex: 2,
           newIndex: 0,
@@ -221,6 +214,13 @@ describe("getListDiff", () => {
           newIndex: 2,
           indexDiff: 1,
           status: "moved",
+        },
+        {
+          value: { name: "joe", age: 87 },
+          prevIndex: 0,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -335,13 +335,7 @@ describe("getListDiff", () => {
           indexDiff: -5,
           status: "moved",
         },
-        {
-          value: true,
-          prevIndex: 2,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
+
         {
           value: true,
           prevIndex: 1,
@@ -371,13 +365,6 @@ describe("getListDiff", () => {
           status: "equal",
         },
         {
-          value: 13,
-          prevIndex: 7,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: false,
           prevIndex: null,
           newIndex: 6,
@@ -390,6 +377,20 @@ describe("getListDiff", () => {
           newIndex: 7,
           indexDiff: null,
           status: "added",
+        },
+        {
+          value: true,
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: 13,
+          prevIndex: 7,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -424,20 +425,6 @@ describe("getListDiff", () => {
       status: "updated",
       diff: [
         {
-          value: true,
-          prevIndex: 2,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
-          value: 13,
-          prevIndex: 7,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: false,
           prevIndex: null,
           newIndex: 6,
@@ -450,6 +437,20 @@ describe("getListDiff", () => {
           newIndex: 7,
           indexDiff: null,
           status: "added",
+        },
+        {
+          value: true,
+          prevIndex: 2,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: 13,
+          prevIndex: 7,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -537,13 +538,6 @@ describe("getListDiff", () => {
       status: "updated",
       diff: [
         {
-          value: "hello",
-          prevIndex: 0,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: { id: 8, age: 77 },
           prevIndex: 4,
           newIndex: 0,
@@ -572,18 +566,25 @@ describe("getListDiff", () => {
           status: "equal",
         },
         {
-          value: { id: 55, character: { strength: 66 } },
-          prevIndex: 5,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: { id: 99, character: { strength: 69 } },
           prevIndex: null,
           newIndex: 4,
           indexDiff: null,
           status: "added",
+        },
+        {
+          value: "hello",
+          prevIndex: 0,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: { id: 55, character: { strength: 66 } },
+          prevIndex: 5,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -647,13 +648,6 @@ describe("getListDiff", () => {
       status: "updated",
       diff: [
         {
-          value: "hello",
-          prevIndex: 0,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: { id: 8, age: 77 },
           prevIndex: 4,
           newIndex: 0,
@@ -682,18 +676,25 @@ describe("getListDiff", () => {
           status: "equal",
         },
         {
-          value: { id: 55, character: { strength: 66 } },
-          prevIndex: 5,
-          newIndex: null,
-          indexDiff: null,
-          status: "deleted",
-        },
-        {
           value: { id: 99, character: { strength: 69 } },
           prevIndex: null,
           newIndex: 4,
           indexDiff: null,
           status: "added",
+        },
+        {
+          value: "hello",
+          prevIndex: 0,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
+        },
+        {
+          value: { id: 55, character: { strength: 66 } },
+          prevIndex: 5,
+          newIndex: null,
+          indexDiff: null,
+          status: "deleted",
         },
       ],
     });
@@ -788,5 +789,37 @@ describe("getListDiff", () => {
         },
       ],
     });
+  });
+});
+
+describe("Performance", () => {
+  it("should correctly stream diff for 10.000 entries", () => {
+    const generateLargeList = (size: number, idPrefix: string) => {
+      return Array.from({ length: size }, (_, i) => ({
+        id: `${idPrefix}-${i}`,
+        value: i,
+      }));
+    };
+    const prevList = generateLargeList(10_000, "prev");
+    const nextList = [
+      ...generateLargeList(5000, "prev"),
+      ...generateLargeList(5000, "next"),
+    ];
+
+    const receivedChunks = getListDiff(prevList, nextList).diff;
+
+    const deletions = receivedChunks.filter(
+      (diff) => diff.status === LIST_STATUS.DELETED,
+    );
+    const additions = receivedChunks.filter(
+      (diff) => diff.status === LIST_STATUS.ADDED,
+    );
+    const updates = receivedChunks.filter(
+      (diff) => diff.status === LIST_STATUS.EQUAL,
+    );
+    expect(receivedChunks.length).toBe(15_000); // 5000 deletions + 5000 equal + 5000 additions
+    expect(deletions.length).toBe(5000);
+    expect(additions.length).toBe(5000);
+    expect(updates.length).toBe(5000);
   });
 });
