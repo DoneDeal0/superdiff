@@ -16,9 +16,9 @@ This library compares two arrays or objects and returns a full diff of their dif
 
 ## WHY YOU SHOULD USE THIS LIBRARY
 
-All other existing solutions return a strange diff format that often requires additional parsing. They are also limited to object comparison.
+Most existing solutions return a confusing diff format that often requires extra parsing. They are also limited to object comparison.
 
-**Superdiff** gives you a complete diff for both array <u>and</u> objects in a very readable format. Last but not least, it's battle-tested, has zero dependencies, and is super fast. 
+**Superdiff** provides a complete and readable diff for both arrays **and** objects. Plus, it's battle-tested, has zero dependencies, and is super fast. 
 
 Import. Enjoy. 👍
 
@@ -66,7 +66,7 @@ isObject(data)
 import { getObjectDiff } from "@donedeal0/superdiff";
 ```
 
-Compares two objects and return a diff for each value and their potential subvalues. Supports deeply nested objects with any kind of values.
+Compares two objects and returns a diff for each value and its possible subvalues. Supports deeply nested objects of any value type.
 
 #### FORMAT
 
@@ -87,7 +87,7 @@ options?: {
 - `prevData`: the original object.
 - `nextData`: the new object.
 - `options`
-  - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
+  - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
   - `showOnly`: returns only the values whose status you are interested in. It takes two parameters:
 
     - `statuses`: status you want to see in the output (e.g. `["added", "equal"]`)
@@ -226,8 +226,8 @@ Compares two arrays and returns a diff for each entry. Supports duplicate values
 - `nextList`: the new list.
 - `options`
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-  - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
-  - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
+  - `referenceProperty` will consider an object to be `updated` rather than `added` or `deleted` if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
+  - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
   - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
 
 **Output**
@@ -328,18 +328,18 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 
 - `prevList`: the original object list.
 - `nextList`: the new object list.
-- `referenceProperty`: a common property in all the objects of your lists (e.g. `id`).
+- `referenceProperty`: a property common to all objects in your lists (e.g. `id`).
 - `options`
-  - `chunksSize` the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff by chunk, `10` = 10 object diffs by chunk).
+  - `chunksSize` the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff per chunk, `10` = 10 object diffs per chunk).
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
   - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
 
 **Output**
 
-The objects diff are grouped in arrays - called `chunks` - and are consumed thanks to an event listener. You have access to 3 events: 
+The objects diff are grouped into arrays - called `chunks` - and are consumed thanks to an event listener. You have access to 3 events: 
   - `data`: to be notified when a new chunk of object diffs is available.
-  - `finish`: to be notified when the stream is complete.
-  - `error`: to be notified of an error during the stream.
+  - `finish`: to be notified when the stream is finished.
+  - `error`: to be notified if an error occurs during the stream.
 
 ```ts
 interface StreamListener<T extends Record<string, unknown>> {
@@ -442,7 +442,7 @@ diff.on("error", (err) => console.log(err))
 import { isEqual } from "@donedeal0/superdiff";
 ```
 
-Checks whether two values are equal.
+Tests whether two values are equal.
 
 #### FORMAT
 
@@ -455,9 +455,9 @@ options: {
     ignoreArrayOrder: boolean; // false by default
      },
 ```
-- `a`: the value to compare to the value `b`.
-- `b`: the value that will be compared to the value `a`.
-- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
+- `a`: the value to be compared to the value `b`.
+- `b`: the value to be compared to the value `a`.
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
 
 #### USAGE
 

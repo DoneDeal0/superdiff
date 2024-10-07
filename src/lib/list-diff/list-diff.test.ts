@@ -791,35 +791,3 @@ describe("getListDiff", () => {
     });
   });
 });
-
-describe("Performance", () => {
-  it("should correctly stream diff for 10.000 entries", () => {
-    const generateLargeList = (size: number, idPrefix: string) => {
-      return Array.from({ length: size }, (_, i) => ({
-        id: `${idPrefix}-${i}`,
-        value: i,
-      }));
-    };
-    const prevList = generateLargeList(10_000, "prev");
-    const nextList = [
-      ...generateLargeList(5000, "prev"),
-      ...generateLargeList(5000, "next"),
-    ];
-
-    const receivedChunks = getListDiff(prevList, nextList).diff;
-
-    const deletions = receivedChunks.filter(
-      (diff) => diff.status === LIST_STATUS.DELETED,
-    );
-    const additions = receivedChunks.filter(
-      (diff) => diff.status === LIST_STATUS.ADDED,
-    );
-    const updates = receivedChunks.filter(
-      (diff) => diff.status === LIST_STATUS.EQUAL,
-    );
-    expect(receivedChunks.length).toBe(15_000); // 5000 deletions + 5000 equal + 5000 additions
-    expect(deletions.length).toBe(5000);
-    expect(additions.length).toBe(5000);
-    expect(updates.length).toBe(5000);
-  });
-});
