@@ -40,6 +40,28 @@ describe("getObjectDiff", () => {
       ],
     });
   });
+  it("consider previous object as completely deleted if no next object is provided, and return an empty diff if showOnly doesn't require deleted values", () => {
+    expect(
+      getObjectDiff(
+        {
+          name: "joe",
+          age: 54,
+          hobbies: ["golf", "football"],
+        },
+        null,
+        {
+          showOnly: {
+            statuses: [OBJECT_STATUS.ADDED],
+            granularity: GRANULARITY.DEEP,
+          },
+        },
+      ),
+    ).toStrictEqual({
+      type: "object",
+      status: "deleted",
+      diff: [],
+    });
+  });
   it("consider next object as completely added if no previous object is provided", () => {
     expect(
       getObjectDiff(null, {
@@ -170,10 +192,10 @@ describe("getObjectDiff", () => {
           status: "equal",
         },
         {
-          property: "country",
-          previousValue: undefined,
-          currentValue: "us",
-          status: "added",
+          property: "type",
+          previousValue: "sport",
+          currentValue: undefined,
+          status: "deleted",
         },
         {
           property: "user",
@@ -191,12 +213,6 @@ describe("getObjectDiff", () => {
           },
           status: "updated",
           diff: [
-            {
-              property: "age",
-              previousValue: 66,
-              currentValue: undefined,
-              status: "deleted",
-            },
             {
               property: "name",
               previousValue: "joe",
@@ -216,6 +232,12 @@ describe("getObjectDiff", () => {
               status: "updated",
             },
             {
+              property: "age",
+              previousValue: 66,
+              currentValue: undefined,
+              status: "deleted",
+            },
+            {
               property: "nickname",
               previousValue: undefined,
               currentValue: "super joe",
@@ -224,10 +246,10 @@ describe("getObjectDiff", () => {
           ],
         },
         {
-          property: "type",
-          previousValue: "sport",
-          currentValue: undefined,
-          status: "deleted",
+          property: "country",
+          previousValue: undefined,
+          currentValue: "us",
+          status: "added",
         },
       ],
     });
@@ -339,16 +361,16 @@ describe("getObjectDiff", () => {
                   status: "updated",
                   diff: [
                     {
-                      property: "rugby",
-                      previousValue: ["france"],
-                      currentValue: undefined,
-                      status: "deleted",
-                    },
-                    {
                       property: "football",
                       previousValue: ["psg"],
                       currentValue: ["psg", "nantes"],
                       status: "updated",
+                    },
+                    {
+                      property: "rugby",
+                      previousValue: ["france"],
+                      currentValue: undefined,
+                      status: "deleted",
                     },
                     {
                       property: "golf",
@@ -401,11 +423,12 @@ describe("getObjectDiff", () => {
           status: "equal",
         },
         {
-          property: "country",
-          previousValue: undefined,
-          currentValue: "us",
-          status: "added",
+          property: "type",
+          previousValue: "sport",
+          currentValue: undefined,
+          status: "deleted",
         },
+
         {
           property: "user",
           previousValue: {
@@ -422,12 +445,6 @@ describe("getObjectDiff", () => {
           },
           status: "updated",
           diff: [
-            {
-              property: "age",
-              previousValue: 66,
-              currentValue: undefined,
-              status: "deleted",
-            },
             {
               property: "name",
               previousValue: "joe",
@@ -447,6 +464,12 @@ describe("getObjectDiff", () => {
               status: "equal",
             },
             {
+              property: "age",
+              previousValue: 66,
+              currentValue: undefined,
+              status: "deleted",
+            },
+            {
               property: "nickname",
               previousValue: undefined,
               currentValue: "super joe",
@@ -455,10 +478,10 @@ describe("getObjectDiff", () => {
           ],
         },
         {
-          property: "type",
-          previousValue: "sport",
-          currentValue: undefined,
-          status: "deleted",
+          property: "country",
+          previousValue: undefined,
+          currentValue: "us",
+          status: "added",
         },
       ],
     });
@@ -536,10 +559,10 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "country",
-          previousValue: undefined,
-          currentValue: "us",
-          status: "added",
+          property: "type",
+          previousValue: "sport",
+          currentValue: undefined,
+          status: "deleted",
         },
         {
           property: "user",
@@ -572,10 +595,10 @@ describe("getObjectDiff", () => {
           ],
         },
         {
-          property: "type",
-          previousValue: "sport",
-          currentValue: undefined,
-          status: "deleted",
+          property: "country",
+          previousValue: undefined,
+          currentValue: "us",
+          status: "added",
         },
       ],
     });
@@ -821,26 +844,6 @@ describe("getObjectDiff", () => {
       status: "added",
       diff: [],
     });
-  });
-  expect(
-    getObjectDiff(
-      {
-        name: "joe",
-        age: 54,
-        hobbies: ["golf", "football"],
-      },
-      null,
-      {
-        showOnly: {
-          statuses: [OBJECT_STATUS.ADDED],
-          granularity: GRANULARITY.DEEP,
-        },
-      },
-    ),
-  ).toStrictEqual({
-    type: "object",
-    status: "deleted",
-    diff: [],
   });
   it("returns all values if their status match the required statuses", () => {
     expect(
