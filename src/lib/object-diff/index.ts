@@ -14,21 +14,19 @@ function getLeanDiff(
   showOnly: ObjectDiffOptions["showOnly"] = DEFAULT_OBJECT_DIFF_OPTIONS.showOnly,
 ): ObjectDiff["diff"] {
   const { statuses, granularity } = showOnly;
-  return diff.reduce(
-    (acc, value) => {
-      if (granularity === GRANULARITY.DEEP && value.diff) {
-        const leanDiff = getLeanDiff(value.diff, showOnly);
-        if (leanDiff.length > 0) {
-          return [...acc, { ...value, diff: leanDiff }];
-        }
+  const res: ObjectDiff["diff"] = [];
+  for (let i = 0; i < diff.length; i++) {
+    const value = diff[i];
+    if (granularity === GRANULARITY.DEEP && value.diff) {
+      const leanDiff = getLeanDiff(value.diff, showOnly);
+      if (leanDiff.length > 0) {
+        res.push({ ...value, diff: leanDiff });
       }
-      if (statuses.includes(value.status)) {
-        return [...acc, value];
-      }
-      return acc;
-    },
-    [] as ObjectDiff["diff"],
-  );
+    } else if (statuses.includes(value.status)) {
+      res.push(value);
+    }
+  }
+  return res;
 }
 
 function getObjectStatus(diff: ObjectDiff["diff"]): OBJECT_STATUS {
@@ -50,18 +48,19 @@ function formatSingleObjectDiff(
     };
   }
   const diff: ObjectDiff["diff"] = [];
-  Object.entries(data).forEach(([property, value]) => {
+
+  for (const [property, value] of Object.entries(data)) {
     if (isObject(value)) {
       const subPropertiesDiff: Diff[] = [];
-      Object.entries(value).forEach(([subProperty, subValue]) => {
+      for (const [subProperty, subValue] of Object.entries(value)) {
         subPropertiesDiff.push({
           property: subProperty,
           previousValue: status === OBJECT_STATUS.ADDED ? undefined : subValue,
           currentValue: status === OBJECT_STATUS.ADDED ? subValue : undefined,
           status,
         });
-      });
-      return diff.push({
+      }
+      diff.push({
         property,
         previousValue:
           status === OBJECT_STATUS.ADDED ? undefined : data[property],
@@ -69,15 +68,17 @@ function formatSingleObjectDiff(
         status,
         diff: subPropertiesDiff,
       });
+    } else {
+      diff.push({
+        property,
+        previousValue:
+          status === OBJECT_STATUS.ADDED ? undefined : data[property],
+        currentValue: status === OBJECT_STATUS.ADDED ? value : undefined,
+        status,
+      });
     }
-    return diff.push({
-      property,
-      previousValue:
-        status === OBJECT_STATUS.ADDED ? undefined : data[property],
-      currentValue: status === OBJECT_STATUS.ADDED ? value : undefined,
-      status,
-    });
-  });
+  }
+
   if (options.showOnly && options.showOnly.statuses.length > 0) {
     return {
       type: "object",
@@ -92,20 +93,6 @@ function formatSingleObjectDiff(
   };
 }
 
-function getPreviousMatch(
-  previousValue: unknown | undefined,
-  nextSubProperty: unknown,
-  options?: ObjectDiffOptions,
-): unknown | undefined {
-  if (!previousValue) {
-    return undefined;
-  }
-  const previousMatch = Object.entries(previousValue).find(([subPreviousKey]) =>
-    isEqual(subPreviousKey, nextSubProperty, options),
-  );
-  return previousMatch ? previousMatch[1] : undefined;
-}
-
 function getValueStatus(
   previousValue: unknown,
   nextValue: unknown,
@@ -117,92 +104,61 @@ function getValueStatus(
   return OBJECT_STATUS.UPDATED;
 }
 
-function getPropertyStatus(subPropertiesDiff: Diff[]): OBJECT_STATUS {
-  return subPropertiesDiff.some(
-    (property) => property.status !== OBJECT_STATUS.EQUAL,
-  )
-    ? OBJECT_STATUS.UPDATED
-    : OBJECT_STATUS.EQUAL;
-}
-
-function getDeletedProperties(
-  previousValue: Record<string, unknown> | undefined,
-  nextValue: Record<string, unknown>,
-): { property: string; value: unknown }[] | undefined {
-  if (!previousValue) return undefined;
-  const prevKeys = Object.keys(previousValue);
-  const nextKeys = Object.keys(nextValue);
-  const deletedKeys = prevKeys.filter((prevKey) => !nextKeys.includes(prevKey));
-  if (deletedKeys.length > 0) {
-    return deletedKeys.map((deletedKey) => ({
-      property: deletedKey,
-      value: previousValue[deletedKey],
-    }));
-  }
-  return undefined;
-}
-
-function getSubPropertiesDiff(
-  previousValue: Record<string, unknown> | undefined,
+function getDiff(
+  previousValue: Record<string, unknown> | undefined = {},
   nextValue: Record<string, unknown>,
   options?: ObjectDiffOptions,
 ): Diff[] {
-  const subPropertiesDiff: Diff[] = [];
-  let subDiff: Diff[];
-  const deletedMainSubProperties = getDeletedProperties(
-    previousValue,
-    nextValue,
-  );
-  if (deletedMainSubProperties) {
-    deletedMainSubProperties.forEach((deletedProperty) => {
-      subPropertiesDiff.push({
-        property: deletedProperty.property,
-        previousValue: deletedProperty.value,
+  const diff: Diff[] = [];
+  const allKeys = new Set([
+    ...Object.keys(previousValue),
+    ...Object.keys(nextValue),
+  ]);
+
+  for (const property of allKeys) {
+    const prevSubValue = previousValue[property];
+    const nextSubValue = nextValue[property];
+    if (!(property in nextValue)) {
+      diff.push({
+        property,
+        previousValue: prevSubValue,
         currentValue: undefined,
         status: OBJECT_STATUS.DELETED,
       });
-    });
-  }
-  Object.entries(nextValue).forEach(([nextSubProperty, nextSubValue]) => {
-    const previousMatch = getPreviousMatch(
-      previousValue,
-      nextSubProperty,
-      options,
-    );
-    if (!previousMatch) {
-      return subPropertiesDiff.push({
-        property: nextSubProperty,
-        previousValue: previousMatch,
-        currentValue: nextSubValue,
-        status:
-          !previousValue || !(nextSubProperty in previousValue)
-            ? OBJECT_STATUS.ADDED
-            : previousMatch === nextSubValue
-              ? OBJECT_STATUS.EQUAL
-              : OBJECT_STATUS.UPDATED,
-      });
+      continue;
     }
-    if (isObject(nextSubValue)) {
-      const data: Diff[] = getSubPropertiesDiff(
-        previousMatch as Record<string, unknown>,
-        nextSubValue,
-        options,
+    if (!(property in previousValue)) {
+      diff.push({
+        property,
+        previousValue: undefined,
+        currentValue: nextSubValue,
+        status: OBJECT_STATUS.ADDED,
+      });
+      continue;
+    }
+    if (isObject(nextSubValue) && isObject(prevSubValue)) {
+      const subDiff = getDiff(prevSubValue, nextSubValue, options);
+      const isUpdated = subDiff.some(
+        (entry) => entry.status !== OBJECT_STATUS.EQUAL,
       );
-      if (data && data.length > 0) {
-        subDiff = data;
-      }
-    }
-    if (previousMatch) {
-      subPropertiesDiff.push({
-        property: nextSubProperty,
-        previousValue: previousMatch,
+      diff.push({
+        property,
+        previousValue: prevSubValue,
         currentValue: nextSubValue,
-        status: getValueStatus(previousMatch, nextSubValue, options),
-        ...(!!subDiff && { diff: subDiff }),
+        status: isUpdated ? OBJECT_STATUS.UPDATED : OBJECT_STATUS.EQUAL,
+        ...(isUpdated && { diff: subDiff }),
+      });
+    } else {
+      const status = getValueStatus(prevSubValue, nextSubValue, options);
+      diff.push({
+        property,
+        previousValue: prevSubValue,
+        currentValue: nextSubValue,
+        status,
       });
     }
-  });
-  return subPropertiesDiff;
+  }
+  return diff;
 }
 
 /**
@@ -234,66 +190,12 @@ export function getObjectDiff(
   if (!nextData) {
     return formatSingleObjectDiff(prevData, OBJECT_STATUS.DELETED, options);
   }
-  const diff: ObjectDiff["diff"] = [];
-  Object.entries(nextData).forEach(([nextProperty, nextValue]) => {
-    const previousValue = prevData[nextProperty];
-    if (!previousValue) {
-      return diff.push({
-        property: nextProperty,
-        previousValue,
-        currentValue: nextValue,
-        status: !(nextProperty in prevData)
-          ? OBJECT_STATUS.ADDED
-          : previousValue === nextValue
-            ? OBJECT_STATUS.EQUAL
-            : OBJECT_STATUS.UPDATED,
-      });
-    }
-    if (isObject(nextValue)) {
-      const subPropertiesDiff: Diff[] = getSubPropertiesDiff(
-        previousValue as Record<string, unknown>,
-        nextValue,
-        options,
-      );
-      const subPropertyStatus = getPropertyStatus(subPropertiesDiff);
-      return diff.push({
-        property: nextProperty,
-        previousValue,
-        currentValue: nextValue,
-        status: subPropertyStatus,
-        ...(subPropertyStatus !== OBJECT_STATUS.EQUAL && {
-          diff: subPropertiesDiff,
-        }),
-      });
-    }
-    return diff.push({
-      property: nextProperty,
-      previousValue,
-      currentValue: nextValue,
-      status: getValueStatus(previousValue, nextValue, options),
-    });
-  });
-  const deletedProperties = getDeletedProperties(prevData, nextData);
-  if (deletedProperties) {
-    deletedProperties.forEach((deletedProperty) => {
-      diff.push({
-        property: deletedProperty.property,
-        previousValue: deletedProperty.value,
-        currentValue: undefined,
-        status: OBJECT_STATUS.DELETED,
-      });
-    });
-  }
-  if (options.showOnly && options.showOnly.statuses.length > 0) {
-    return {
-      type: "object",
-      status: getObjectStatus(diff),
-      diff: getLeanDiff(diff, options.showOnly),
-    };
-  }
+  const diff: ObjectDiff["diff"] = getDiff(prevData, nextData, options);
+  const status = getObjectStatus(diff);
+  const showLeanDiff = (options?.showOnly?.statuses?.length || 0) > 0;
   return {
     type: "object",
-    status: getObjectStatus(diff),
-    diff,
+    status,
+    diff: showLeanDiff ? getLeanDiff(diff, options.showOnly) : diff,
   };
 }
