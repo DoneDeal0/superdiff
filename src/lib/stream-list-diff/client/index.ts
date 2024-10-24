@@ -246,14 +246,14 @@ async function getValidClientStream<T extends Record<string, unknown>>(
 
 /**
  * Streams the diff of two object lists
- * @param {Record<string, unknown>[]} prevList - The original object list.
- * @param {Record<string, unknown>[]} nextList - The new object list.
- * @param {ReferenceProperty<T>} referenceProperty - A common property in all the objects of your lists (e.g. `id`)
+ * @param {ReadableStream | File | Record<string, unknown>[]} prevList - The original object list.
+ * @param {ReadableStream | File | Record<string, unknown>[]} nextList - The new object list.
+ * @param {string} referenceProperty - A common property in all the objects of your lists (e.g. `id`)
  * @param {ListStreamOptions} options - Options to refine your output.
     - `chunksSize`: the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff by chunk, `10` = 10 object diffs by chunk).
     - `showOnly`: returns only the values whose status you are interested in. (e.g. `["added", "equal"]`)
     - `considerMoveAsUpdate`: if set to `true` a `moved` object will be considered as `updated`
- * @returns EventEmitter
+ * @returns StreamListener
  */
 export function streamListDiffClient<T extends Record<string, unknown>>(
   prevList: ReadableStream<T> | File | T[],
