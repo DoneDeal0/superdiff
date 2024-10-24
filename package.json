@@ -85,13 +85,16 @@
     "@swc/core": "^1.7.26",
     "@swc/jest": "^0.2.36",
     "@types/jest": "^29.5.13",
+    "blob-polyfill": "^9.0.20240710",
     "eslint": "^9.11.1",
     "husky": "^9.1.6",
     "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.3.3",
     "swc-loader": "^0.2.6",
     "tsup": "^8.3.0",
     "typescript": "^5.6.2",
-    "typescript-eslint": "^8.7.0"
+    "typescript-eslint": "^8.7.0",
+    "web-streams-polyfill": "^4.0.0"
   }
 }

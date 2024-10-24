@@ -38,3 +38,5 @@ export function isEqual(
 export function isObject(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === "object" && !Array.isArray(value);
 }
+
+export const isClient = () => typeof window !== "undefined";
