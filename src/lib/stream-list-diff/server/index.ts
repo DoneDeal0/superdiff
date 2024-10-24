@@ -8,7 +8,6 @@ import {
   ListStreamOptions,
   ReferenceProperty,
 } from "@models/stream";
-import { isClient } from "@lib/utils";
 import {
   Emitter,
   EmitterEvents,
@@ -232,17 +231,23 @@ function getValidStream<T>(
   throw new Error(`Invalid ${listType}. Expected Readable, Array, or File.`);
 }
 
+/**
+ * Streams the diff of two object lists
+ * @param {Readable | FilePath | Record<string, unknown>[]} prevList - The original object list.
+ * @param {Readable | FilePath | Record<string, unknown>[]} nextList - The new object list.
+ * @param {string} referenceProperty - A common property in all the objects of your lists (e.g. `id`)
+ * @param {ListStreamOptions} options - Options to refine your output.
+    - `chunksSize`: the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff by chunk, `10` = 10 object diffs by chunk).
+    - `showOnly`: returns only the values whose status you are interested in. (e.g. `["added", "equal"]`)
+    - `considerMoveAsUpdate`: if set to `true` a `moved` object will be considered as `updated`
+ * @returns StreamListener
+ */
 export function streamListDiff<T extends Record<string, unknown>>(
   prevStream: Readable | FilePath | T[],
   nextStream: Readable | FilePath | T[],
   referenceProperty: ReferenceProperty<T>,
   options: ListStreamOptions = DEFAULT_LIST_STREAM_OPTIONS,
 ): StreamListener<T> {
-  if (isClient()) {
-    throw new Error(
-      "streamListDiff can only be used in Node environment. Please use streamListDiffClient instead.",
-    );
-  }
   const emitter = new EventEmitter<EmitterEvents<T>>();
   setTimeout(async () => {
     try {

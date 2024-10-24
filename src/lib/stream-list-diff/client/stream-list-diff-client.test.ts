@@ -5,7 +5,7 @@ import "blob-polyfill";
 import { ReadableStream } from "web-streams-polyfill";
 import { LIST_STATUS } from "@models/list";
 import { StreamListDiff } from "@models/stream";
-import { streamListDiffClient } from ".";
+import { streamListDiff } from ".";
 import prevListFile from "../../../mocks/prevList.json";
 import nextListFile from "../../../mocks/nextList.json";
 
@@ -18,7 +18,7 @@ describe("data emission", () => {
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListDiffClient([], nextList, "id", { chunksSize: 2 });
+    const diff = streamListDiff([], nextList, "id", { chunksSize: 2 });
 
     const expectedChunks = [
       {
@@ -53,7 +53,7 @@ describe("data emission", () => {
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListDiffClient(prevList, [], "id", { chunksSize: 2 });
+    const diff = streamListDiff(prevList, [], "id", { chunksSize: 2 });
 
     const expectedChunks = [
       {
@@ -93,7 +93,7 @@ describe("data emission", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiffClient(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     const expectedChunks = [
       [
@@ -164,7 +164,7 @@ describe("data emission", () => {
       { id: 9, name: "Item 9" },
       { id: 8, name: "Item 8" },
     ];
-    const diff = streamListDiffClient(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
     });
 
@@ -291,7 +291,7 @@ describe("data emission", () => {
       { id: 5, name: "Item 5" },
     ];
 
-    const diff = streamListDiffClient(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 150,
     });
 
@@ -362,7 +362,7 @@ describe("data emission", () => {
       { id: 3, name: "Item 3" },
       { id: 5, name: "Item 5" },
     ];
-    const diff = streamListDiffClient(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       considerMoveAsUpdate: true,
     });
@@ -434,7 +434,7 @@ describe("data emission", () => {
       { id: 3, name: "Item 3" },
       { id: 5, name: "Item 5" },
     ];
-    const diff = streamListDiffClient(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       showOnly: ["added", "deleted"],
     });
@@ -522,7 +522,7 @@ describe("data emission", () => {
       { id: 9, name: "Item 9" },
       { id: 8, name: "Item 8" },
     ];
-    const diff = streamListDiffClient(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
     });
 
@@ -751,7 +751,7 @@ describe("input handling", () => {
       },
     });
 
-    const diff = streamListDiffClient(prevStream, nextStream, "id", {
+    const diff = streamListDiff(prevStream, nextStream, "id", {
       chunksSize: 5,
     });
 
@@ -775,7 +775,7 @@ describe("input handling", () => {
       type: "application/json",
     });
 
-    const diff = streamListDiffClient(prevFile, nextFile, "id", {
+    const diff = streamListDiff(prevFile, nextFile, "id", {
       chunksSize: 5,
     });
 
@@ -801,7 +801,7 @@ describe("input handling", () => {
       type: "application/json",
     });
 
-    const diff = streamListDiffClient(prevStream, nextFile, "id", {
+    const diff = streamListDiff(prevStream, nextFile, "id", {
       chunksSize: 5,
     });
 
@@ -824,7 +824,7 @@ describe("input handling", () => {
       },
     });
 
-    const diff = streamListDiffClient(prevStream, nextList, "id", {
+    const diff = streamListDiff(prevStream, nextList, "id", {
       chunksSize: 5,
     });
 
@@ -844,7 +844,7 @@ describe("input handling", () => {
       type: "application/json",
     });
 
-    const diff = streamListDiffClient(prevFile, nextList, "id", {
+    const diff = streamListDiff(prevFile, nextList, "id", {
       chunksSize: 5,
     });
 
@@ -863,7 +863,7 @@ describe("input handling", () => {
 
 describe("finish event", () => {
   it("emits 'finish' event if no prevList nor nextList is provided", (done) => {
-    const diff = streamListDiffClient([], [], "id");
+    const diff = streamListDiff([], [], "id");
     diff.on("finish", () => done());
   });
   it("emits 'finish' event when all the chunks have been processed", (done) => {
@@ -875,7 +875,7 @@ describe("finish event", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiffClient(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
     diff.on("finish", () => done());
   });
 });
@@ -893,7 +893,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error prevList is invalid by design for the test
-    const diff = streamListDiffClient(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -915,7 +915,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error nextList is invalid by design for the test
-    const diff = streamListDiffClient(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -932,7 +932,7 @@ describe("error event", () => {
       { id: 2, name: "Item 2" },
     ];
 
-    const diff = streamListDiffClient(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -949,7 +949,7 @@ describe("error event", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListDiffClient(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -966,7 +966,7 @@ describe("error event", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListDiffClient(prevList, nextList, "id", {
+    const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: -3,
     });
 
@@ -982,7 +982,7 @@ describe("error event", () => {
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - prevList is invalid by design for the test
-    const diff = streamListDiffClient({ name: "hello" }, nextList, "id");
+    const diff = streamListDiff({ name: "hello" }, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -995,7 +995,7 @@ describe("error event", () => {
     const prevList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - nextList is invalid by design for the test
-    const diff = streamListDiffClient(prevList, null, "id");
+    const diff = streamListDiff(prevList, null, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -1025,7 +1025,7 @@ describe("performance", () => {
     nextList[20_000].value = "updated-value-20000"; // Another updated entry
     nextList.push({ id: numEntries, value: `new-value-${numEntries}` }); // 1 added entry
 
-    const diffListener = streamListDiffClient<{ id: number; value: string }>(
+    const diffListener = streamListDiff<{ id: number; value: string }>(
       prevList,
       nextList,
       "id",

@@ -40,7 +40,7 @@ I am grateful to the generous donors of **Superdiff**!
 
 ## FEATURES
 
-**Superdiff** exports 6 functions:
+**Superdiff** exports 5 functions:
 
 ```ts
 // Returns a complete diff of two objects
@@ -51,9 +51,6 @@ getListDiff(prevList, nextList)
 
 // Streams the diff of two object lists, ideal for large lists and maximum performance
 streamListDiff(prevList, nextList, referenceProperty)
-
-// Similar to streamListDiff, but for browser use
-streamListDiffClient(prevList, nextList, referenceProperty)
 
 // Checks whether two values are equal 
 isEqual(dataA, dataB)
@@ -310,9 +307,9 @@ getListDiff(
 
 ```js
 // If you are in a server environment
-import { streamListDiff } from "@donedeal0/superdiff";
+import { streamListDiff } from "@donedeal0/superdiff/server";
 // If you are in a browser environment
-import { streamListDiffClient } from "@donedeal0/superdiff";
+import { streamListDiff } from "@donedeal0/superdiff/client";
 ```
 
 Streams the diff of two object lists, ideal for large lists and maximum performance.
@@ -321,12 +318,11 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 
 **Input**
 
-#### streamListDiff (server)
+#### Server
 
 > In a server environment, `Readable` refers to Node.js streams, and `FilePath` refers to the path of a file (e.g., `./list.json`). Examples are provided in the #usage section below.
 
 ```ts
-// streamListDiff
  prevList: Readable | FilePath | Record<string, unknown>[],
  nextList: Readable | FilePath | Record<string, unknown>[],
  referenceProperty: keyof Record<string, unknown>,
@@ -337,7 +333,7 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 }
 ```
 
-#### streamListDiffClient (browser)
+#### Browser
 
 > In a browser environment, `ReadableStream` refers to the browser's streaming API, and `File` refers to an uploaded or local file. Examples are provided in the #usage section below.
 
@@ -493,74 +489,6 @@ diff.on("data", (chunk) => {
 
 diff.on("finish", () => console.log("Your data has been processed. The full diff is available."))
 diff.on("error", (err) => console.log(err))
-```
-
-**Using `fetch`**
-
-A common use case would be to do a live diff against a stream, in order to avoid loading the entire dataset into memory. Here are two examples, for browser and server use:
-
-Browser:
-```ts
-import { streamListDiffClient } from "@donedeal0/superdiff";
-
-async function streamDiffFromAPI() {
-  try {
-    const response = await fetch("https://example.com/api/streaming-data");
-    const reader = response.body.getReader();
-
-    const stream = new ReadableStream({
-      async start(controller) {
-        let result;
-        while (!(result = await reader.read()).done) {
-          controller.enqueue(result.value); // Push the next chunk into the stream
-        }
-        controller.close(); // Close the stream when done
-      },
-    });
-
-    const prevStream = [{ id: 1, name: "Joe" }, { id: 2, name: "Jane" }] // Some previous list or stream
-
-    const diff = streamListDiffClient(prevStream, stream, 'id', { chunksSize: 5 });
-    diff.on("data", (diffChunk) => console.log(diffChunk));
-    diff.on("finish", () => console.log("Stream diff complete"));
-  } catch (err) {
-    console.error(err);
-  }
-}
-```
-
-Server:
-
-```ts
-import fetch from "node-fetch"; 
-import { Readable } from "stream";
-import { streamListDiff } from "@donedeal0/superdiff";
-
-async function streamDiffFromAPI() {
-  try {
-    const response = await fetch("https://example.com/api/streaming-data");
-    const reader = response.body.getReader();
-
-    const stream = new Readable({
-      async read() {
-        let result;
-        while (!(result = await reader.read()).done) {
-          this.push(result.value); // Push the next chunk into the stream
-        }
-        this.push(null); // Close the stream when done
-      },
-    });
-
-    const prevList = [{ id: 1, name: "Joe" }, { id: 2, name: "Jane" }]; // Some previous list or stream
-    const prevListStream = Readable.from(prevList, { objectMode: true })
-    const diff = streamListDiff(prevListStream, stream, 'id', { chunksSize: 5 });
-
-    diff.on("data", (diffChunk) => console.log(diffChunk));
-    diff.on("finish", () => console.log("Stream diff complete"));
-  } catch (err) {
-    console.error(err);
-  }
-}
 ```
 
 <hr/>
