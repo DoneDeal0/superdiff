@@ -16,6 +16,14 @@ export type StreamReferences<T extends Record<string, unknown>> = Map<
   { prevIndex: number; nextIndex?: number }
 >;
 
+export type DataBuffer<T extends Record<string, unknown>> = Map<
+  ReferenceProperty<T>,
+  {
+    data: T | null;
+    index: number | null;
+  }
+>;
+
 export type ListStreamOptions = {
   chunksSize?: number; // 0 by default.
   showOnly?: `${LIST_STATUS}`[];
@@ -25,3 +33,5 @@ export type ListStreamOptions = {
 export const DEFAULT_LIST_STREAM_OPTIONS: ListStreamOptions = {
   chunksSize: 0,
 };
+
+export type FilePath = string;

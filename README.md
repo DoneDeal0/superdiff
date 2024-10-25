@@ -18,7 +18,7 @@ This library compares two arrays or objects and returns a full diff of their dif
 
 Most existing solutions return a confusing diff format that often requires extra parsing. They are also limited to object comparison.
 
-**Superdiff** provides a complete and readable diff for both arrays **and** objects. Plus, it's battle-tested, has zero dependencies, and is super fast. 
+**Superdiff** provides a complete and readable diff for both arrays **and** objects. Plus, it supports stream and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and is super fast. 
 
 Import. Enjoy. 👍
 
@@ -306,7 +306,10 @@ getListDiff(
 ### streamListDiff() 
 
 ```js
-import { streamListDiff } from "@donedeal0/superdiff";
+// If you are in a server environment
+import { streamListDiff } from "@donedeal0/superdiff/server";
+// If you are in a browser environment
+import { streamListDiff } from "@donedeal0/superdiff/client";
 ```
 
 Streams the diff of two object lists, ideal for large lists and maximum performance.
@@ -315,14 +318,33 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 
 **Input**
 
+#### Server
+
+> In a server environment, `Readable` refers to Node.js streams, and `FilePath` refers to the path of a file (e.g., `./list.json`). Examples are provided in the #usage section below.
+
 ```ts
- prevList: Record<string, unknown>[],
- nextList: Record<string, unknown>[],
+ prevList: Readable | FilePath | Record<string, unknown>[],
+ nextList: Readable | FilePath | Record<string, unknown>[],
  referenceProperty: keyof Record<string, unknown>,
  options: {
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
-  chunksSize?: number, // // 0 by default
-  considerMoveAsUpdate? boolean; // false by default
+  chunksSize?: number, // 0 by default
+  considerMoveAsUpdate?: boolean; // false by default
+}
+```
+
+#### Browser
+
+> In a browser environment, `ReadableStream` refers to the browser's streaming API, and `File` refers to an uploaded or local file. Examples are provided in the #usage section below.
+
+```ts
+ prevList: ReadableStream<Record<string, unknown>> | File | Record<string, unknown>[],
+ nextList: ReadableStream<Record<string, unknown>> | File | Record<string, unknown>[],
+ referenceProperty: keyof Record<string, unknown>,
+ options: {
+  showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
+  chunksSize?: number, // 0 by default
+  considerMoveAsUpdate?: boolean; // false by default
 }
 ```
 
@@ -369,6 +391,40 @@ type StreamListDiff<T extends Record<string, unknown>> = {
 #### USAGE
 
 **Input**
+
+You can send streams, file paths, or arrays as input:
+
+> If you are in a server environment
+
+```ts
+    // for a simple array
+    const stream = [{ id: 1, name: "hello" }]
+    // for a large array 
+    const stream = Readable.from(list, { objectMode: true });
+    // for a local file
+    const stream = path.resolve(__dirname, "./list.json");
+   
+```
+
+> If you are in a browser environment
+
+```ts
+    // for a simple array 
+    const stream = [{ id: 1, name: "hello" }]
+    // for a large array 
+    const stream = new ReadableStream({
+      start(controller) {
+        list.forEach((value) => controller.enqueue(value));
+        controller.close();
+      },
+    }); 
+    // for a local file
+    const stream = new File([JSON.stringify(file)], "file.json", { type: "application/json" }); 
+    // for a file input
+    const stream = e.target.files[0]; 
+
+```
+> Example
 
 ```diff
 const diff = streamListDiff(
@@ -431,9 +487,10 @@ diff.on("data", (chunk) => {
      ]
 });
 
-diff.on("finish", () => console.log("The full diff is available"))
+diff.on("finish", () => console.log("Your data has been processed. The full diff is available."))
 diff.on("error", (err) => console.log(err))
 ```
+
 <hr/>
 
 ### isEqual()

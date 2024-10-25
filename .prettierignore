@@ -5,4 +5,3 @@ jest.config.js
 package-lock.json
 README.md
 tsconfig.json
-tsup.config.ts
