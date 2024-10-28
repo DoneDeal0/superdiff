@@ -1,10 +1,12 @@
 import { isObject } from "@lib/utils";
+import { IEmitter } from "@models/emitter";
+import { ListType } from "@models/list";
 import {
   ListStreamOptions,
   ReferenceProperty,
+  StreamEvent,
   StreamListDiff,
 } from "@models/stream";
-import { Emitter, StreamEvent } from "./emitter";
 
 export function isValidChunkSize(
   chunksSize: ListStreamOptions["chunksSize"],
@@ -17,7 +19,7 @@ export function isValidChunkSize(
 export function isDataValid<T extends Record<string, unknown>>(
   data: T,
   referenceProperty: ReferenceProperty<T>,
-  listType: "prevList" | "nextList",
+  listType: ListType,
 ): { isValid: boolean; message?: string } {
   if (!isObject(data)) {
     return {
@@ -38,7 +40,7 @@ export function isDataValid<T extends Record<string, unknown>>(
 }
 
 export function outputDiffChunk<T extends Record<string, unknown>>(
-  emitter: Emitter<T>,
+  emitter: IEmitter<T>,
 ) {
   let chunks: StreamListDiff<T>[] = [];
 

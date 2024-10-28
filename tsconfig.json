@@ -18,10 +18,9 @@
     "skipLibCheck": true ,
     "baseUrl": ".",
     "paths": {
-      "@models/*": ["./src/models/*"],
       "@lib/*": ["./src/lib/*"],
-      
-
+      "@mocks/*": ["./src/mocks/*"],
+      "@models/*": ["./src/models/*"]
     }
   },
 }

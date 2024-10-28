@@ -104,12 +104,12 @@ type ObjectDiff = {
   diff: Diff[];
 };
 
-/** recursive diff in case of subproperties */
 type Diff = {
   property: string;
   previousValue: unknown;
   currentValue: unknown;
   status: "added" | "deleted" | "equal" | "updated";
+  // recursive diff in case of subproperties
   diff?: Diff[];
 };
 ```
@@ -307,12 +307,14 @@ getListDiff(
 
 ```js
 // If you are in a server environment
-import { streamListDiff } from "@donedeal0/superdiff/server";
+import { streamListDiff } from "@donedeal0/superdiff/server.cjs";
 // If you are in a browser environment
 import { streamListDiff } from "@donedeal0/superdiff/client";
 ```
 
 Streams the diff of two object lists, ideal for large lists and maximum performance.
+
+ℹ️ `streamListDiff` requires ESM support for browser usage. It will work out of the box if you use a modern bundler (Webpack, Rollup) or JavaScript framework (Next.js, Vue.js).
 
 #### FORMAT
 
@@ -330,6 +332,8 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
   chunksSize?: number, // 0 by default
   considerMoveAsUpdate?: boolean; // false by default
+  useWorker?: boolean; // true by default
+  showWarnings?: boolean; // true by default
 }
 ```
 
@@ -345,6 +349,9 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
   chunksSize?: number, // 0 by default
   considerMoveAsUpdate?: boolean; // false by default
+  useWorker?: boolean; // true by default
+  showWarnings?: boolean; // true by default
+
 }
 ```
 
@@ -355,6 +362,10 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
   - `chunksSize` the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff per chunk, `10` = 10 object diffs per chunk).
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
   - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
+  - `useWorker`: if set to `true`, the diff will be run in a worker for maximum performance. Only recommended for large lists (e.g. +100,000 items).
+  - `showWarnings`: if set to `true`, potential warnings will be displayed in the console. 
+
+> ⚠️ Warning: using Readable streams may impact workers' performance since they need to be converted to arrays. Consider using arrays or files for optimal performance. Alternatively, you can turn the `useWorker` option off.
 
 **Output**
 
@@ -364,19 +375,11 @@ The objects diff are grouped into arrays - called `chunks` - and are consumed th
   - `error`: to be notified if an error occurs during the stream.
 
 ```ts
-interface StreamListener<T extends Record<string, unknown>> {
-  on<E extends keyof EmitterEvents<T>>(
-    event: E,
-    listener: Listener<EmitterEvents<T>[E]>,
-  ): this;
+interface StreamListener<T> {
+  on(event: "data", listener: (chunk: StreamListDiff<T>[]) => void);
+  on(event: "finish", listener: () => void);
+  on(event: "error", listener: (error: Error) => void);
 }
-
-type EmitterEvents<T extends Record<string, unknown>> = {
-  data: [StreamListDiff<T>[]];
-  error: [Error];
-  finish: [];
-};
-
 
 type StreamListDiff<T extends Record<string, unknown>> = {
   currentValue: T | null;

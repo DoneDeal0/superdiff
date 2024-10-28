@@ -1,8 +1,66 @@
-import path from "path";
-import { Readable } from "stream";
+/**
+ * @jest-environment jsdom
+ */
+import "blob-polyfill";
+import "jsdom";
+import { ReadableStream } from "web-streams-polyfill";
+import prevListFile from "@mocks/prevList.json";
+import nextListFile from "@mocks/nextList.json";
 import { ListStatus } from "@models/list";
-import { StreamListDiff } from "@models/stream";
+import {
+  ListStreamOptions,
+  ReferenceProperty,
+  StreamEvent,
+  StreamListDiff,
+} from "@models/stream";
+import { workerDiff } from "./worker/utils";
 import { streamListDiff } from ".";
+
+class Worker {
+  onmessage: ((event: { data: unknown }) => void) | null = null;
+
+  postMessage<T extends Record<string, unknown>>(msg: {
+    prevList: File | T[];
+    nextList: File | T[];
+    referenceProperty: ReferenceProperty<T>;
+    options: ListStreamOptions;
+  }) {
+    if (msg) {
+      const { prevList, nextList, referenceProperty, options } = msg;
+      const listener = workerDiff(
+        prevList,
+        nextList,
+        referenceProperty,
+        options,
+      );
+
+      listener.on(StreamEvent.Data, (chunk) => {
+        this.onmessage!({
+          data: { event: StreamEvent.Data, chunk },
+        });
+      });
+
+      listener.on(StreamEvent.Finish, () => {
+        this.onmessage!({
+          data: { event: StreamEvent.Finish },
+        });
+      });
+
+      listener.on(StreamEvent.Error, (error) => {
+        this.onmessage!({
+          data: { event: StreamEvent.Error, error: error.message },
+        });
+      });
+    }
+  }
+
+  terminate() {}
+}
+
+// @ts-expect-error - a Worker polyfill is necessary to test a Web Worker in a Node environment.
+global.Worker = Worker;
+// @ts-expect-error - the ReadableStream polyfill is necessary to test ReadableStream in a Node environment.
+global.ReadableStream = ReadableStream;
 
 describe("data emission", () => {
   it("emits 'data' event and consider the all the nextList added if no prevList is provided", (done) => {
@@ -12,7 +70,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff([], nextList, "id", {
       chunksSize: 2,
-      useWorker: false,
+      showWarnings: false,
     });
 
     const expectedChunks = [
@@ -48,10 +106,7 @@ describe("data emission", () => {
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListDiff(prevList, [], "id", {
-      chunksSize: 2,
-      useWorker: false,
-    });
+    const diff = streamListDiff(prevList, [], "id", { chunksSize: 2 });
 
     const expectedChunks = [
       {
@@ -91,7 +146,7 @@ describe("data emission", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id");
 
     const expectedChunks = [
       [
@@ -162,10 +217,7 @@ describe("data emission", () => {
       { id: 9, name: "Item 9" },
       { id: 8, name: "Item 8" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id", {
-      chunksSize: 5,
-      useWorker: false,
-    });
+    const diff = streamListDiff(prevList, nextList, "id", { chunksSize: 5 });
 
     const expectedChunks = [
       [
@@ -283,7 +335,6 @@ describe("data emission", () => {
       { id: 3, name: "Item 3" },
       { id: 4, name: "Item 4" },
     ];
-
     const nextList = [
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item Two" },
@@ -292,8 +343,7 @@ describe("data emission", () => {
     ];
 
     const diff = streamListDiff(prevList, nextList, "id", {
-      chunksSize: 5,
-      useWorker: false,
+      chunksSize: 150,
     });
 
     const expectedChunks = [
@@ -344,7 +394,7 @@ describe("data emission", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error(err));
+
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -366,7 +416,6 @@ describe("data emission", () => {
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       considerMoveAsUpdate: true,
-      useWorker: false,
     });
 
     const expectedChunks = [
@@ -439,7 +488,6 @@ describe("data emission", () => {
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       showOnly: ["added", "deleted"],
-      useWorker: false,
     });
 
     const expectedChunks = [
@@ -527,7 +575,6 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
     });
 
     const expectedChunks = [
@@ -742,12 +789,22 @@ describe("input handling", () => {
   ];
 
   it("handles two readable streams", (done) => {
-    const prevStream = Readable.from(prevList, { objectMode: true });
-    const nextStream = Readable.from(nextList, { objectMode: true });
+    const prevStream = new ReadableStream({
+      start(controller) {
+        prevList.forEach((item) => controller.enqueue(item));
+        controller.close();
+      },
+    });
+    const nextStream = new ReadableStream({
+      start(controller) {
+        nextList.forEach((item) => controller.enqueue(item));
+        controller.close();
+      },
+    });
 
     const diff = streamListDiff(prevStream, nextStream, "id", {
       chunksSize: 5,
-      useWorker: false,
+      showWarnings: false,
     });
 
     let chunkCount = 0;
@@ -762,12 +819,16 @@ describe("input handling", () => {
     });
   });
   it("handles two local files", (done) => {
-    const prevFile = path.resolve(__dirname, "../../../mocks/prevList.json");
-    const nextFile = path.resolve(__dirname, "../../../mocks/nextList.json");
+    const prevFile = new File([JSON.stringify(prevListFile)], "prevList.json", {
+      type: "application/json",
+    });
+
+    const nextFile = new File([JSON.stringify(nextListFile)], "nextList.json", {
+      type: "application/json",
+    });
 
     const diff = streamListDiff(prevFile, nextFile, "id", {
       chunksSize: 5,
-      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -782,12 +843,19 @@ describe("input handling", () => {
     });
   });
   it("handles a readable stream against a local file", (done) => {
-    const prevStream = Readable.from(prevList, { objectMode: true });
-    const nextFile = path.resolve(__dirname, "../../../mocks/nextList.json");
+    const prevStream = new ReadableStream({
+      start(controller) {
+        prevList.forEach((item) => controller.enqueue(item));
+        controller.close();
+      },
+    });
+    const nextFile = new File([JSON.stringify(nextListFile)], "nextList.json", {
+      type: "application/json",
+    });
 
     const diff = streamListDiff(prevStream, nextFile, "id", {
       chunksSize: 5,
-      useWorker: false,
+      showWarnings: false,
     });
 
     let chunkCount = 0;
@@ -802,11 +870,16 @@ describe("input handling", () => {
     });
   });
   it("handles a readable stream against an array", (done) => {
-    const prevStream = Readable.from(prevList, { objectMode: true });
+    const prevStream = new ReadableStream({
+      start(controller) {
+        prevList.forEach((item) => controller.enqueue(item));
+        controller.close();
+      },
+    });
 
     const diff = streamListDiff(prevStream, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
+      showWarnings: false,
     });
 
     let chunkCount = 0;
@@ -821,11 +894,12 @@ describe("input handling", () => {
     });
   });
   it("handles a local file against an array", (done) => {
-    const prevFile = path.resolve(__dirname, "../../../mocks/prevList.json");
+    const prevFile = new File([JSON.stringify(prevListFile)], "prevList.json", {
+      type: "application/json",
+    });
 
     const diff = streamListDiff(prevFile, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -843,7 +917,7 @@ describe("input handling", () => {
 
 describe("finish event", () => {
   it("emits 'finish' event if no prevList nor nextList is provided", (done) => {
-    const diff = streamListDiff([], [], "id", { useWorker: false });
+    const diff = streamListDiff([], [], "id");
     diff.on("finish", () => done());
   });
   it("emits 'finish' event when all the chunks have been processed", (done) => {
@@ -855,7 +929,7 @@ describe("finish event", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id");
     diff.on("finish", () => done());
   });
 });
@@ -873,7 +947,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error prevList is invalid by design for the test
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -895,7 +969,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error nextList is invalid by design for the test
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -912,7 +986,7 @@ describe("error event", () => {
       { id: 2, name: "Item 2" },
     ];
 
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -929,7 +1003,7 @@ describe("error event", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -948,7 +1022,6 @@ describe("error event", () => {
 
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: -3,
-      useWorker: false,
     });
 
     diff.on("error", (err) => {
@@ -963,13 +1036,11 @@ describe("error event", () => {
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - prevList is invalid by design for the test
-    const diff = streamListDiff({ name: "hello" }, nextList, "id", {
-      useWorker: false,
-    });
+    const diff = streamListDiff({ name: "hello" }, nextList, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
-        "Invalid prevList. Expected Readable, Array, or File.",
+        "Invalid prevList. Expected ReadableStream, Array, or File.",
       );
       done();
     });
@@ -978,11 +1049,11 @@ describe("error event", () => {
     const prevList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - nextList is invalid by design for the test
-    const diff = streamListDiff(prevList, null, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, null, "id");
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
-        "Invalid nextList. Expected Readable, Array, or File.",
+        "Invalid nextList. Expected ReadableStream, Array, or File.",
       );
       done();
     });
