@@ -1,11 +1,11 @@
-export enum OBJECT_STATUS {
+export enum ObjectStatus {
   ADDED = "added",
   EQUAL = "equal",
   DELETED = "deleted",
   UPDATED = "updated",
 }
 
-export enum GRANULARITY {
+export enum Granularity {
   BASIC = "basic",
   DEEP = "deep",
 }
@@ -15,14 +15,14 @@ export type ObjectData = Record<string, unknown> | undefined | null;
 export type ObjectDiffOptions = {
   ignoreArrayOrder?: boolean;
   showOnly?: {
-    statuses: `${OBJECT_STATUS}`[];
-    granularity?: `${GRANULARITY}`;
+    statuses: `${ObjectStatus}`[];
+    granularity?: `${Granularity}`;
   };
 };
 
 export const DEFAULT_OBJECT_DIFF_OPTIONS = {
   ignoreArrayOrder: false,
-  showOnly: { statuses: [], granularity: GRANULARITY.BASIC },
+  showOnly: { statuses: [], granularity: Granularity.BASIC },
 };
 
 /** recursive diff in case of subproperties */
@@ -30,12 +30,12 @@ export type Diff = {
   property: string;
   previousValue: unknown;
   currentValue: unknown;
-  status: OBJECT_STATUS;
+  status: `${ObjectStatus}`;
   diff?: Diff[];
 };
 
 export type ObjectDiff = {
   type: "object";
-  status: OBJECT_STATUS;
+  status: `${ObjectStatus}`;
   diff: Diff[];
 };

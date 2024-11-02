@@ -1,3 +1,5 @@
 /node_modules
 dist
 .eslintcache
+# Ignore generated worker files
+src/lib/stream-list-diff/server/worker/node-worker.cjs

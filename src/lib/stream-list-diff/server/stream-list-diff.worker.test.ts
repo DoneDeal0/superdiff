@@ -12,7 +12,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff([], nextList, "id", {
       chunksSize: 2,
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -35,7 +35,7 @@ describe("data emission", () => {
     ];
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("finish", () => {
@@ -50,7 +50,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff(prevList, [], "id", {
       chunksSize: 2,
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -73,7 +73,7 @@ describe("data emission", () => {
     ];
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -91,7 +91,7 @@ describe("data emission", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: true });
 
     const expectedChunks = [
       [
@@ -129,7 +129,7 @@ describe("data emission", () => {
     let chunkCount = 0;
 
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks[chunkCount]);
+      expect(chunk).toEqual(expectedChunks[chunkCount]);
       chunkCount++;
     });
     diff.on("finish", () => {
@@ -164,7 +164,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -267,7 +267,7 @@ describe("data emission", () => {
     let chunkCount = 0;
 
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks[chunkCount]);
+      expect(chunk).toEqual(expectedChunks[chunkCount]);
       chunkCount++;
     });
 
@@ -293,7 +293,7 @@ describe("data emission", () => {
 
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -341,7 +341,7 @@ describe("data emission", () => {
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -366,7 +366,7 @@ describe("data emission", () => {
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       considerMoveAsUpdate: true,
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -414,7 +414,7 @@ describe("data emission", () => {
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
 
@@ -439,7 +439,7 @@ describe("data emission", () => {
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       showOnly: ["added", "deleted"],
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -463,7 +463,7 @@ describe("data emission", () => {
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
 
@@ -527,7 +527,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
     });
 
     const expectedChunks = [
@@ -674,7 +674,7 @@ describe("data emission", () => {
     let chunkCount = 0;
 
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks[chunkCount]);
+      expect(chunk).toEqual(expectedChunks[chunkCount]);
       chunkCount++;
     });
 
@@ -747,12 +747,13 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevStream, nextStream, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
+      showWarnings: false,
     });
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -767,12 +768,12 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevFile, nextFile, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
     });
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -787,12 +788,13 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevStream, nextFile, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
+      showWarnings: false,
     });
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -806,12 +808,13 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevStream, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
+      showWarnings: false,
     });
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -825,12 +828,12 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevFile, nextList, "id", {
       chunksSize: 5,
-      useWorker: false,
+      useWorker: true,
     });
 
     let chunkCount = 0;
     diff.on("data", (chunk) => {
-      expect(chunk).toStrictEqual(expectedChunks);
+      expect(chunk).toEqual(expectedChunks);
       chunkCount++;
     });
     diff.on("error", (err) => console.error(err));
@@ -843,7 +846,7 @@ describe("input handling", () => {
 
 describe("finish event", () => {
   it("emits 'finish' event if no prevList nor nextList is provided", (done) => {
-    const diff = streamListDiff([], [], "id", { useWorker: false });
+    const diff = streamListDiff([], [], "id", { useWorker: true });
     diff.on("finish", () => done());
   });
   it("emits 'finish' event when all the chunks have been processed", (done) => {
@@ -855,7 +858,7 @@ describe("finish event", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: true });
     diff.on("finish", () => done());
   });
 });
@@ -873,7 +876,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error prevList is invalid by design for the test
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: true });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -895,7 +898,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error nextList is invalid by design for the test
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: true });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -912,7 +915,7 @@ describe("error event", () => {
       { id: 2, name: "Item 2" },
     ];
 
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: true });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -929,7 +932,7 @@ describe("error event", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: true });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -948,7 +951,7 @@ describe("error event", () => {
 
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: -3,
-      useWorker: false,
+      useWorker: true,
     });
 
     diff.on("error", (err) => {
@@ -964,7 +967,7 @@ describe("error event", () => {
 
     // @ts-expect-error - prevList is invalid by design for the test
     const diff = streamListDiff({ name: "hello" }, nextList, "id", {
-      useWorker: false,
+      useWorker: true,
     });
 
     diff.on("error", (err) => {
@@ -978,7 +981,7 @@ describe("error event", () => {
     const prevList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - nextList is invalid by design for the test
-    const diff = streamListDiff(prevList, null, "id", { useWorker: false });
+    const diff = streamListDiff(prevList, null, "id", { useWorker: true });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(

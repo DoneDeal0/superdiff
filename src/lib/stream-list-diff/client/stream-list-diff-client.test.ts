@@ -3,13 +3,13 @@
  */
 import "blob-polyfill";
 import { ReadableStream } from "web-streams-polyfill";
-import { LIST_STATUS } from "@models/list";
+import prevListFile from "@mocks/prevList.json";
+import nextListFile from "@mocks/nextList.json";
+import { ListStatus } from "@models/list";
 import { StreamListDiff } from "@models/stream";
 import { streamListDiff } from ".";
-import prevListFile from "../../../mocks/prevList.json";
-import nextListFile from "../../../mocks/nextList.json";
 
-//@ts-expect-error - the ReadableStream polyfill is necessary to test ReadableStream in a Node environment.
+// @ts-expect-error - the ReadableStream polyfill is necessary to test ReadableStream in a Node environment.
 global.ReadableStream = ReadableStream;
 
 describe("data emission", () => {
@@ -18,7 +18,10 @@ describe("data emission", () => {
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListDiff([], nextList, "id", { chunksSize: 2 });
+    const diff = streamListDiff([], nextList, "id", {
+      chunksSize: 2,
+      useWorker: false,
+    });
 
     const expectedChunks = [
       {
@@ -27,7 +30,7 @@ describe("data emission", () => {
         prevIndex: null,
         newIndex: 0,
         indexDiff: null,
-        status: LIST_STATUS.ADDED,
+        status: ListStatus.ADDED,
       },
       {
         previousValue: null,
@@ -35,7 +38,7 @@ describe("data emission", () => {
         prevIndex: null,
         newIndex: 1,
         indexDiff: null,
-        status: LIST_STATUS.ADDED,
+        status: ListStatus.ADDED,
       },
     ];
     let chunkCount = 0;
@@ -53,7 +56,10 @@ describe("data emission", () => {
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ];
-    const diff = streamListDiff(prevList, [], "id", { chunksSize: 2 });
+    const diff = streamListDiff(prevList, [], "id", {
+      chunksSize: 2,
+      useWorker: false,
+    });
 
     const expectedChunks = [
       {
@@ -62,7 +68,7 @@ describe("data emission", () => {
         prevIndex: 0,
         newIndex: null,
         indexDiff: null,
-        status: LIST_STATUS.DELETED,
+        status: ListStatus.DELETED,
       },
       {
         previousValue: { id: 2, name: "Item 2" },
@@ -70,7 +76,7 @@ describe("data emission", () => {
         prevIndex: 1,
         newIndex: null,
         indexDiff: null,
-        status: LIST_STATUS.DELETED,
+        status: ListStatus.DELETED,
       },
     ];
     let chunkCount = 0;
@@ -78,7 +84,7 @@ describe("data emission", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error("shiiiite", err));
+    diff.on("error", (err) => console.error(err));
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -93,7 +99,7 @@ describe("data emission", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
 
     const expectedChunks = [
       [
@@ -103,7 +109,7 @@ describe("data emission", () => {
           prevIndex: 1,
           newIndex: 0,
           indexDiff: -1,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
       ],
       [
@@ -113,7 +119,7 @@ describe("data emission", () => {
           prevIndex: 0,
           newIndex: null,
           indexDiff: null,
-          status: LIST_STATUS.DELETED,
+          status: ListStatus.DELETED,
         },
       ],
       [
@@ -123,7 +129,7 @@ describe("data emission", () => {
           prevIndex: null,
           newIndex: 1,
           indexDiff: null,
-          status: LIST_STATUS.ADDED,
+          status: ListStatus.ADDED,
         },
       ],
     ];
@@ -166,6 +172,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     const expectedChunks = [
@@ -176,7 +183,7 @@ describe("data emission", () => {
           prevIndex: 0,
           newIndex: 0,
           indexDiff: 0,
-          status: LIST_STATUS.EQUAL,
+          status: ListStatus.EQUAL,
         },
         {
           previousValue: { id: 2, name: "Item 2" },
@@ -184,7 +191,7 @@ describe("data emission", () => {
           prevIndex: 1,
           newIndex: 1,
           indexDiff: 0,
-          status: LIST_STATUS.UPDATED,
+          status: ListStatus.UPDATED,
         },
         {
           previousValue: { id: 3, name: "Item 3" },
@@ -192,7 +199,7 @@ describe("data emission", () => {
           prevIndex: 2,
           newIndex: 2,
           indexDiff: 0,
-          status: LIST_STATUS.EQUAL,
+          status: ListStatus.EQUAL,
         },
         {
           previousValue: { id: 5, name: "Item 5" },
@@ -200,7 +207,7 @@ describe("data emission", () => {
           prevIndex: 4,
           newIndex: 3,
           indexDiff: -1,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: { id: 6, name: "Item 6" },
@@ -208,7 +215,7 @@ describe("data emission", () => {
           prevIndex: 5,
           newIndex: 4,
           indexDiff: -1,
-          status: LIST_STATUS.UPDATED,
+          status: ListStatus.UPDATED,
         },
       ],
       [
@@ -218,7 +225,7 @@ describe("data emission", () => {
           prevIndex: 6,
           newIndex: 5,
           indexDiff: -1,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: { id: 9, name: "Item 9" },
@@ -226,7 +233,7 @@ describe("data emission", () => {
           prevIndex: 8,
           newIndex: 8,
           indexDiff: 0,
-          status: LIST_STATUS.EQUAL,
+          status: ListStatus.EQUAL,
         },
         {
           previousValue: { id: 10, name: "Item 10" },
@@ -234,7 +241,7 @@ describe("data emission", () => {
           prevIndex: 9,
           newIndex: 6,
           indexDiff: -3,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: { id: 8, name: "Item 8" },
@@ -242,7 +249,7 @@ describe("data emission", () => {
           prevIndex: 7,
           newIndex: 9,
           indexDiff: 2,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: { id: 4, name: "Item 4" },
@@ -250,7 +257,7 @@ describe("data emission", () => {
           prevIndex: 3,
           newIndex: null,
           indexDiff: null,
-          status: LIST_STATUS.DELETED,
+          status: ListStatus.DELETED,
         },
       ],
       [
@@ -260,7 +267,7 @@ describe("data emission", () => {
           prevIndex: null,
           newIndex: 7,
           indexDiff: null,
-          status: LIST_STATUS.ADDED,
+          status: ListStatus.ADDED,
         },
       ],
     ];
@@ -293,6 +300,7 @@ describe("data emission", () => {
 
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 150,
+      useWorker: false,
     });
 
     const expectedChunks = [
@@ -302,7 +310,7 @@ describe("data emission", () => {
         prevIndex: 0,
         newIndex: 0,
         indexDiff: 0,
-        status: LIST_STATUS.EQUAL,
+        status: ListStatus.EQUAL,
       },
       {
         previousValue: { id: 2, name: "Item 2" },
@@ -310,7 +318,7 @@ describe("data emission", () => {
         prevIndex: 1,
         newIndex: 1,
         indexDiff: 0,
-        status: LIST_STATUS.UPDATED,
+        status: ListStatus.UPDATED,
       },
       {
         previousValue: { id: 3, name: "Item 3" },
@@ -318,7 +326,7 @@ describe("data emission", () => {
         prevIndex: 2,
         newIndex: 2,
         indexDiff: 0,
-        status: LIST_STATUS.EQUAL,
+        status: ListStatus.EQUAL,
       },
       {
         previousValue: { id: 4, name: "Item 4" },
@@ -326,7 +334,7 @@ describe("data emission", () => {
         prevIndex: 3,
         newIndex: null,
         indexDiff: null,
-        status: LIST_STATUS.DELETED,
+        status: ListStatus.DELETED,
       },
       {
         previousValue: null,
@@ -334,7 +342,7 @@ describe("data emission", () => {
         prevIndex: null,
         newIndex: 3,
         indexDiff: null,
-        status: LIST_STATUS.ADDED,
+        status: ListStatus.ADDED,
       },
     ];
 
@@ -365,6 +373,7 @@ describe("data emission", () => {
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       considerMoveAsUpdate: true,
+      useWorker: false,
     });
 
     const expectedChunks = [
@@ -374,7 +383,7 @@ describe("data emission", () => {
         prevIndex: 1,
         newIndex: 0,
         indexDiff: -1,
-        status: LIST_STATUS.UPDATED,
+        status: ListStatus.UPDATED,
       },
       {
         previousValue: { id: 1, name: "Item 1" },
@@ -382,7 +391,7 @@ describe("data emission", () => {
         prevIndex: 0,
         newIndex: 1,
         indexDiff: 1,
-        status: LIST_STATUS.UPDATED,
+        status: ListStatus.UPDATED,
       },
       {
         previousValue: { id: 3, name: "Item 3" },
@@ -390,7 +399,7 @@ describe("data emission", () => {
         prevIndex: 2,
         newIndex: 2,
         indexDiff: 0,
-        status: LIST_STATUS.EQUAL,
+        status: ListStatus.EQUAL,
       },
       {
         previousValue: { id: 4, name: "Item 4" },
@@ -398,7 +407,7 @@ describe("data emission", () => {
         prevIndex: 3,
         newIndex: null,
         indexDiff: null,
-        status: LIST_STATUS.DELETED,
+        status: ListStatus.DELETED,
       },
       {
         previousValue: null,
@@ -406,7 +415,7 @@ describe("data emission", () => {
         prevIndex: null,
         newIndex: 3,
         indexDiff: null,
-        status: LIST_STATUS.ADDED,
+        status: ListStatus.ADDED,
       },
     ];
 
@@ -437,6 +446,7 @@ describe("data emission", () => {
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
       showOnly: ["added", "deleted"],
+      useWorker: false,
     });
 
     const expectedChunks = [
@@ -446,7 +456,7 @@ describe("data emission", () => {
         prevIndex: 3,
         newIndex: null,
         indexDiff: null,
-        status: LIST_STATUS.DELETED,
+        status: ListStatus.DELETED,
       },
       {
         previousValue: null,
@@ -454,7 +464,7 @@ describe("data emission", () => {
         prevIndex: null,
         newIndex: 3,
         indexDiff: null,
-        status: LIST_STATUS.ADDED,
+        status: ListStatus.ADDED,
       },
     ];
 
@@ -524,6 +534,7 @@ describe("data emission", () => {
     ];
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     const expectedChunks = [
@@ -542,7 +553,7 @@ describe("data emission", () => {
           prevIndex: 0,
           newIndex: 0,
           indexDiff: 0,
-          status: LIST_STATUS.EQUAL,
+          status: ListStatus.EQUAL,
         },
         {
           previousValue: { id: 2, name: "Item 2" },
@@ -550,7 +561,7 @@ describe("data emission", () => {
           prevIndex: 1,
           newIndex: 1,
           indexDiff: 0,
-          status: LIST_STATUS.UPDATED,
+          status: ListStatus.UPDATED,
         },
         {
           previousValue: {
@@ -566,7 +577,7 @@ describe("data emission", () => {
           prevIndex: 2,
           newIndex: 2,
           indexDiff: 0,
-          status: LIST_STATUS.EQUAL,
+          status: ListStatus.EQUAL,
         },
         {
           previousValue: { id: 5, name: "Item 5" },
@@ -574,7 +585,7 @@ describe("data emission", () => {
           prevIndex: 4,
           newIndex: 3,
           indexDiff: -1,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: {
@@ -590,7 +601,7 @@ describe("data emission", () => {
           prevIndex: 5,
           newIndex: 4,
           indexDiff: -1,
-          status: LIST_STATUS.UPDATED,
+          status: ListStatus.UPDATED,
         },
       ],
       [
@@ -600,7 +611,7 @@ describe("data emission", () => {
           prevIndex: 6,
           newIndex: 5,
           indexDiff: -1,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: { id: 9, name: "Item 9" },
@@ -608,7 +619,7 @@ describe("data emission", () => {
           prevIndex: 8,
           newIndex: 8,
           indexDiff: 0,
-          status: LIST_STATUS.EQUAL,
+          status: ListStatus.EQUAL,
         },
         {
           previousValue: {
@@ -632,7 +643,7 @@ describe("data emission", () => {
           prevIndex: 9,
           newIndex: 6,
           indexDiff: -3,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: { id: 8, name: "Item 8" },
@@ -640,7 +651,7 @@ describe("data emission", () => {
           prevIndex: 7,
           newIndex: 9,
           indexDiff: 2,
-          status: LIST_STATUS.MOVED,
+          status: ListStatus.MOVED,
         },
         {
           previousValue: {
@@ -652,7 +663,7 @@ describe("data emission", () => {
           prevIndex: 3,
           newIndex: null,
           indexDiff: null,
-          status: LIST_STATUS.DELETED,
+          status: ListStatus.DELETED,
         },
       ],
       [
@@ -662,7 +673,7 @@ describe("data emission", () => {
           prevIndex: null,
           newIndex: 7,
           indexDiff: null,
-          status: LIST_STATUS.ADDED,
+          status: ListStatus.ADDED,
         },
       ],
     ];
@@ -701,7 +712,7 @@ describe("input handling", () => {
       prevIndex: 0,
       newIndex: 0,
       indexDiff: 0,
-      status: LIST_STATUS.EQUAL,
+      status: ListStatus.EQUAL,
     },
     {
       previousValue: { id: 2, name: "Item 2" },
@@ -709,7 +720,7 @@ describe("input handling", () => {
       prevIndex: 1,
       newIndex: 1,
       indexDiff: 0,
-      status: LIST_STATUS.UPDATED,
+      status: ListStatus.UPDATED,
     },
     {
       previousValue: { id: 3, name: "Item 3" },
@@ -717,7 +728,7 @@ describe("input handling", () => {
       prevIndex: 2,
       newIndex: 2,
       indexDiff: 0,
-      status: LIST_STATUS.EQUAL,
+      status: ListStatus.EQUAL,
     },
     {
       previousValue: { id: 4, name: "Item 4" },
@@ -725,7 +736,7 @@ describe("input handling", () => {
       prevIndex: 3,
       newIndex: null,
       indexDiff: null,
-      status: LIST_STATUS.DELETED,
+      status: ListStatus.DELETED,
     },
     {
       previousValue: null,
@@ -733,7 +744,7 @@ describe("input handling", () => {
       prevIndex: null,
       newIndex: 3,
       indexDiff: null,
-      status: LIST_STATUS.ADDED,
+      status: ListStatus.ADDED,
     },
   ];
 
@@ -753,6 +764,7 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevStream, nextStream, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -760,7 +772,7 @@ describe("input handling", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error("sheeeet", err));
+    diff.on("error", (err) => console.error(err));
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -777,6 +789,7 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevFile, nextFile, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -784,7 +797,7 @@ describe("input handling", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error("sheeeet", err));
+    diff.on("error", (err) => console.error(err));
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -803,6 +816,7 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevStream, nextFile, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -810,7 +824,7 @@ describe("input handling", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error("sheeeet", err));
+    diff.on("error", (err) => console.error(err));
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -826,6 +840,7 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevStream, nextList, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -833,7 +848,7 @@ describe("input handling", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error("sheeeet", err));
+    diff.on("error", (err) => console.error(err));
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -846,6 +861,7 @@ describe("input handling", () => {
 
     const diff = streamListDiff(prevFile, nextList, "id", {
       chunksSize: 5,
+      useWorker: false,
     });
 
     let chunkCount = 0;
@@ -853,7 +869,7 @@ describe("input handling", () => {
       expect(chunk).toStrictEqual(expectedChunks);
       chunkCount++;
     });
-    diff.on("error", (err) => console.error("sheeeet", err));
+    diff.on("error", (err) => console.error(err));
     diff.on("finish", () => {
       expect(chunkCount).toBe(1);
       done();
@@ -863,7 +879,7 @@ describe("input handling", () => {
 
 describe("finish event", () => {
   it("emits 'finish' event if no prevList nor nextList is provided", (done) => {
-    const diff = streamListDiff([], [], "id");
+    const diff = streamListDiff([], [], "id", { useWorker: false });
     diff.on("finish", () => done());
   });
   it("emits 'finish' event when all the chunks have been processed", (done) => {
@@ -875,7 +891,7 @@ describe("finish event", () => {
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
     ];
-    const diff = streamListDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
     diff.on("finish", () => done());
   });
 });
@@ -893,7 +909,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error prevList is invalid by design for the test
-    const diff = streamListDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -915,7 +931,7 @@ describe("error event", () => {
     ];
 
     // @ts-expect-error nextList is invalid by design for the test
-    const diff = streamListDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -932,7 +948,7 @@ describe("error event", () => {
       { id: 2, name: "Item 2" },
     ];
 
-    const diff = streamListDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -949,7 +965,7 @@ describe("error event", () => {
     ];
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
-    const diff = streamListDiff(prevList, nextList, "id");
+    const diff = streamListDiff(prevList, nextList, "id", { useWorker: false });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -968,6 +984,7 @@ describe("error event", () => {
 
     const diff = streamListDiff(prevList, nextList, "id", {
       chunksSize: -3,
+      useWorker: false,
     });
 
     diff.on("error", (err) => {
@@ -982,7 +999,9 @@ describe("error event", () => {
     const nextList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - prevList is invalid by design for the test
-    const diff = streamListDiff({ name: "hello" }, nextList, "id");
+    const diff = streamListDiff({ name: "hello" }, nextList, "id", {
+      useWorker: false,
+    });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
@@ -995,7 +1014,7 @@ describe("error event", () => {
     const prevList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
 
     // @ts-expect-error - nextList is invalid by design for the test
-    const diff = streamListDiff(prevList, null, "id");
+    const diff = streamListDiff(prevList, null, "id", { useWorker: false });
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(

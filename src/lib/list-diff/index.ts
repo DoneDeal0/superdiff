@@ -1,10 +1,10 @@
+import { isEqual, isObject } from "@lib/utils";
 import {
   DEFAULT_LIST_DIFF_OPTIONS,
-  LIST_STATUS,
+  ListStatus,
   ListDiff,
   ListDiffOptions,
 } from "@models/list";
-import { isEqual, isObject } from "@lib/utils";
 
 function getLeanDiff(
   diff: ListDiff["diff"],
@@ -15,13 +15,13 @@ function getLeanDiff(
 
 function formatSingleListDiff<T>(
   listData: T[],
-  status: LIST_STATUS,
+  status: ListStatus,
   options: ListDiffOptions = { showOnly: [] },
 ): ListDiff {
   const diff = listData.map((data, i) => ({
     value: data,
-    prevIndex: status === LIST_STATUS.ADDED ? null : i,
-    newIndex: status === LIST_STATUS.ADDED ? i : null,
+    prevIndex: status === ListStatus.ADDED ? null : i,
+    newIndex: status === ListStatus.ADDED ? i : null,
     indexDiff: null,
     status,
   }));
@@ -39,10 +39,10 @@ function formatSingleListDiff<T>(
   };
 }
 
-function getListStatus(listDiff: ListDiff["diff"]): LIST_STATUS {
-  return listDiff.some((value) => value.status !== LIST_STATUS.EQUAL)
-    ? LIST_STATUS.UPDATED
-    : LIST_STATUS.EQUAL;
+function getListStatus(listDiff: ListDiff["diff"]): ListStatus {
+  return listDiff.some((value) => value.status !== ListStatus.EQUAL)
+    ? ListStatus.UPDATED
+    : ListStatus.EQUAL;
 }
 
 function isReferencedObject(
@@ -72,15 +72,15 @@ export const getListDiff = <T>(
   if (!prevList && !nextList) {
     return {
       type: "list",
-      status: LIST_STATUS.EQUAL,
+      status: ListStatus.EQUAL,
       diff: [],
     };
   }
   if (!prevList) {
-    return formatSingleListDiff(nextList as T[], LIST_STATUS.ADDED, options);
+    return formatSingleListDiff(nextList as T[], ListStatus.ADDED, options);
   }
   if (!nextList) {
-    return formatSingleListDiff(prevList as T[], LIST_STATUS.DELETED, options);
+    return formatSingleListDiff(prevList as T[], ListStatus.DELETED, options);
   }
   const diff: ListDiff["diff"] = [];
   const prevIndexMatches = new Set<number>();
@@ -106,10 +106,10 @@ export const getListDiff = <T>(
     }
     const indexDiff = prevIndex === -1 ? null : i - prevIndex;
     if (indexDiff === 0 || options.ignoreArrayOrder) {
-      let nextStatus = LIST_STATUS.EQUAL;
+      let nextStatus = ListStatus.EQUAL;
       if (isReferencedObject(nextValue, options.referenceProperty)) {
         if (!isEqual(prevList[prevIndex], nextValue)) {
-          nextStatus = LIST_STATUS.UPDATED;
+          nextStatus = ListStatus.UPDATED;
         }
       }
       return diff.push({
@@ -126,7 +126,7 @@ export const getListDiff = <T>(
         prevIndex: null,
         newIndex: i,
         indexDiff,
-        status: LIST_STATUS.ADDED,
+        status: ListStatus.ADDED,
       });
     }
     return diff.push({
@@ -135,8 +135,8 @@ export const getListDiff = <T>(
       newIndex: i,
       indexDiff,
       status: options.considerMoveAsUpdate
-        ? LIST_STATUS.UPDATED
-        : LIST_STATUS.MOVED,
+        ? ListStatus.UPDATED
+        : ListStatus.MOVED,
     });
   });
 
@@ -147,7 +147,7 @@ export const getListDiff = <T>(
         prevIndex: i,
         newIndex: null,
         indexDiff: null,
-        status: LIST_STATUS.DELETED,
+        status: ListStatus.DELETED,
       });
     }
   });

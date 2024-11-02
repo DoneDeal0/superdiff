@@ -1,4 +1,4 @@
-import { GRANULARITY, OBJECT_STATUS } from "@models/object";
+import { Granularity, ObjectStatus } from "@models/object";
 import { getObjectDiff } from ".";
 
 describe("getObjectDiff", () => {
@@ -51,8 +51,8 @@ describe("getObjectDiff", () => {
         null,
         {
           showOnly: {
-            statuses: [OBJECT_STATUS.ADDED],
-            granularity: GRANULARITY.DEEP,
+            statuses: [ObjectStatus.ADDED],
+            granularity: Granularity.DEEP,
           },
         },
       ),
@@ -509,7 +509,7 @@ describe("getObjectDiff", () => {
             nickname: "super joe",
           },
         },
-        { showOnly: { statuses: [OBJECT_STATUS.ADDED] } },
+        { showOnly: { statuses: [ObjectStatus.ADDED] } },
       ),
     ).toStrictEqual({
       type: "object",
@@ -549,8 +549,8 @@ describe("getObjectDiff", () => {
         },
         {
           showOnly: {
-            statuses: [OBJECT_STATUS.ADDED, OBJECT_STATUS.DELETED],
-            granularity: GRANULARITY.DEEP,
+            statuses: [ObjectStatus.ADDED, ObjectStatus.DELETED],
+            granularity: Granularity.DEEP,
           },
         },
       ),
@@ -634,8 +634,8 @@ describe("getObjectDiff", () => {
         },
         {
           showOnly: {
-            statuses: [OBJECT_STATUS.UPDATED],
-            granularity: GRANULARITY.DEEP,
+            statuses: [ObjectStatus.UPDATED],
+            granularity: Granularity.DEEP,
           },
         },
       ),
@@ -742,8 +742,8 @@ describe("getObjectDiff", () => {
         },
         {
           showOnly: {
-            statuses: [OBJECT_STATUS.ADDED],
-            granularity: GRANULARITY.DEEP,
+            statuses: [ObjectStatus.ADDED],
+            granularity: Granularity.DEEP,
           },
         },
       ),
@@ -834,8 +834,8 @@ describe("getObjectDiff", () => {
         },
         {
           showOnly: {
-            statuses: [OBJECT_STATUS.DELETED],
-            granularity: GRANULARITY.DEEP,
+            statuses: [ObjectStatus.DELETED],
+            granularity: Granularity.DEEP,
           },
         },
       ),
@@ -850,7 +850,7 @@ describe("getObjectDiff", () => {
       getObjectDiff(
         { name: "joe", age: 54, hobbies: ["golf", "football"] },
         null,
-        { showOnly: { statuses: [OBJECT_STATUS.DELETED] } },
+        { showOnly: { statuses: [ObjectStatus.DELETED] } },
       ),
     ).toStrictEqual({
       type: "object",
