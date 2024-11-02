@@ -307,7 +307,7 @@ getListDiff(
 
 ```js
 // If you are in a server environment
-import { streamListDiff } from "@donedeal0/superdiff/server.cjs";
+import { streamListDiff } from "@donedeal0/superdiff/server";
 // If you are in a browser environment
 import { streamListDiff } from "@donedeal0/superdiff/client";
 ```

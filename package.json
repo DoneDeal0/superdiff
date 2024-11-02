@@ -1,26 +1,17 @@
 {
   "name": "@donedeal0/superdiff",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "type": "module",
   "description": "SuperDiff compares two arrays or objects and returns a full diff of their differences",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "declaration": true,
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "exports": {
-    ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
-    },
-    "./client": {
-      "default": "./dist/client.mjs"
-    },
-    "./server": {
-      "default": "./dist/server.cjs"
-    }
+    ".": "./dist/index.js",
+    "./client": "./dist/client.js",
+    "./server": "./dist/server.cjs"
   },
   "author": "DoneDeal0",
   "license": "ISC",
