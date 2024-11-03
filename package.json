@@ -1,6 +1,6 @@
 {
   "name": "@donedeal0/superdiff",
-  "version": "3.2.0",
+  "version": "3.1.2",
   "type": "module",
   "description": "SuperDiff compares two arrays or objects and returns a full diff of their differences",
   "main": "dist/index.js",
