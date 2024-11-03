@@ -12,6 +12,8 @@
 
 This library compares two arrays or objects and returns a full diff of their differences.
 
+ℹ️ The documentation is also available on our [website](https://superdiff.gitbook.io/donedeal0-superdiff)!
+
 <hr/>
 
 ## WHY YOU SHOULD USE THIS LIBRARY
