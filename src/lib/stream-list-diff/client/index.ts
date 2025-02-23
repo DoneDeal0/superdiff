@@ -201,35 +201,28 @@ async function getValidClientStream<T extends Record<string, unknown>>(
   input: ReadableStream<T> | T[] | File,
   listType: ListType,
 ): Promise<ReadableStream<T>> {
-  if (Array.isArray(input)) {
-    return new ReadableStream({
-      start(controller) {
-        input.forEach((item) => controller.enqueue(item));
-        controller.close();
-      },
-    });
-  }
-
   if (input instanceof ReadableStream) {
     return input;
   }
-
+  let nextInput = input;
   if (input instanceof File) {
     const fileText = await input.text();
-    let jsonData: T[];
     try {
-      jsonData = JSON.parse(fileText);
+      nextInput = JSON.parse(fileText);
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_: unknown) {
       throw new Error(`Your ${listType} is not a valid JSON array.`);
     }
 
-    if (!Array.isArray(jsonData)) {
+    if (!Array.isArray(nextInput)) {
       throw new Error(`Your ${listType} is not a JSON array.`);
     }
+  }
+
+  if (Array.isArray(nextInput)) {
     return new ReadableStream({
       start(controller) {
-        jsonData.forEach((item) => controller.enqueue(item));
+        nextInput.forEach((item) => controller.enqueue(item));
         controller.close();
       },
     });
