@@ -505,6 +505,299 @@ diff.on("error", (err) => console.log(err))
 
 <hr/>
 
+<<<<<<< HEAD
+=======
+### getTextDiff
+
+```js
+import { getTextDiff } from "@donedeal0/superdiff";
+```
+
+Compares two texts and returns a diff for each characters, words or sentence, depending on your preference. 
+
+The output is optimized by default to produce a readable, visual diff (like GitHub or Git). A strict mode that tracks exact token moves and updates is also available. 
+
+All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentation, etc.) are handled.
+
+#### FORMAT
+
+**Input**
+
+```ts
+  previousText: string | null | undefined,
+  currentText: string | null | undefined,
+  options?: {
+    showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default.
+    separation?: "character" | "word" | "sentence", // "word" by default
+    mode?: "visual" | "strict", // "visual" by default
+    ignoreCase?: boolean, // false by default
+    ignorePunctuation?: boolean, // false by default
+    locale?: Intl.Locale | string // english by default
+  }
+```
+- `previousText`: the original text.
+- `currentText`: the new text.
+- `options`
+  - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
+    - `moved` and `updated` are only available in `strict` mode.
+  - `separation` whether you want a `character`, `word` or `sentence` based diff.
+  - `mode`: 
+    - `visual` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
+    - `strict`: tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality).
+  - `ignoreCase`: if set to `true` `hello` and `HELLO` will be considered equal.
+  - `ignorePunctuation`: if set to `true` `hello!` and `hello` will be considered equal.
+  - `locale`: the locale of your text.  
+
+**Output**
+
+```ts
+type TextDiff = {
+  type: "text";
+  status: "added" | "deleted" | "equal" | "updated";
+  diff: {
+    value: string;
+    previousValue?: string
+    status: "added" | "deleted" | "equal" | "moved" | "updated";
+    currentIndex: number | null;
+    previousIndex: number | null;
+  }[];
+};
+```
+
+#### USAGE
+
+**VISUAL MODE**
+
+`visual` is optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing). Token updates are rendered as two `added` and `deleted` entries. 
+
+This mode is based on a [longest common subsequence (LCS) computation](https://en.wikipedia.org/wiki/Longest_common_subsequence), similar to Git and GitHub diffs.
+
+**Input**
+
+```diff
+getTextDiff(
+- "The brown fox jumped high",
++ "The orange cat has jumped",
+{ mode: "visual", separation: "word" }
+);
+```
+
+**Output**
+
+```diff
+{
+      type: "text",
++     status: "updated",
+      diff: [
+        {
+          value: 'The',
+          status: 'equal',
+          currentIndex: 0,
+          previousIndex: 0
+        },
+-       {
+-         value: "brown",
+-         status: "deleted",
+-         currentIndex: null,
+-         previousIndex: 1,
+-       }
+-       {
+-         value: "fox",
+-         status: "deleted",
+-         currentIndex: null,
+-         previousIndex: 2,
+-       }
++       {
++         value: "orange",
++         status: "added",
++         currentIndex: 1,
++         previousIndex: null,
++       },
++       {
++         value: "cat",
++         status: "added",
++         currentIndex: 2,
++         previousIndex: null,
++       },
++       {
++         value: "has",
++         status: "added",
++         currentIndex: 3,
++         previousIndex: null,
++       },
+        {
+          value: "jumped",
+          status: "equal",
+          currentIndex: 4,
+          previousIndex: 3,
+        },
+-       {
+-         value: "high",
+-         status: "deleted",
+-         currentIndex: null,
+-         previousIndex: 4,
+-       }
+      ],
+    }
+```
+
+**STRICT MODE**
+
+`strict` tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality). It also considers direct token swaps as `updated`.
+
+**Input**
+
+```diff
+getTextDiff(
+- "The brown fox jumped high",
++ "The orange cat has jumped",
+{ mode: "strict", separation: "word" }
+);
+```
+
+**Output**
+
+```diff
+{
+      type: "text",
++     status: "updated",
+      diff: [
+        {
+          value: 'The',
+          status: 'equal',
+          currentIndex: 0,
+          previousIndex: 0
+        },
++       {
++         value: "orange",
++         previousValue: "brown",
++         status: "updated",
++         currentIndex: 1,
++         previousIndex: null,
++       },
++       {
++         value: "cat",
++         previousValue: "fox",
++         status: "updated",
++         currentIndex: 2,
++         previousIndex: null,
++       },
++       {
++         value: "has",
++         status: "added",
++         currentIndex: 3,
++         previousIndex: null,
++       },
++       {
++         value: "jumped",
++         status: "moved",
++         currentIndex: 4,
++         previousIndex: 3,
++       },
+-       {
+-         value: "high",
+-         status: "deleted",
+-         currentIndex: null,
+-         previousIndex: 4,
+-       }
+      ],
+    }
+```
+
+#### TOKEN STATUSES
+
+| Status  | Represents    | Index meaning                           |
+| ------- | ------------- | --------------------------------------- |
+| **equal**   | same token    | both indexes valid                      |
+| **added**   | new token     | `previousIndex = null`                  |
+| **deleted** | removed token | `currentIndex = null`                   |
+| **moved**   | same token (only in `strict` mode)    | both indexes valid                      |
+| **updated** | replacement (only in `strict` mode)  | no shared identity, one index only |
+
+
+<hr/>
+
+### isEqual
+
+```js
+import { isEqual } from "@donedeal0/superdiff";
+```
+
+Tests whether two values are equal.
+
+#### FORMAT
+
+**Input**
+
+```ts
+a: unknown,
+b: unknown,
+options: { 
+    ignoreArrayOrder: boolean; // false by default
+     },
+```
+- `a`: the value to be compared to the value `b`.
+- `b`: the value to be compared to the value `a`.
+- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
+
+#### USAGE
+
+
+```ts
+isEqual(
+  [
+    { name: "joe", age: 99 },
+    { name: "nina", age: 23 },
+  ],
+  [
+    { name: "joe", age: 98 },
+    { name: "nina", age: 23 },
+  ],
+);
+```
+
+**Output**
+
+```ts
+false;
+```
+<hr/>
+
+### isObject
+
+```js
+import { isObject } from "@donedeal0/superdiff";
+```
+
+Tests whether a value is an object.
+
+#### FORMAT
+
+**Input**
+
+```ts
+value: unknown;
+```
+
+- `value`: the value whose type will be checked.
+
+#### USAGE
+
+**Input**
+
+```ts
+isObject(["hello", "world"]);
+```
+
+**Output**
+
+```ts
+false;
+```
+
+<hr/>
+
+>>>>>>> 929e827 (feat: tokenization)
 ### ℹ️ More examples are available in the source code tests.
 
 <hr/>
