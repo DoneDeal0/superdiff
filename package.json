@@ -86,6 +86,7 @@
     "blob-polyfill": "^9.0.20240710",
     "deep-diff": "^1.0.2",
     "deep-object-diff": "^1.1.9",
+    "diff": "^8.0.2",
     "eslint": "^9.21.0",
     "husky": "^9.1.7",
     "jest": "^29.7.0",

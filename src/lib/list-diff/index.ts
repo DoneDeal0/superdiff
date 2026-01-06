@@ -74,6 +74,40 @@ function getNextStatus(
     : ListStatus.MOVED;
 }
 
+function stableStringify<T>(value: T): string {
+  if (isObject(value)) {
+    const keys = Object.keys(value).sort();
+    return (
+      "{" +
+      keys.map((k) => JSON.stringify(k) + ":" + stableStringify(value[k])) +
+      "}"
+    );
+  }
+  if (Array.isArray(value)) {
+    return "[" + value.map(stableStringify).join(",") + "]";
+  }
+  if (value === undefined) {
+    return "undefined";
+  }
+  return JSON.stringify(value);
+}
+
+function getNextStatus(
+  indexDiff: number,
+  isStrictEqual: boolean,
+  options: ListDiffOptions,
+): ListStatus {
+  if (indexDiff === 0) {
+    return !isStrictEqual ? ListStatus.UPDATED : ListStatus.EQUAL;
+  }
+  if (options.ignoreArrayOrder && isStrictEqual) {
+    return ListStatus.EQUAL;
+  }
+  return options.considerMoveAsUpdate || !isStrictEqual
+    ? ListStatus.UPDATED
+    : ListStatus.MOVED;
+}
+
 /**
  * Returns the diff between two arrays
  * @param {Array<T>} prevList - The original array.
