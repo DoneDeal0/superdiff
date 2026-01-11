@@ -20,14 +20,14 @@ function getLeanDiff(
   for (let i = 0; i < diff.length; i++) {
     const entry = diff[i];
     if (isDeep && entry.diff) {
-      const sub = getLeanDiff(entry.diff, showOnly);
-      if (sub.length > 0) {
+      const subDiff = getLeanDiff(entry.diff, showOnly);
+      if (subDiff.length > 0) {
         res.push({
           property: entry.property,
           previousValue: entry.previousValue,
           currentValue: entry.currentValue,
           status: entry.status,
-          diff: sub,
+          diff: subDiff,
         });
       }
       continue;
@@ -61,9 +61,9 @@ function formatSingleObjectDiff(
   for (const key in data) {
     const value = data[key];
     if (isObject(value)) {
-      const sub: Diff[] = [];
+      const subDiff: Diff[] = [];
       for (const subKey in value) {
-        sub.push({
+        subDiff.push({
           property: subKey,
           previousValue: added ? undefined : value[subKey],
           currentValue: added ? value[subKey] : undefined,
@@ -75,7 +75,7 @@ function formatSingleObjectDiff(
         previousValue: added ? undefined : data[key],
         currentValue: added ? value : undefined,
         status,
-        diff: sub,
+        diff: subDiff,
       });
     } else {
       diff.push({
