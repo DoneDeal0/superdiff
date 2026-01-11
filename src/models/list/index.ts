@@ -25,6 +25,11 @@ export type ListDiffOptions = {
   ignoreArrayOrder?: boolean;
 };
 
+export type ListData<T> = {
+  indexes: number[];
+  value: T;
+};
+
 export type ListDiff = {
   type: "list";
   status: `${ListStatus}`;

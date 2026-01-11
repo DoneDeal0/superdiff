@@ -12,22 +12,53 @@ export function isEqual(
   b: unknown,
   options: isEqualOptions = { ignoreArrayOrder: false },
 ): boolean {
+  if (a === b) return true;
   if (typeof a !== typeof b) return false;
+  if (a === null || b === null) return a === b;
+  if (typeof a !== "object") return a === b;
+
   if (Array.isArray(a) && Array.isArray(b)) {
-    if (a.length !== b.length) {
-      return false;
+    if (a.length !== b.length) return false;
+    if (!options.ignoreArrayOrder) {
+      for (let i = 0; i < a.length; i++) {
+        if (!isEqual(a[i], b[i], options)) return false;
+      }
+      return true;
     }
-    if (options.ignoreArrayOrder) {
-      return a.every((v) =>
-        b.some((nextV) => JSON.stringify(nextV) === JSON.stringify(v)),
-      );
+
+    const counts = new Map<unknown, number>();
+    for (const item of a) {
+      const key = JSON.stringify(item);
+      counts.set(key, (counts.get(key) || 0) + 1);
     }
-    return a.every((v, i) => JSON.stringify(v) === JSON.stringify(b[i]));
+    for (const item of b) {
+      const key = JSON.stringify(item);
+      const count = counts.get(key);
+      if (!count) return false;
+      if (count === 1) counts.delete(key);
+      else counts.set(key, count - 1);
+    }
+    return counts.size === 0;
   }
-  if (typeof a === "object") {
-    return JSON.stringify(a) === JSON.stringify(b);
+
+  if (a && b) {
+    const aObj = a as Record<string, unknown>;
+    const bObj = b as Record<string, unknown>;
+    let bKeyCount = 0;
+    for (const _ in bObj) {
+      if (Object.prototype.hasOwnProperty.call(bObj, _)) bKeyCount++;
+    }
+    let matchedKeys = 0;
+    for (const key in aObj) {
+      if (!Object.prototype.hasOwnProperty.call(aObj, key)) continue;
+      matchedKeys++;
+      if (!Object.prototype.hasOwnProperty.call(bObj, key)) return false;
+      if (!isEqual(aObj[key], bObj[key], options)) return false;
+    }
+    return matchedKeys === bKeyCount;
   }
-  return a === b;
+
+  return true;
 }
 
 /**
@@ -36,5 +67,5 @@ export function isEqual(
  * @returns value is Record<string, unknown>
  */
 export function isObject(value: unknown): value is Record<string, unknown> {
-  return !!value && typeof value === "object" && !Array.isArray(value);
+  return typeof value === "object" && !!value && !Array.isArray(value);
 }

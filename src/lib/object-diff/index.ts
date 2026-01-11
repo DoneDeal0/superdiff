@@ -14,25 +14,38 @@ function getLeanDiff(
   showOnly: ObjectDiffOptions["showOnly"] = DEFAULT_OBJECT_DIFF_OPTIONS.showOnly,
 ): ObjectDiff["diff"] {
   const { statuses, granularity } = showOnly;
+  const authorizedStatuses = new Set(statuses);
   const res: ObjectDiff["diff"] = [];
+  const isDeep = granularity === Granularity.DEEP;
   for (let i = 0; i < diff.length; i++) {
-    const value = diff[i];
-    if (granularity === Granularity.DEEP && value.diff) {
-      const leanDiff = getLeanDiff(value.diff, showOnly);
-      if (leanDiff.length > 0) {
-        res.push({ ...value, diff: leanDiff });
+    const entry = diff[i];
+    if (isDeep && entry.diff) {
+      const subDiff = getLeanDiff(entry.diff, showOnly);
+      if (subDiff.length > 0) {
+        res.push({
+          property: entry.property,
+          previousValue: entry.previousValue,
+          currentValue: entry.currentValue,
+          status: entry.status,
+          diff: subDiff,
+        });
       }
-    } else if (statuses.includes(value.status)) {
-      res.push(value);
+      continue;
+    }
+    if (authorizedStatuses.has(entry.status)) {
+      res.push(entry);
     }
   }
   return res;
 }
 
 function getObjectStatus(diff: ObjectDiff["diff"]): ObjectStatus {
-  return diff.some((property) => property.status !== ObjectStatus.EQUAL)
-    ? ObjectStatus.UPDATED
-    : ObjectStatus.EQUAL;
+  for (let i = 0; i < diff.length; i++) {
+    if (diff[i].status !== ObjectStatus.EQUAL) {
+      return ObjectStatus.UPDATED;
+    }
+  }
+  return ObjectStatus.EQUAL;
 }
 
 function formatSingleObjectDiff(
@@ -41,122 +54,116 @@ function formatSingleObjectDiff(
   options: ObjectDiffOptions = DEFAULT_OBJECT_DIFF_OPTIONS,
 ): ObjectDiff {
   if (!data) {
-    return {
-      type: "object",
-      status: ObjectStatus.EQUAL,
-      diff: [],
-    };
+    return { type: "object", status: ObjectStatus.EQUAL, diff: [] };
   }
   const diff: ObjectDiff["diff"] = [];
-
-  for (const [property, value] of Object.entries(data)) {
+  const added = status === ObjectStatus.ADDED;
+  for (const key in data) {
+    const value = data[key];
     if (isObject(value)) {
-      const subPropertiesDiff: Diff[] = [];
-      for (const [subProperty, subValue] of Object.entries(value)) {
-        subPropertiesDiff.push({
-          property: subProperty,
-          previousValue: status === ObjectStatus.ADDED ? undefined : subValue,
-          currentValue: status === ObjectStatus.ADDED ? subValue : undefined,
+      const subDiff: Diff[] = [];
+      for (const subKey in value) {
+        subDiff.push({
+          property: subKey,
+          previousValue: added ? undefined : value[subKey],
+          currentValue: added ? value[subKey] : undefined,
           status,
         });
       }
       diff.push({
-        property,
-        previousValue:
-          status === ObjectStatus.ADDED ? undefined : data[property],
-        currentValue: status === ObjectStatus.ADDED ? value : undefined,
+        property: key,
+        previousValue: added ? undefined : data[key],
+        currentValue: added ? value : undefined,
         status,
-        diff: subPropertiesDiff,
+        diff: subDiff,
       });
     } else {
       diff.push({
-        property,
-        previousValue:
-          status === ObjectStatus.ADDED ? undefined : data[property],
-        currentValue: status === ObjectStatus.ADDED ? value : undefined,
+        property: key,
+        previousValue: added ? undefined : data[key],
+        currentValue: added ? value : undefined,
         status,
       });
     }
   }
-
-  if (options.showOnly && options.showOnly.statuses.length > 0) {
-    return {
-      type: "object",
-      status,
-      diff: getLeanDiff(diff, options.showOnly),
-    };
+  const showOnly = options.showOnly;
+  if (showOnly && showOnly.statuses.length > 0) {
+    return { type: "object", status, diff: getLeanDiff(diff, showOnly) };
   }
-  return {
-    type: "object",
-    status,
-    diff,
-  };
-}
-
-function getValueStatus(
-  previousValue: unknown,
-  nextValue: unknown,
-  options?: ObjectDiffOptions,
-): ObjectStatus {
-  if (isEqual(previousValue, nextValue, options)) {
-    return ObjectStatus.EQUAL;
-  }
-  return ObjectStatus.UPDATED;
+  return { type: "object", status, diff };
 }
 
 function getDiff(
-  previousValue: Record<string, unknown> | undefined = {},
-  nextValue: Record<string, unknown>,
+  prevData: Record<string, unknown> = {},
+  nextData: Record<string, unknown>,
   options?: ObjectDiffOptions,
 ): Diff[] {
   const diff: Diff[] = [];
-  const allKeys = new Set([
-    ...Object.keys(previousValue),
-    ...Object.keys(nextValue),
-  ]);
 
-  for (const property of allKeys) {
-    const prevSubValue = previousValue[property];
-    const nextSubValue = nextValue[property];
-    if (!(property in nextValue)) {
+  for (const key in prevData) {
+    const prevVal = prevData[key];
+
+    if (!Object.prototype.hasOwnProperty.call(nextData, key)) {
       diff.push({
-        property,
-        previousValue: prevSubValue,
+        property: key,
+        previousValue: prevVal,
         currentValue: undefined,
         status: ObjectStatus.DELETED,
       });
       continue;
     }
-    if (!(property in previousValue)) {
-      diff.push({
-        property,
-        previousValue: undefined,
-        currentValue: nextSubValue,
-        status: ObjectStatus.ADDED,
-      });
-      continue;
-    }
-    if (isObject(nextSubValue) && isObject(prevSubValue)) {
-      const subDiff = getDiff(prevSubValue, nextSubValue, options);
-      const isUpdated = subDiff.some(
-        (entry) => entry.status !== ObjectStatus.EQUAL,
+
+    const nextVal = nextData[key];
+
+    if (isObject(prevVal) && isObject(nextVal)) {
+      const subDiff = getDiff(prevVal, nextVal, options);
+      let updated = false;
+
+      for (let i = 0; i < subDiff.length; i++) {
+        if (subDiff[i].status !== ObjectStatus.EQUAL) {
+          updated = true;
+          break;
+        }
+      }
+
+      diff.push(
+        updated
+          ? {
+              property: key,
+              previousValue: prevVal,
+              currentValue: nextVal,
+              status: ObjectStatus.UPDATED,
+              diff: subDiff,
+            }
+          : {
+              property: key,
+              previousValue: prevVal,
+              currentValue: nextVal,
+              status: ObjectStatus.EQUAL,
+            },
       );
-      diff.push({
-        property,
-        previousValue: prevSubValue,
-        currentValue: nextSubValue,
-        status: isUpdated ? ObjectStatus.UPDATED : ObjectStatus.EQUAL,
-        ...(isUpdated && { diff: subDiff }),
-      });
     } else {
-      const status = getValueStatus(prevSubValue, nextSubValue, options);
+      const status = isEqual(prevVal, nextVal, options)
+        ? ObjectStatus.EQUAL
+        : ObjectStatus.UPDATED;
+
       diff.push({
-        property,
-        previousValue: prevSubValue,
-        currentValue: nextSubValue,
+        property: key,
+        previousValue: prevVal,
+        currentValue: nextVal,
         status,
       });
     }
+  }
+
+  for (const key in nextData) {
+    if (Object.prototype.hasOwnProperty.call(prevData, key)) continue;
+    diff.push({
+      property: key,
+      previousValue: undefined,
+      currentValue: nextData[key],
+      status: ObjectStatus.ADDED,
+    });
   }
   return diff;
 }
