@@ -28,9 +28,7 @@
   },
   "readme": "./README.md",
   "release": {
-    "branches": [
-      "master"
-    ],
+    "branches": ["main"],
     "verifyConditions": [
       "@semantic-release/github",
       "@semantic-release/npm"
