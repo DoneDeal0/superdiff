@@ -24,22 +24,3 @@ export function bench(name: string, runs: number, fn: () => void) {
   console.log(`${name}: ${result.toFixed(2)} ms`);
   return result;
 }
-
-export async function benchAsync(
-  name: string,
-  runs: number,
-  fn: () => Promise<void>,
-) {
-  // warmup
-  await fn();
-
-  const start = performance.now();
-  for (let i = 0; i < runs; i++) {
-    await fn();
-  }
-  const end = performance.now();
-
-  const avg = (end - start) / runs;
-  console.log(`${name}: ${avg.toFixed(2)} ms`);
-  return avg;
-}
