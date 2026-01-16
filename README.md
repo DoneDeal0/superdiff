@@ -12,7 +12,7 @@
 
 # WHAT IS IT?
 
-**Superdiff** provides a rich and readable diff for both **arrays** and **objects**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offer a **top-tier performance**. 
+**Superdiff** provides a rich and readable diff for **arrays**, **objects** and **texts**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offer a **top-tier performance**. 
 
 ℹ️ The documentation is also available on our [website](https://superdiff.gitbook.io/donedeal0-superdiff)!
 
@@ -20,24 +20,26 @@
 
 ## FEATURES
 
-**Superdiff** exports 3 functions:
+**Superdiff** exports 4 functions:
 
 - [getObjectDiff](#getobjectdiff)
 - [getListDiff](#getlistdiff)
 - [streamListDiff](#streamlistdiff)
+- [getTextDiff](#getextdiff)
 
 <hr/>
 
 ## ⚔ COMPETITORS
 
-| Feature                        | Superdiff | deep-object-diff | deep-diff |
-| ------------------------------ | --------- | ---------------- | --------- | 
-| Object diff                    | ✅         | ✅               | ✅        | 
-| List diff                      | ✅         | ❌               | ✅        |
-| Streaming for huge datasets    | ✅         | ❌               | ❌        |
-| Move detection                 | ✅         | ❌               | ❌        |
-| Output refinement              | ✅         | ❌               | ❌        |
-| Zero dependencies              | ✅         | ✅               | ❌        |
+| Feature                        | Superdiff | deep-object-diff | deep-diff | diff      |
+| ------------------------------ | --------- | ---------------- | --------- | --------- | 
+| Object diff                    | ✅         | ✅               | ✅        | ❌        |
+| List diff                      | ✅         | ❌               | ✅        | ❌        |
+| Text diff                      | ✅         | ❌               | ✅        | ✅        |
+| Streaming for huge datasets    | ✅         | ❌               | ❌        | ❌        |
+| Move detection                 | ✅         | ❌               | ❌        | ❌        |
+| Output refinement              | ✅         | ❌               | ❌        | ❌        |
+| Zero dependencies              | ✅         | ✅               | ❌        | ✅        |
 
 ## 📊 BENCHMARK
 
@@ -60,7 +62,14 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 | 100k flat object keys          | **29.23 ms**  | 31.86 ms         | 3784.50 ms|
 | 100k nested nodes              | **4.25 ms**   | 9.67 ms          | 16.51 ms  |
 
-👉 Despite providing a full structural diff with a richer output, **Superdiff is the fastest**. It also scales linearly, even with deeply nested data.
+### Text diff
+
+| Scenario                | Superdiff    | diff       |
+| ----------------------- | ------------ | ---------- |
+| 10k words               | **2.20 ms**  | 4.11 ms    | 
+| 10k sentences           | 1.55 ms      | **0.62 ms**|
+
+👉 Despite providing a full structural diff with a richer output, **Superdiff is the fastest** for arrays and objects diff. It also offers very strong performance for text diff. Finally, it also scales linearly, even with deeply nested data.
 
 <hr/>
 
@@ -505,15 +514,13 @@ diff.on("error", (err) => console.log(err))
 
 <hr/>
 
-<<<<<<< HEAD
-=======
 ### getTextDiff
 
 ```js
 import { getTextDiff } from "@donedeal0/superdiff";
 ```
 
-Compares two texts and returns a diff for each characters, words or sentence, depending on your preference. 
+Compares two texts and returns a structured diff at the character, word, or sentence level.
 
 The output is optimized by default to produce a readable, visual diff (like GitHub or Git). A strict mode that tracks exact token moves and updates is also available. 
 
@@ -532,7 +539,7 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
     mode?: "visual" | "strict", // "visual" by default
     ignoreCase?: boolean, // false by default
     ignorePunctuation?: boolean, // false by default
-    locale?: Intl.Locale | string // english by default
+    locale?: Intl.Locale | string // undefined by default
   }
 ```
 - `previousText`: the original text.
@@ -546,7 +553,7 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
     - `strict`: tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality).
   - `ignoreCase`: if set to `true` `hello` and `HELLO` will be considered equal.
   - `ignorePunctuation`: if set to `true` `hello!` and `hello` will be considered equal.
-  - `locale`: the locale of your text.  
+  - `locale`: the locale of your text. Enables locale‑aware segmentation.
 
 **Output**
 
@@ -704,100 +711,8 @@ getTextDiff(
     }
 ```
 
-#### TOKEN STATUSES
-
-| Status  | Represents    | Index meaning                           |
-| ------- | ------------- | --------------------------------------- |
-| **equal**   | same token    | both indexes valid                      |
-| **added**   | new token     | `previousIndex = null`                  |
-| **deleted** | removed token | `currentIndex = null`                   |
-| **moved**   | same token (only in `strict` mode)    | both indexes valid                      |
-| **updated** | replacement (only in `strict` mode)  | no shared identity, one index only |
-
-
 <hr/>
 
-### isEqual
-
-```js
-import { isEqual } from "@donedeal0/superdiff";
-```
-
-Tests whether two values are equal.
-
-#### FORMAT
-
-**Input**
-
-```ts
-a: unknown,
-b: unknown,
-options: { 
-    ignoreArrayOrder: boolean; // false by default
-     },
-```
-- `a`: the value to be compared to the value `b`.
-- `b`: the value to be compared to the value `a`.
-- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
-
-#### USAGE
-
-
-```ts
-isEqual(
-  [
-    { name: "joe", age: 99 },
-    { name: "nina", age: 23 },
-  ],
-  [
-    { name: "joe", age: 98 },
-    { name: "nina", age: 23 },
-  ],
-);
-```
-
-**Output**
-
-```ts
-false;
-```
-<hr/>
-
-### isObject
-
-```js
-import { isObject } from "@donedeal0/superdiff";
-```
-
-Tests whether a value is an object.
-
-#### FORMAT
-
-**Input**
-
-```ts
-value: unknown;
-```
-
-- `value`: the value whose type will be checked.
-
-#### USAGE
-
-**Input**
-
-```ts
-isObject(["hello", "world"]);
-```
-
-**Output**
-
-```ts
-false;
-```
-
-<hr/>
-
->>>>>>> 929e827 (feat: tokenization)
 ### ℹ️ More examples are available in the source code tests.
 
 <hr/>

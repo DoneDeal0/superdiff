@@ -1,4 +1,4 @@
-import { TextDiff, TextStatus, TextToken, TextTokenDiff } from "@models/text";
+import { TextDiff, TextToken, TextTokenDiff, TextStatus } from "@models/text";
 import { getDiffStatus } from "../utils/status";
 
 export function getStrictTextDiff(
@@ -7,68 +7,74 @@ export function getStrictTextDiff(
 ): TextDiff {
   const previousTokensMap = new Map<string, TextToken[]>();
   const addedTokensMap = new Map<number, TextToken>();
-  const statusMap = new Set<TextStatus>();
+  const statusSet = new Set<TextStatus>();
   const diff: TextTokenDiff[] = [];
 
-  previousTokens.forEach((previousToken) => {
-    const match = previousTokensMap.get(previousToken.normalizedValue);
-    if (match) {
-      previousTokensMap.set(previousToken.normalizedValue, [
-        ...match,
-        previousToken,
-      ]);
+  for (let i = 0; i < previousTokens.length; i++) {
+    const token = previousTokens[i];
+    const key = token.normalizedValue;
+    const previousData = previousTokensMap.get(key);
+    if (previousData) {
+      previousData.push(token);
     } else {
-      previousTokensMap.set(previousToken.normalizedValue, [previousToken]);
+      previousTokensMap.set(key, [token]);
     }
-  });
+  }
 
-  currentTokens.forEach((currentToken) => {
-    const prevTokens = previousTokensMap.get(currentToken.normalizedValue);
-    const prevToken = prevTokens?.at(0);
-    if (prevTokens && prevToken) {
-      const nextStatus =
-        prevToken.currentIndex === currentToken.currentIndex
+  for (let i = 0; i < currentTokens.length; i++) {
+    const token = currentTokens[i];
+    const key = token.normalizedValue;
+    const prevArr = previousTokensMap.get(key);
+
+    if (prevArr && prevArr.length > 0) {
+      const prev = prevArr[0];
+      const status =
+        prev.currentIndex === token.currentIndex
           ? TextStatus.EQUAL
           : TextStatus.MOVED;
-      statusMap.add(nextStatus);
+
+      statusSet.add(status);
+
       diff.push({
-        value: currentToken.value,
-        status: nextStatus,
-        currentIndex: currentToken.currentIndex,
-        previousIndex: prevToken.currentIndex,
+        value: token.value,
+        status,
+        currentIndex: token.currentIndex,
+        previousIndex: prev.currentIndex,
       });
-      const nextPrevTokens = prevTokens.splice(1);
-      if (nextPrevTokens.length === 0) {
-        previousTokensMap.delete(prevToken.normalizedValue);
+
+      if (prevArr.length === 1) {
+        previousTokensMap.delete(key);
       } else {
-        previousTokensMap.set(prevToken.normalizedValue, nextPrevTokens);
+        prevArr.shift();
       }
     } else {
-      addedTokensMap.set(currentToken.currentIndex, currentToken);
-      statusMap.add(TextStatus.ADDED);
+      addedTokensMap.set(token.currentIndex, token);
+      statusSet.add(TextStatus.ADDED);
       diff.push({
-        value: currentToken.value,
+        value: token.value,
         status: TextStatus.ADDED,
-        currentIndex: currentToken.currentIndex,
+        currentIndex: token.currentIndex,
         previousIndex: null,
       });
     }
-  });
+  }
 
-  previousTokensMap.forEach((previousTokens) => {
-    previousTokens.forEach((previousToken) => {
-      const match = addedTokensMap.get(previousToken.currentIndex);
-      if (match) {
-        statusMap.add(TextStatus.UPDATED);
+  for (const previousTokens of previousTokensMap.values()) {
+    for (let i = 0; i < previousTokens.length; i++) {
+      const previousToken = previousTokens[i];
+      const added = addedTokensMap.get(previousToken.currentIndex);
+
+      if (added) {
+        statusSet.add(TextStatus.UPDATED);
         diff[previousToken.currentIndex] = {
-          value: match.value,
+          value: added.value,
           previousValue: previousToken.value,
           status: TextStatus.UPDATED,
           previousIndex: null,
-          currentIndex: match.currentIndex,
+          currentIndex: added.currentIndex,
         };
       } else {
-        statusMap.add(TextStatus.DELETED);
+        statusSet.add(TextStatus.DELETED);
         diff.push({
           value: previousToken.value,
           status: TextStatus.DELETED,
@@ -76,10 +82,8 @@ export function getStrictTextDiff(
           currentIndex: null,
         });
       }
-    });
-  });
+    }
+  }
 
-  const status = getDiffStatus(statusMap);
-
-  return { type: "text", status, diff };
+  return { type: "text", status: getDiffStatus(statusSet), diff };
 }

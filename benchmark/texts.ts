@@ -1,4 +1,4 @@
-import * as Diff from "diff";
+import { diffWords, diffSentences } from "diff";
 import { getTextDiff } from "../src";
 import { bench } from "./utils";
 
@@ -16,26 +16,32 @@ export function generateText(wordCount: number, mutate = false): string {
   return mutated.join(" ");
 }
 
-export function runTextBench10K() {
+export function runTextBench10KWords() {
   const prev = generateText(10_000);
   const curr = generateText(10_000, true);
   console.log("\nText diff – 10k words");
 
-  const diff = bench("diff", 1, () => Diff.diffWords(prev, curr));
+  const diff = bench("diff", 1, () => diffWords(prev, curr));
   const superdiff = bench("Superdiff", 1, () => {
-    getTextDiff(prev, curr, { separation: "word", mode: "strict" });
+    getTextDiff(prev, curr, {
+      separation: "word",
+      mode: "visual",
+    });
   });
   return { superdiff, diff };
 }
 
-export function runTextBench100K() {
-  const prev = generateText(100_000);
-  const curr = generateText(100_000, true);
-  console.log("\nText diff – 100k words");
+export function runTextBench10KSentences() {
+  const prev = generateText(10_000);
+  const curr = generateText(10_000, true);
+  console.log("\nText diff – 100k sentences");
 
-  const diff = bench("diff", 1, () => Diff.diffWords(prev, curr));
+  const diff = bench("diff", 1, () => diffSentences(prev, curr, {}));
   const superdiff = bench("Superdiff", 1, () => {
-    getTextDiff(prev, curr, { separation: "word", mode: "visual" });
+    getTextDiff(prev, curr, {
+      separation: "sentences",
+      mode: "visual",
+    });
   });
   return { superdiff, diff };
 }

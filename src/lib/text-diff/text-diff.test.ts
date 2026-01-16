@@ -438,13 +438,6 @@ describe("getTextDiff – strict", () => {
   });
 
   it("handles moves, updates, adds and deletes correctly - by sentence", () => {
-    console.log(
-      "tyty",
-      getTextDiff("The brown fox jumped high", "The orange cat has jumped", {
-        mode: "visual",
-        separation: "word",
-      }),
-    );
     expect(
       getTextDiff(
         "A one. B two. C three. D four.",

@@ -4,103 +4,174 @@ import {
   TextToken,
 } from "@models/text";
 
-const normalizeToken = (token: string, options: TextDiffOptions): string => {
-  let nextToken = token;
+const PUNCTUATION_REGEX = /[",;:!?“”‘’'«»()[\]{}…—–-]/g;
+const EMOJI_SPLIT_REGEX =
+  /(\p{Emoji_Presentation}|\p{Extended_Pictographic}|[+\\/*=<>%&|^~@#$€£¥])/gu;
+
+const segmenterCache = new Map<string, Intl.Segmenter>();
+
+function getSegmenter(
+  locale: Intl.Locale | string | undefined,
+  granularity: "word" | "sentence",
+) {
+  const key = `${locale || "default"}-${granularity}`;
+  let segmenter = segmenterCache.get(key);
+  if (!segmenter) {
+    segmenter = new Intl.Segmenter(locale, { granularity });
+    segmenterCache.set(key, segmenter);
+  }
+  return segmenter;
+}
+
+function normalizeToken(token: string, options: TextDiffOptions): string {
+  let normalizedToken = token;
   if (options.ignoreCase) {
-    nextToken = nextToken.toLowerCase();
+    normalizedToken = normalizedToken.toLowerCase();
   }
   if (options.ignorePunctuation) {
-    nextToken = nextToken.replace(/[",;:!?“”‘’'«»()[\]{}…—–-]/g, "");
+    normalizedToken = normalizedToken.replace(PUNCTUATION_REGEX, "");
   }
-  return nextToken;
-};
+  return normalizedToken;
+}
 
 export const tokenizeText = (
   text: string | null | undefined,
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
 ): TextToken[] => {
   const result: TextToken[] = [];
+  if (!text || !text.trim()) return result;
 
-  const generateToken = (token: string, currentIndex: number) => {
+  const { separation, locale, ignoreCase, ignorePunctuation } = options;
+
+  if (separation === "word" && !ignoreCase && !ignorePunctuation && !locale) {
+    const tokens = text.match(/\S+/g) || [];
+    for (let i = 0; i < tokens.length; i++) {
+      const value = tokens[i];
+      result.push({
+        value,
+        normalizedValue: value,
+        currentIndex: i,
+      });
+    }
+    return result;
+  }
+
+  if (separation === "character") {
+    let index = 0;
+    for (const char of text) {
+      const trimmedChar = char.trim();
+      if (trimmedChar) {
+        result.push({
+          value: trimmedChar,
+          normalizedValue: normalizeToken(trimmedChar, options),
+          currentIndex: index,
+        });
+      }
+      index++;
+    }
+    return result;
+  }
+
+  if (separation === "sentence" && locale) {
+    const segmenter = getSegmenter(locale, "sentence");
+    let index = 0;
+    for (const data of segmenter.segment(text)) {
+      const trimmedSentence = data.segment.trim();
+      if (trimmedSentence) {
+        result.push({
+          value: trimmedSentence,
+          normalizedValue: normalizeToken(trimmedSentence, options),
+          currentIndex: index,
+        });
+        index++;
+      }
+    }
+    return result;
+  }
+
+  if (separation === "sentence" && !locale) {
+    const sentences = text.match(/[^.!?]+[.!?]+|\S+/g) || [];
+    let index = 0;
+    for (const data of sentences) {
+      const trimmedSentence = data.trim();
+      if (trimmedSentence) {
+        result.push({
+          value: trimmedSentence,
+          normalizedValue: normalizeToken(trimmedSentence, options),
+          currentIndex: index,
+        });
+        index++;
+      }
+    }
+    return result;
+  }
+
+  if (separation === "word") {
+    const segmenter = getSegmenter(locale, "word");
+    const validWords: string[] = [];
+    let lastEndIndex: number | null = null;
+
+    for (const data of segmenter.segment(text)) {
+      const word = data.segment;
+      const trimmedWord = word.trim();
+      if (!trimmedWord) {
+        lastEndIndex = data.index + word.length;
+        continue;
+      }
+
+      const endIndex = data.index + word.length;
+      const isAdjacent = lastEndIndex === data.index;
+      const prevWord =
+        validWords.length > 0 ? validWords[validWords.length - 1] : "";
+      const endsWithDash = /[—–-]$/.test(prevWord);
+
+      const pushSplit = (word: string) => {
+        const parts = word.split(EMOJI_SPLIT_REGEX).filter(Boolean);
+        for (let i = 0; i < parts.length; i++) validWords.push(parts[i]);
+      };
+
+      if (data.isWordLike) {
+        if (validWords.length > 0 && isAdjacent && endsWithDash) {
+          const prevToken = validWords.pop()!;
+          pushSplit(prevToken + trimmedWord);
+        } else {
+          pushSplit(trimmedWord);
+        }
+      } else {
+        if (validWords.length > 0) {
+          const prevToken = validWords.pop()!;
+          pushSplit(prevToken + trimmedWord);
+        } else {
+          pushSplit(trimmedWord);
+        }
+      }
+
+      lastEndIndex = endIndex;
+    }
+
+    for (let i = 0; i < validWords.length; i++) {
+      const value = validWords[i];
+      result.push({
+        value,
+        normalizedValue: normalizeToken(value, options),
+        currentIndex: i,
+      });
+    }
+
+    return result;
+  }
+
+  const parts = text.split(/\s+/u);
+  for (let i = 0; i < parts.length; i++) {
+    const token = parts[i];
     if (token) {
       result.push({
         value: token,
         normalizedValue: normalizeToken(token, options),
-        currentIndex,
+        currentIndex: i,
       });
     }
-  };
-
-  // Intl.Segmenter splits words and punctuation separately.
-  // This function merges them into user-expected tokens like: "word!", "Jean-Claude", "day..."
-  const mergeWordsPunctuation = (tokens: Intl.SegmentData[]): string[] => {
-    const mergedWords: string[] = [];
-
-    const pushSplit = (segment: string) => {
-      const parts = segment
-        .split(
-          /(\p{Emoji_Presentation}|\p{Extended_Pictographic}|[+\\/*=<>%&|^~@#$€£¥])/gu,
-        )
-        .filter(Boolean);
-      mergedWords.push(...parts);
-    };
-
-    let lastEndIndex: number | null = null;
-
-    for (const { segment, isWordLike, index } of tokens) {
-      const endIndex = index + segment.length;
-      const validSegment = segment.trim();
-      if (!validSegment) {
-        lastEndIndex = endIndex;
-        continue;
-      }
-      if (isWordLike) {
-        const isAdjacent = lastEndIndex === index;
-        const endsWithDash = /[—–-]$/.test(mergedWords.at(-1) || "");
-
-        if (mergedWords.length > 0 && isAdjacent && endsWithDash) {
-          const prev = mergedWords.pop()!;
-          pushSplit(prev + validSegment);
-        } else {
-          pushSplit(validSegment);
-        }
-      } else if (mergedWords.length > 0) {
-        const prev = mergedWords.pop()!;
-        pushSplit(prev + validSegment);
-      } else {
-        pushSplit(validSegment);
-      }
-      lastEndIndex = endIndex;
-    }
-    return mergedWords;
-  };
-
-  if (!text?.trim()) return result;
-  switch (options.separation) {
-    case "character":
-      [...text].forEach((token, i) => generateToken(token.trim(), i));
-      break;
-    case "sentence": {
-      const segmenter = new Intl.Segmenter(options.locale, {
-        granularity: "sentence",
-      });
-      for (const [i, { segment }] of [...segmenter.segment(text)].entries()) {
-        generateToken(segment.trim(), i);
-      }
-      break;
-    }
-    case "word": {
-      const segmenter = new Intl.Segmenter(options.locale, {
-        granularity: "word",
-      });
-      const tokens = [...segmenter.segment(text)];
-      mergeWordsPunctuation(tokens).forEach((token, i) =>
-        generateToken(token, i),
-      );
-      break;
-    }
-    default:
-      text.split(/\s+/u).forEach(generateToken);
   }
+
   return result;
 };

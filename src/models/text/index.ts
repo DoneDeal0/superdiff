@@ -35,7 +35,6 @@ export type TextDiffOptions = {
   mode?: "visual" | "strict";
   ignoreCase?: boolean;
   ignorePunctuation?: boolean;
-
   locale?: Intl.Locale | string;
 };
 
