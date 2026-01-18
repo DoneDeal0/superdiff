@@ -2,7 +2,7 @@ import { parentPort } from "worker_threads";
 import {
   FilePath,
   ListStreamOptions,
-  ReferenceProperty,
+  ReferenceKey,
   StreamEvent,
 } from "@models/stream";
 import { WorkerEvent } from "@models/worker";
@@ -13,12 +13,12 @@ parentPort?.on(
   async <T extends Record<string, unknown>>(event: {
     prevList: FilePath | T[];
     nextList: FilePath | T[];
-    referenceProperty: ReferenceProperty<T>;
+    referenceKey: ReferenceKey<T>;
     options: ListStreamOptions;
   }) => {
-    const { prevList, nextList, referenceProperty, options } = event;
+    const { prevList, nextList, referenceKey, options } = event;
 
-    const listener = workerDiff(prevList, nextList, referenceProperty, options);
+    const listener = workerDiff(prevList, nextList, referenceKey, options);
 
     listener.on(StreamEvent.Data, (chunk) => {
       parentPort?.postMessage({ event: StreamEvent.Data, chunk });

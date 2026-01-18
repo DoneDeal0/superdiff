@@ -3,7 +3,7 @@ import {
   DataBuffer,
   DEFAULT_LIST_STREAM_OPTIONS,
   ListStreamOptions,
-  ReferenceProperty,
+  ReferenceKey,
   StreamEvent,
   StreamListener,
 } from "@models/stream";
@@ -14,7 +14,7 @@ import { generateWorker } from "./worker/utils";
 async function getDiffChunks<T extends Record<string, unknown>>(
   prevStream: ReadableStream<T>,
   nextStream: ReadableStream<T>,
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   emitter: IEmitter<T>,
   options: ListStreamOptions = DEFAULT_LIST_STREAM_OPTIONS,
 ): Promise<void> {
@@ -38,7 +38,7 @@ async function getDiffChunks<T extends Record<string, unknown>>(
   async function processPrevStreamChunk(chunk: T) {
     const { isValid, message } = isDataValid(
       chunk,
-      referenceProperty,
+      referenceKey,
       ListType.PREV,
     );
     if (!isValid) {
@@ -46,39 +46,36 @@ async function getDiffChunks<T extends Record<string, unknown>>(
       emitter.emit(StreamEvent.Finish);
       return;
     }
-    const ref = chunk[referenceProperty] as ReferenceProperty<T>;
+    const ref = chunk[referenceKey] as ReferenceKey<T>;
     const relatedChunk = nextDataBuffer.get(ref);
 
     if (relatedChunk) {
       nextDataBuffer.delete(ref);
       const isDataEqual =
         JSON.stringify(chunk) === JSON.stringify(relatedChunk.data);
-      const indexDiff = (relatedChunk.index as number) - currentPrevIndex;
+      const isEqual = (relatedChunk.index as number) - currentPrevIndex === 0;
       if (isDataEqual) {
         handleDiffChunk(
           {
+            value: relatedChunk.data,
+            index: relatedChunk.index,
             previousValue: chunk,
-            currentValue: relatedChunk.data,
-            prevIndex: currentPrevIndex,
-            newIndex: relatedChunk.index,
-            indexDiff,
-            status:
-              indexDiff === 0
-                ? ListStatus.EQUAL
-                : options.considerMoveAsUpdate
-                  ? ListStatus.UPDATED
-                  : ListStatus.MOVED,
+            previousIndex: currentPrevIndex,
+            status: isEqual
+              ? ListStatus.EQUAL
+              : options.considerMoveAsUpdate
+                ? ListStatus.UPDATED
+                : ListStatus.MOVED,
           },
           options,
         );
       } else {
         handleDiffChunk(
           {
+            value: relatedChunk.data,
+            index: relatedChunk.index,
             previousValue: chunk,
-            currentValue: relatedChunk.data,
-            prevIndex: currentPrevIndex,
-            newIndex: relatedChunk.index,
-            indexDiff,
+            previousIndex: currentPrevIndex,
             status: ListStatus.UPDATED,
           },
           options,
@@ -93,7 +90,7 @@ async function getDiffChunks<T extends Record<string, unknown>>(
   async function processNextStreamChunk(chunk: T) {
     const { isValid, message } = isDataValid(
       chunk,
-      referenceProperty,
+      referenceKey,
       ListType.NEXT,
     );
     if (!isValid) {
@@ -101,39 +98,36 @@ async function getDiffChunks<T extends Record<string, unknown>>(
       emitter.emit(StreamEvent.Finish);
       return;
     }
-    const ref = chunk[referenceProperty] as ReferenceProperty<T>;
+    const ref = chunk[referenceKey] as ReferenceKey<T>;
     const relatedChunk = prevDataBuffer.get(ref);
 
     if (relatedChunk) {
       prevDataBuffer.delete(ref);
       const isDataEqual =
         JSON.stringify(chunk) === JSON.stringify(relatedChunk.data);
-      const indexDiff = currentNextIndex - (relatedChunk.index as number);
+      const isEqual = currentNextIndex - (relatedChunk.index as number) === 0;
       if (isDataEqual) {
         handleDiffChunk(
           {
+            value: chunk,
+            index: currentNextIndex,
             previousValue: relatedChunk.data,
-            currentValue: chunk,
-            prevIndex: relatedChunk.index,
-            newIndex: currentNextIndex,
-            indexDiff,
-            status:
-              indexDiff === 0
-                ? ListStatus.EQUAL
-                : options.considerMoveAsUpdate
-                  ? ListStatus.UPDATED
-                  : ListStatus.MOVED,
+            previousIndex: relatedChunk.index,
+            status: isEqual
+              ? ListStatus.EQUAL
+              : options.considerMoveAsUpdate
+                ? ListStatus.UPDATED
+                : ListStatus.MOVED,
           },
           options,
         );
       } else {
         handleDiffChunk(
           {
+            value: chunk,
+            index: currentNextIndex,
             previousValue: relatedChunk.data,
-            currentValue: chunk,
-            prevIndex: relatedChunk.index,
-            newIndex: currentNextIndex,
-            indexDiff,
+            previousIndex: relatedChunk.index,
             status: ListStatus.UPDATED,
           },
           options,
@@ -167,11 +161,10 @@ async function getDiffChunks<T extends Record<string, unknown>>(
   for (const [key, chunk] of prevDataBuffer.entries()) {
     handleDiffChunk(
       {
+        value: null,
+        index: null,
         previousValue: chunk.data,
-        currentValue: null,
-        prevIndex: chunk.index,
-        newIndex: null,
-        indexDiff: null,
+        previousIndex: chunk.index,
         status: ListStatus.DELETED,
       },
       options,
@@ -181,11 +174,10 @@ async function getDiffChunks<T extends Record<string, unknown>>(
   for (const [key, chunk] of nextDataBuffer.entries()) {
     handleDiffChunk(
       {
+        value: chunk.data,
+        index: chunk.index,
         previousValue: null,
-        currentValue: chunk.data,
-        prevIndex: null,
-        newIndex: chunk.index,
-        indexDiff: null,
+        previousIndex: null,
         status: ListStatus.ADDED,
       },
       options,
@@ -236,7 +228,7 @@ async function getValidClientStream<T extends Record<string, unknown>>(
 export async function generateStream<T extends Record<string, unknown>>(
   prevList: ReadableStream<T> | File | T[],
   nextList: ReadableStream<T> | File | T[],
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   options: ListStreamOptions,
   emitter: IEmitter<T>,
 ): Promise<void> {
@@ -246,7 +238,7 @@ export async function generateStream<T extends Record<string, unknown>>(
       getValidClientStream(nextList, ListType.NEXT),
     ]);
 
-    getDiffChunks(prevStream, nextStream, referenceProperty, emitter, options);
+    getDiffChunks(prevStream, nextStream, referenceKey, emitter, options);
   } catch (err) {
     return emitter.emit(StreamEvent.Error, err as Error);
   }
@@ -256,7 +248,7 @@ export async function generateStream<T extends Record<string, unknown>>(
  * Streams the diff of two object lists
  * @param {ReadableStream | File | Record<string, unknown>[]} prevList - The original object list.
  * @param {ReadableStream | File | Record<string, unknown>[]} nextList - The new object list.
- * @param {string} referenceProperty - A common property in all the objects of your lists (e.g. `id`)
+ * @param {string} referenceKey - A common key in all the objects of your lists (e.g. `id`)
  * @param {ListStreamOptions} options - Options to refine your output.
     - `chunksSize`: the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff by chunk, `10` = 10 object diffs by chunk).
     - `showOnly`: returns only the values whose status you are interested in. (e.g. `["added", "equal"]`).
@@ -268,19 +260,18 @@ export async function generateStream<T extends Record<string, unknown>>(
 export function streamListDiff<T extends Record<string, unknown>>(
   prevList: ReadableStream<T> | File | T[],
   nextList: ReadableStream<T> | File | T[],
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   options: ListStreamOptions = DEFAULT_LIST_STREAM_OPTIONS,
 ): StreamListener<T> {
   const emitter = new EventEmitter<EmitterEvents<T>>();
 
   if (typeof Worker === "undefined" || !options.useWorker) {
     setTimeout(
-      () =>
-        generateStream(prevList, nextList, referenceProperty, options, emitter),
+      () => generateStream(prevList, nextList, referenceKey, options, emitter),
       0,
     );
   } else {
-    generateWorker(prevList, nextList, referenceProperty, options, emitter);
+    generateWorker(prevList, nextList, referenceKey, options, emitter);
   }
 
   return emitter as StreamListener<T>;

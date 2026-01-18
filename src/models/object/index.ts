@@ -27,9 +27,9 @@ export const DEFAULT_OBJECT_DIFF_OPTIONS = {
 
 /** recursive diff in case of subproperties */
 export type Diff = {
-  property: string;
+  key: string;
+  value: unknown;
   previousValue: unknown;
-  currentValue: unknown;
   status: `${ObjectStatus}`;
   diff?: Diff[];
 };

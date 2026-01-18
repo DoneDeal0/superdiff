@@ -9,7 +9,7 @@ import nextListFile from "@mocks/nextList.json";
 import { ListStatus } from "@models/list";
 import {
   ListStreamOptions,
-  ReferenceProperty,
+  ReferenceKey,
   StreamEvent,
   StreamListDiff,
 } from "@models/stream";
@@ -22,17 +22,12 @@ class Worker {
   postMessage<T extends Record<string, unknown>>(msg: {
     prevList: File | T[];
     nextList: File | T[];
-    referenceProperty: ReferenceProperty<T>;
+    referenceKey: ReferenceKey<T>;
     options: ListStreamOptions;
   }) {
     if (msg) {
-      const { prevList, nextList, referenceProperty, options } = msg;
-      const listener = workerDiff(
-        prevList,
-        nextList,
-        referenceProperty,
-        options,
-      );
+      const { prevList, nextList, referenceKey, options } = msg;
+      const listener = workerDiff(prevList, nextList, referenceKey, options);
 
       listener.on(StreamEvent.Data, (chunk) => {
         this.onmessage!({
@@ -75,19 +70,17 @@ describe("data emission", () => {
 
     const expectedChunks = [
       {
+        value: { id: 1, name: "Item 1" },
+        index: 0,
         previousValue: null,
-        currentValue: { id: 1, name: "Item 1" },
-        prevIndex: null,
-        newIndex: 0,
-        indexDiff: null,
+        previousIndex: null,
         status: ListStatus.ADDED,
       },
       {
+        value: { id: 2, name: "Item 2" },
+        index: 1,
         previousValue: null,
-        currentValue: { id: 2, name: "Item 2" },
-        prevIndex: null,
-        newIndex: 1,
-        indexDiff: null,
+        previousIndex: null,
         status: ListStatus.ADDED,
       },
     ];
@@ -110,19 +103,17 @@ describe("data emission", () => {
 
     const expectedChunks = [
       {
+        value: null,
+        index: null,
         previousValue: { id: 1, name: "Item 1" },
-        currentValue: null,
-        prevIndex: 0,
-        newIndex: null,
-        indexDiff: null,
+        previousIndex: 0,
         status: ListStatus.DELETED,
       },
       {
+        value: null,
+        index: null,
         previousValue: { id: 2, name: "Item 2" },
-        currentValue: null,
-        prevIndex: 1,
-        newIndex: null,
-        indexDiff: null,
+        previousIndex: 1,
         status: ListStatus.DELETED,
       },
     ];
@@ -151,31 +142,28 @@ describe("data emission", () => {
     const expectedChunks = [
       [
         {
+          value: { id: 2, name: "Item 2" },
+          index: 0,
           previousValue: { id: 2, name: "Item 2" },
-          currentValue: { id: 2, name: "Item 2" },
-          prevIndex: 1,
-          newIndex: 0,
-          indexDiff: -1,
+          previousIndex: 1,
           status: ListStatus.MOVED,
         },
       ],
       [
         {
+          value: null,
+          index: null,
           previousValue: { id: 1, name: "Item 1" },
-          currentValue: null,
-          prevIndex: 0,
-          newIndex: null,
-          indexDiff: null,
+          previousIndex: 0,
           status: ListStatus.DELETED,
         },
       ],
       [
         {
+          value: { id: 3, name: "Item 3" },
+          index: 1,
           previousValue: null,
-          currentValue: { id: 3, name: "Item 3" },
-          prevIndex: null,
-          newIndex: 1,
-          indexDiff: null,
+          previousIndex: null,
           status: ListStatus.ADDED,
         },
       ],
@@ -222,95 +210,84 @@ describe("data emission", () => {
     const expectedChunks = [
       [
         {
+          value: { id: 1, name: "Item 1" },
+          index: 0,
           previousValue: { id: 1, name: "Item 1" },
-          currentValue: { id: 1, name: "Item 1" },
-          prevIndex: 0,
-          newIndex: 0,
-          indexDiff: 0,
+          previousIndex: 0,
           status: ListStatus.EQUAL,
         },
         {
+          value: { id: 2, name: "Item Two" },
+          index: 1,
           previousValue: { id: 2, name: "Item 2" },
-          currentValue: { id: 2, name: "Item Two" },
-          prevIndex: 1,
-          newIndex: 1,
-          indexDiff: 0,
+          previousIndex: 1,
           status: ListStatus.UPDATED,
         },
         {
+          value: { id: 3, name: "Item 3" },
+          index: 2,
           previousValue: { id: 3, name: "Item 3" },
-          currentValue: { id: 3, name: "Item 3" },
-          prevIndex: 2,
-          newIndex: 2,
-          indexDiff: 0,
+          previousIndex: 2,
           status: ListStatus.EQUAL,
         },
         {
+          value: { id: 5, name: "Item 5" },
+          index: 3,
           previousValue: { id: 5, name: "Item 5" },
-          currentValue: { id: 5, name: "Item 5" },
-          prevIndex: 4,
-          newIndex: 3,
-          indexDiff: -1,
+          previousIndex: 4,
           status: ListStatus.MOVED,
         },
         {
+          value: { id: 6, name: "Item Six" },
+          index: 4,
           previousValue: { id: 6, name: "Item 6" },
-          currentValue: { id: 6, name: "Item Six" },
-          prevIndex: 5,
-          newIndex: 4,
-          indexDiff: -1,
+          previousIndex: 5,
           status: ListStatus.UPDATED,
         },
       ],
       [
         {
+          value: { id: 7, name: "Item 7" },
+          index: 5,
           previousValue: { id: 7, name: "Item 7" },
-          currentValue: { id: 7, name: "Item 7" },
-          prevIndex: 6,
-          newIndex: 5,
-          indexDiff: -1,
+          previousIndex: 6,
           status: ListStatus.MOVED,
         },
         {
+          value: { id: 9, name: "Item 9" },
+          index: 8,
           previousValue: { id: 9, name: "Item 9" },
-          currentValue: { id: 9, name: "Item 9" },
-          prevIndex: 8,
-          newIndex: 8,
-          indexDiff: 0,
+          previousIndex: 8,
           status: ListStatus.EQUAL,
         },
         {
+          value: { id: 10, name: "Item 10" },
+          index: 6,
           previousValue: { id: 10, name: "Item 10" },
-          currentValue: { id: 10, name: "Item 10" },
-          prevIndex: 9,
-          newIndex: 6,
-          indexDiff: -3,
+          previousIndex: 9,
           status: ListStatus.MOVED,
         },
         {
+          value: { id: 8, name: "Item 8" },
+          index: 9,
           previousValue: { id: 8, name: "Item 8" },
-          currentValue: { id: 8, name: "Item 8" },
-          prevIndex: 7,
-          newIndex: 9,
-          indexDiff: 2,
+          previousIndex: 7,
           status: ListStatus.MOVED,
         },
         {
+          value: null,
+          index: null,
           previousValue: { id: 4, name: "Item 4" },
-          currentValue: null,
-          prevIndex: 3,
-          newIndex: null,
-          indexDiff: null,
+          previousIndex: 3,
           status: ListStatus.DELETED,
         },
       ],
       [
         {
+          value: { id: 11, name: "Item 11" },
+          index: 7,
           previousValue: null,
-          currentValue: { id: 11, name: "Item 11" },
-          prevIndex: null,
-          newIndex: 7,
-          indexDiff: null,
+          previousIndex: null,
           status: ListStatus.ADDED,
         },
       ],
@@ -348,43 +325,38 @@ describe("data emission", () => {
 
     const expectedChunks = [
       {
+        value: { id: 1, name: "Item 1" },
+        index: 0,
         previousValue: { id: 1, name: "Item 1" },
-        currentValue: { id: 1, name: "Item 1" },
-        prevIndex: 0,
-        newIndex: 0,
-        indexDiff: 0,
+        previousIndex: 0,
         status: ListStatus.EQUAL,
       },
       {
+        value: { id: 2, name: "Item Two" },
+        index: 1,
         previousValue: { id: 2, name: "Item 2" },
-        currentValue: { id: 2, name: "Item Two" },
-        prevIndex: 1,
-        newIndex: 1,
-        indexDiff: 0,
+        previousIndex: 1,
         status: ListStatus.UPDATED,
       },
       {
+        value: { id: 3, name: "Item 3" },
+        index: 2,
         previousValue: { id: 3, name: "Item 3" },
-        currentValue: { id: 3, name: "Item 3" },
-        prevIndex: 2,
-        newIndex: 2,
-        indexDiff: 0,
+        previousIndex: 2,
         status: ListStatus.EQUAL,
       },
       {
+        value: null,
+        index: null,
         previousValue: { id: 4, name: "Item 4" },
-        currentValue: null,
-        prevIndex: 3,
-        newIndex: null,
-        indexDiff: null,
+        previousIndex: 3,
         status: ListStatus.DELETED,
       },
       {
+        value: { id: 5, name: "Item 5" },
+        index: 3,
         previousValue: null,
-        currentValue: { id: 5, name: "Item 5" },
-        prevIndex: null,
-        newIndex: 3,
-        indexDiff: null,
+        previousIndex: null,
         status: ListStatus.ADDED,
       },
     ];
@@ -421,42 +393,37 @@ describe("data emission", () => {
     const expectedChunks = [
       {
         previousValue: { id: 2, name: "Item 2" },
-        currentValue: { id: 2, name: "Item Two" },
-        prevIndex: 1,
-        newIndex: 0,
-        indexDiff: -1,
+        value: { id: 2, name: "Item Two" },
+        previousIndex: 1,
+        index: 0,
         status: ListStatus.UPDATED,
       },
       {
+        value: { id: 1, name: "Item 1" },
+        index: 1,
         previousValue: { id: 1, name: "Item 1" },
-        currentValue: { id: 1, name: "Item 1" },
-        prevIndex: 0,
-        newIndex: 1,
-        indexDiff: 1,
+        previousIndex: 0,
         status: ListStatus.UPDATED,
       },
       {
+        value: { id: 3, name: "Item 3" },
+        index: 2,
         previousValue: { id: 3, name: "Item 3" },
-        currentValue: { id: 3, name: "Item 3" },
-        prevIndex: 2,
-        newIndex: 2,
-        indexDiff: 0,
+        previousIndex: 2,
         status: ListStatus.EQUAL,
       },
       {
+        value: null,
+        index: null,
         previousValue: { id: 4, name: "Item 4" },
-        currentValue: null,
-        prevIndex: 3,
-        newIndex: null,
-        indexDiff: null,
+        previousIndex: 3,
         status: ListStatus.DELETED,
       },
       {
+        value: { id: 5, name: "Item 5" },
+        index: 3,
         previousValue: null,
-        currentValue: { id: 5, name: "Item 5" },
-        prevIndex: null,
-        newIndex: 3,
-        indexDiff: null,
+        previousIndex: null,
         status: ListStatus.ADDED,
       },
     ];
@@ -493,18 +460,18 @@ describe("data emission", () => {
     const expectedChunks = [
       {
         previousValue: { id: 4, name: "Item 4" },
-        currentValue: null,
-        prevIndex: 3,
-        newIndex: null,
-        indexDiff: null,
+        value: null,
+        previousIndex: 3,
+        index: null,
+
         status: ListStatus.DELETED,
       },
       {
         previousValue: null,
-        currentValue: { id: 5, name: "Item 5" },
-        prevIndex: null,
-        newIndex: 3,
-        indexDiff: null,
+        value: { id: 5, name: "Item 5" },
+        previousIndex: null,
+        index: 3,
+
         status: ListStatus.ADDED,
       },
     ];
@@ -580,88 +547,91 @@ describe("data emission", () => {
     const expectedChunks = [
       [
         {
+          value: {
+            id: 1,
+            name: "Item 1",
+            user: { role: "admin", hobbies: ["golf", "football"] },
+          },
+          index: 0,
           previousValue: {
             id: 1,
             name: "Item 1",
             user: { role: "admin", hobbies: ["golf", "football"] },
           },
-          currentValue: {
-            id: 1,
-            name: "Item 1",
-            user: { role: "admin", hobbies: ["golf", "football"] },
-          },
-          prevIndex: 0,
-          newIndex: 0,
-          indexDiff: 0,
+          previousIndex: 0,
           status: ListStatus.EQUAL,
         },
         {
+          value: { id: 2, name: "Item Two" },
+          index: 1,
           previousValue: { id: 2, name: "Item 2" },
-          currentValue: { id: 2, name: "Item Two" },
-          prevIndex: 1,
-          newIndex: 1,
-          indexDiff: 0,
+          previousIndex: 1,
           status: ListStatus.UPDATED,
         },
         {
+          value: {
+            id: 3,
+            name: "Item 3",
+            user: { role: "admin", hobbies: ["rugby"] },
+          },
+          index: 2,
           previousValue: {
             id: 3,
             name: "Item 3",
             user: { role: "admin", hobbies: ["rugby"] },
           },
-          currentValue: {
-            id: 3,
-            name: "Item 3",
-            user: { role: "admin", hobbies: ["rugby"] },
-          },
-          prevIndex: 2,
-          newIndex: 2,
-          indexDiff: 0,
+          previousIndex: 2,
           status: ListStatus.EQUAL,
         },
         {
+          value: { id: 5, name: "Item 5" },
+          index: 3,
           previousValue: { id: 5, name: "Item 5" },
-          currentValue: { id: 5, name: "Item 5" },
-          prevIndex: 4,
-          newIndex: 3,
-          indexDiff: -1,
+          previousIndex: 4,
           status: ListStatus.MOVED,
         },
         {
+          value: {
+            id: 6,
+            name: "Item 6",
+            user: { role: "root", hobbies: ["farming"] },
+          },
+          index: 4,
           previousValue: {
             id: 6,
             name: "Item 6",
             user: { role: "root", hobbies: ["coding"] },
           },
-          currentValue: {
-            id: 6,
-            name: "Item 6",
-            user: { role: "root", hobbies: ["farming"] },
-          },
-          prevIndex: 5,
-          newIndex: 4,
-          indexDiff: -1,
+          previousIndex: 5,
           status: ListStatus.UPDATED,
         },
       ],
       [
         {
+          value: { id: 7, name: "Item 7" },
+          index: 5,
           previousValue: { id: 7, name: "Item 7" },
-          currentValue: { id: 7, name: "Item 7" },
-          prevIndex: 6,
-          newIndex: 5,
-          indexDiff: -1,
+          previousIndex: 6,
           status: ListStatus.MOVED,
         },
         {
+          value: { id: 9, name: "Item 9" },
+          index: 8,
           previousValue: { id: 9, name: "Item 9" },
-          currentValue: { id: 9, name: "Item 9" },
-          prevIndex: 8,
-          newIndex: 8,
-          indexDiff: 0,
+          previousIndex: 8,
           status: ListStatus.EQUAL,
         },
         {
+          value: {
+            id: 10,
+            name: "Item 10",
+            user: {
+              role: "root",
+              hobbies: ["coding"],
+              skills: { driving: true, diving: false },
+            },
+          },
+          index: 6,
           previousValue: {
             id: 10,
             name: "Item 10",
@@ -671,48 +641,34 @@ describe("data emission", () => {
               skills: { driving: true, diving: false },
             },
           },
-          currentValue: {
-            id: 10,
-            name: "Item 10",
-            user: {
-              role: "root",
-              hobbies: ["coding"],
-              skills: { driving: true, diving: false },
-            },
-          },
-          prevIndex: 9,
-          newIndex: 6,
-          indexDiff: -3,
+          previousIndex: 9,
           status: ListStatus.MOVED,
         },
         {
+          value: { id: 8, name: "Item 8" },
+          index: 9,
           previousValue: { id: 8, name: "Item 8" },
-          currentValue: { id: 8, name: "Item 8" },
-          prevIndex: 7,
-          newIndex: 9,
-          indexDiff: 2,
+          previousIndex: 7,
           status: ListStatus.MOVED,
         },
         {
+          value: null,
+          index: null,
           previousValue: {
             id: 4,
             name: "Item 4",
             user: { role: "reader", hobbies: ["video games", "fishing"] },
           },
-          currentValue: null,
-          prevIndex: 3,
-          newIndex: null,
-          indexDiff: null,
+          previousIndex: 3,
           status: ListStatus.DELETED,
         },
       ],
       [
         {
+          value: { id: 11, name: "Item 11" },
+          index: 7,
           previousValue: null,
-          currentValue: { id: 11, name: "Item 11" },
-          prevIndex: null,
-          newIndex: 7,
-          indexDiff: null,
+          previousIndex: null,
           status: ListStatus.ADDED,
         },
       ],
@@ -747,43 +703,38 @@ describe("input handling", () => {
   ];
   const expectedChunks = [
     {
+      value: { id: 1, name: "Item 1" },
+      index: 0,
       previousValue: { id: 1, name: "Item 1" },
-      currentValue: { id: 1, name: "Item 1" },
-      prevIndex: 0,
-      newIndex: 0,
-      indexDiff: 0,
+      previousIndex: 0,
       status: ListStatus.EQUAL,
     },
     {
+      value: { id: 2, name: "Item Two" },
+      index: 1,
       previousValue: { id: 2, name: "Item 2" },
-      currentValue: { id: 2, name: "Item Two" },
-      prevIndex: 1,
-      newIndex: 1,
-      indexDiff: 0,
+      previousIndex: 1,
       status: ListStatus.UPDATED,
     },
     {
+      value: { id: 3, name: "Item 3" },
+      index: 2,
       previousValue: { id: 3, name: "Item 3" },
-      currentValue: { id: 3, name: "Item 3" },
-      prevIndex: 2,
-      newIndex: 2,
-      indexDiff: 0,
+      previousIndex: 2,
       status: ListStatus.EQUAL,
     },
     {
+      value: null,
+      index: null,
       previousValue: { id: 4, name: "Item 4" },
-      currentValue: null,
-      prevIndex: 3,
-      newIndex: null,
-      indexDiff: null,
+      previousIndex: 3,
       status: ListStatus.DELETED,
     },
     {
+      value: { id: 5, name: "Item 5" },
+      index: 3,
       previousValue: null,
-      currentValue: { id: 5, name: "Item 5" },
-      prevIndex: null,
-      newIndex: 3,
-      indexDiff: null,
+      previousIndex: null,
       status: ListStatus.ADDED,
     },
   ];
@@ -979,7 +930,7 @@ describe("error event", () => {
     });
   });
 
-  test("emits 'error' event when all prevList ojects don't have the requested reference property", (done) => {
+  test("emits 'error' event when all prevList ojects don't have the requested referenceKey", (done) => {
     const prevList = [{ id: 1, name: "Item 1" }, { name: "Item 2" }];
     const nextList = [
       { id: 1, name: "Item 1" },
@@ -990,13 +941,13 @@ describe("error event", () => {
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
-        `The reference property 'id' is not available in all the objects of your prevList.`,
+        `The referenceKey 'id' is not available in all the objects of your prevList.`,
       );
       done();
     });
   });
 
-  test("emits 'error' event when all nextList ojects don't have the requested reference property", (done) => {
+  test("emits 'error' event when all nextList ojects don't have the requested referenceKey", (done) => {
     const prevList = [
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
@@ -1007,7 +958,7 @@ describe("error event", () => {
 
     diff.on("error", (err) => {
       expect(err["message"]).toEqual(
-        `The reference property 'id' is not available in all the objects of your nextList.`,
+        `The referenceKey 'id' is not available in all the objects of your nextList.`,
       );
       done();
     });

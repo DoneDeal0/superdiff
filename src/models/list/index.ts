@@ -1,6 +1,6 @@
 export const DEFAULT_LIST_DIFF_OPTIONS = {
   showOnly: [],
-  referenceProperty: undefined,
+  referenceKey: undefined,
   considerMoveAsUpdate: false,
   ignoreArrayOrder: false,
 };
@@ -20,7 +20,7 @@ export enum ListType {
 
 export type ListDiffOptions = {
   showOnly?: `${ListStatus}`[];
-  referenceProperty?: string;
+  referenceKey?: string;
   considerMoveAsUpdate?: boolean;
   ignoreArrayOrder?: boolean;
 };
@@ -35,9 +35,8 @@ export type ListDiff = {
   status: `${ListStatus}`;
   diff: {
     value: unknown;
-    prevIndex: number | null;
-    newIndex: number | null;
-    indexDiff: number | null;
-    status: ListStatus;
+    previousIndex: number | null;
+    index: number | null;
+    status: `${ListStatus}`;
   }[];
 };

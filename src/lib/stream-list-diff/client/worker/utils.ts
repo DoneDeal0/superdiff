@@ -2,7 +2,7 @@ import { IEmitter, EmitterEvents, EventEmitter } from "@models/emitter";
 import {
   ListStreamOptions,
   READABLE_STREAM_ALERT,
-  ReferenceProperty,
+  ReferenceKey,
   StreamEvent,
   StreamListener,
 } from "@models/stream";
@@ -12,13 +12,12 @@ import { generateStream } from "..";
 export function workerDiff<T extends Record<string, unknown>>(
   prevList: File | T[],
   nextList: File | T[],
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   options: ListStreamOptions,
 ): StreamListener<T> {
   const emitter = new EventEmitter<EmitterEvents<T>>();
   setTimeout(
-    () =>
-      generateStream(prevList, nextList, referenceProperty, options, emitter),
+    () => generateStream(prevList, nextList, referenceKey, options, emitter),
     0,
   );
   return emitter as StreamListener<T>;
@@ -43,7 +42,7 @@ async function getArrayFromStream<T>(
 export async function generateWorker<T extends Record<string, unknown>>(
   prevList: ReadableStream<T> | File | T[],
   nextList: ReadableStream<T> | File | T[],
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   options: ListStreamOptions,
   emitter: IEmitter<T>,
 ) {
@@ -57,7 +56,7 @@ export async function generateWorker<T extends Record<string, unknown>>(
     const worker = new Worker(new URL("./web-worker.js", import.meta.url), {
       type: "module",
     });
-    worker.postMessage({ prevList, nextList, referenceProperty, options });
+    worker.postMessage({ prevList, nextList, referenceKey, options });
     worker.onmessage = (e: WebWorkerMessage<T>) => {
       const { event, chunk, error } = e.data;
       if (event === StreamEvent.Data) {
