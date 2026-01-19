@@ -43,9 +43,8 @@ function formatSingleListDiff<T>(
   for (let i = 0; i < listData.length; i++) {
     diff[i] = {
       value: listData[i],
-      prevIndex: isAdded ? null : i,
-      newIndex: isAdded ? i : null,
-      indexDiff: null,
+      previousIndex: isAdded ? null : i,
+      index: isAdded ? i : null,
       status,
     };
   }
@@ -81,7 +80,7 @@ function getNextStatus(
  * @param {Array<T>} nextList - The new array.
  * @param {ListOptions} options - Options to refine your output.
     - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-    - `referenceProperty` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
+    - `referenceKey` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
     - `considerMoveAsUpdate` if set to `true` a `moved` value will be considered as `updated`.
     - `ignoreArrayOrder` if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
  * @returns ListDiff
@@ -104,7 +103,7 @@ export const getListDiff = <T>(
   const diff: ListDiff["diff"] = [];
   const previousMap = new Map<string, ListData<T>>();
   const statusMap = new Set<ListStatus>();
-  const { referenceProperty, ignoreArrayOrder } = options;
+  const { referenceKey, ignoreArrayOrder } = options;
   let containsArrays = false;
 
   const stableStringifyCache = new Map<unknown, string>();
@@ -147,12 +146,8 @@ export const getListDiff = <T>(
     }
     let reference: string;
 
-    if (
-      referenceProperty &&
-      isObject(prevValue) &&
-      referenceProperty in prevValue
-    ) {
-      reference = stableStringifyCached(prevValue[referenceProperty]);
+    if (referenceKey && isObject(prevValue) && referenceKey in prevValue) {
+      reference = stableStringifyCached(prevValue[referenceKey]);
     } else {
       reference = stableStringifyCached(prevValue);
     }
@@ -170,12 +165,8 @@ export const getListDiff = <T>(
     let previousMatch: ListData<T> | undefined;
     let isStrictEqual = false;
 
-    if (
-      referenceProperty &&
-      isObject(nextValue) &&
-      referenceProperty in nextValue
-    ) {
-      reference = stableStringifyCached(nextValue[referenceProperty]);
+    if (referenceKey && isObject(nextValue) && referenceKey in nextValue) {
+      reference = stableStringifyCached(nextValue[referenceKey]);
       previousMatch = previousMap.get(reference);
       if (previousMatch) {
         isStrictEqual = isEqual(previousMatch.value, nextValue, {
@@ -211,15 +202,14 @@ export const getListDiff = <T>(
     isStrictEqual: boolean,
   ) => {
     if (previousMatch) {
-      const prevIndex = previousMatch.indexes[0];
-      const indexDiff = nextIndex - prevIndex;
+      const previousIndex = previousMatch.indexes[0];
+      const indexDiff = nextIndex - previousIndex;
       const nextStatus = getNextStatus(indexDiff, isStrictEqual, options);
 
       diff.push({
         value: nextValue,
-        prevIndex,
-        newIndex: nextIndex,
-        indexDiff,
+        previousIndex,
+        index: nextIndex,
         status: nextStatus,
       });
       statusMap.add(nextStatus);
@@ -231,9 +221,8 @@ export const getListDiff = <T>(
     } else {
       diff.push({
         value: nextValue,
-        prevIndex: null,
-        newIndex: nextIndex,
-        indexDiff: null,
+        previousIndex: null,
+        index: nextIndex,
         status: ListStatus.ADDED,
       });
       statusMap.add(ListStatus.ADDED);
@@ -258,9 +247,8 @@ export const getListDiff = <T>(
     for (let i = 0; i < prevData.indexes.length; i++) {
       diff.push({
         value: prevData.value,
-        prevIndex: prevData.indexes[i],
-        newIndex: null,
-        indexDiff: null,
+        previousIndex: prevData.indexes[i],
+        index: null,
         status: ListStatus.DELETED,
       });
     }

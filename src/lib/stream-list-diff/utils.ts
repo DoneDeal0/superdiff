@@ -3,7 +3,7 @@ import { IEmitter } from "@models/emitter";
 import { ListType } from "@models/list";
 import {
   ListStreamOptions,
-  ReferenceProperty,
+  ReferenceKey,
   StreamEvent,
   StreamListDiff,
 } from "@models/stream";
@@ -18,7 +18,7 @@ export function isValidChunkSize(
 
 export function isDataValid<T extends Record<string, unknown>>(
   data: T,
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   listType: ListType,
 ): { isValid: boolean; message?: string } {
   if (!isObject(data)) {
@@ -27,10 +27,10 @@ export function isDataValid<T extends Record<string, unknown>>(
       message: `Your ${listType} must only contain valid objects. Found '${data}'`,
     };
   }
-  if (!Object.hasOwn(data, referenceProperty)) {
+  if (!Object.hasOwn(data, referenceKey)) {
     return {
       isValid: false,
-      message: `The reference property '${String(referenceProperty)}' is not available in all the objects of your ${listType}.`,
+      message: `The referenceKey '${String(referenceKey)}' is not available in all the objects of your ${listType}.`,
     };
   }
   return {

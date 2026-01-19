@@ -20,21 +20,21 @@ describe("getObjectDiff", () => {
       status: "deleted",
       diff: [
         {
-          property: "name",
+          key: "name",
+          value: undefined,
           previousValue: "joe",
-          currentValue: undefined,
           status: "deleted",
         },
         {
-          property: "age",
+          key: "age",
+          value: undefined,
           previousValue: 54,
-          currentValue: undefined,
           status: "deleted",
         },
         {
-          property: "hobbies",
+          key: "hobbies",
+          value: undefined,
           previousValue: ["golf", "football"],
-          currentValue: undefined,
           status: "deleted",
         },
       ],
@@ -74,21 +74,21 @@ describe("getObjectDiff", () => {
       status: "added",
       diff: [
         {
-          property: "name",
+          key: "name",
+          value: "joe",
           previousValue: undefined,
-          currentValue: "joe",
           status: "added",
         },
         {
-          property: "age",
+          key: "age",
+          value: 54,
           previousValue: undefined,
-          currentValue: 54,
           status: "added",
         },
         {
-          property: "hobbies",
+          key: "hobbies",
+          value: ["golf", "football"],
           previousValue: undefined,
-          currentValue: ["golf", "football"],
           status: "added",
         },
       ],
@@ -119,39 +119,39 @@ describe("getObjectDiff", () => {
       status: "equal",
       diff: [
         {
-          property: "age",
+          key: "age",
+          value: 66,
           previousValue: 66,
-          currentValue: 66,
           status: "equal",
         },
         {
-          property: "member",
+          key: "member",
+          value: false,
           previousValue: false,
-          currentValue: false,
           status: "equal",
         },
         {
-          property: "promoCode",
+          key: "promoCode",
+          value: null,
           previousValue: null,
-          currentValue: null,
           status: "equal",
         },
         {
-          property: "city",
+          key: "city",
+          value: undefined,
           previousValue: undefined,
-          currentValue: undefined,
           status: "equal",
         },
         {
-          property: "hobbies",
+          key: "hobbies",
+          value: ["golf", "football"],
           previousValue: ["golf", "football"],
-          currentValue: ["golf", "football"],
           status: "equal",
         },
         {
-          property: "options",
+          key: "options",
+          value: { vegan: undefined, phone: null },
           previousValue: { vegan: undefined, phone: null },
-          currentValue: { vegan: undefined, phone: null },
           status: "equal",
         },
       ],
@@ -186,69 +186,69 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "id",
+          key: "id",
+          value: 54,
           previousValue: 54,
-          currentValue: 54,
           status: "equal",
         },
         {
-          property: "type",
+          key: "type",
+          value: undefined,
           previousValue: "sport",
-          currentValue: undefined,
           status: "deleted",
         },
         {
-          property: "user",
+          key: "user",
+          value: {
+            name: "joe",
+            member: false,
+            hobbies: ["golf", "chess"],
+            nickname: "super joe",
+          },
           previousValue: {
             name: "joe",
             member: true,
             hobbies: ["golf", "football"],
             age: 66,
           },
-          currentValue: {
-            name: "joe",
-            member: false,
-            hobbies: ["golf", "chess"],
-            nickname: "super joe",
-          },
           status: "updated",
           diff: [
             {
-              property: "name",
+              key: "name",
+              value: "joe",
               previousValue: "joe",
-              currentValue: "joe",
               status: "equal",
             },
             {
-              property: "member",
+              key: "member",
+              value: false,
               previousValue: true,
-              currentValue: false,
               status: "updated",
             },
             {
-              property: "hobbies",
+              key: "hobbies",
+              value: ["golf", "chess"],
               previousValue: ["golf", "football"],
-              currentValue: ["golf", "chess"],
               status: "updated",
             },
             {
-              property: "age",
+              key: "age",
+              value: undefined,
               previousValue: 66,
-              currentValue: undefined,
               status: "deleted",
             },
             {
-              property: "nickname",
+              key: "nickname",
+              value: "super joe",
               previousValue: undefined,
-              currentValue: "super joe",
               status: "added",
             },
           ],
         },
         {
-          property: "country",
+          key: "country",
+          value: "us",
           previousValue: undefined,
-          currentValue: "us",
           status: "added",
         },
       ],
@@ -289,13 +289,23 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "id",
+          key: "id",
+          value: 54,
           previousValue: 54,
-          currentValue: 54,
           status: "equal",
         },
         {
-          property: "user",
+          key: "user",
+          value: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                golf: ["st andrews"],
+              },
+            },
+          },
           previousValue: {
             name: "joe",
             data: {
@@ -306,26 +316,23 @@ describe("getObjectDiff", () => {
               },
             },
           },
-          currentValue: {
-            name: "joe",
-            data: {
-              member: true,
-              hobbies: {
-                football: ["psg", "nantes"],
-                golf: ["st andrews"],
-              },
-            },
-          },
           status: "updated",
           diff: [
             {
-              property: "name",
+              key: "name",
               previousValue: "joe",
-              currentValue: "joe",
+              value: "joe",
               status: "equal",
             },
             {
-              property: "data",
+              key: "data",
+              value: {
+                member: true,
+                hobbies: {
+                  football: ["psg", "nantes"],
+                  golf: ["st andrews"],
+                },
+              },
               previousValue: {
                 member: true,
                 hobbies: {
@@ -333,49 +340,42 @@ describe("getObjectDiff", () => {
                   rugby: ["france"],
                 },
               },
-              currentValue: {
-                member: true,
-                hobbies: {
-                  football: ["psg", "nantes"],
-                  golf: ["st andrews"],
-                },
-              },
               status: "updated",
               diff: [
                 {
-                  property: "member",
+                  key: "member",
+                  value: true,
                   previousValue: true,
-                  currentValue: true,
                   status: "equal",
                 },
                 {
-                  property: "hobbies",
+                  key: "hobbies",
+                  value: {
+                    football: ["psg", "nantes"],
+                    golf: ["st andrews"],
+                  },
                   previousValue: {
                     football: ["psg"],
                     rugby: ["france"],
                   },
-                  currentValue: {
-                    football: ["psg", "nantes"],
-                    golf: ["st andrews"],
-                  },
                   status: "updated",
                   diff: [
                     {
-                      property: "football",
+                      key: "football",
+                      value: ["psg", "nantes"],
                       previousValue: ["psg"],
-                      currentValue: ["psg", "nantes"],
                       status: "updated",
                     },
                     {
-                      property: "rugby",
+                      key: "rugby",
+                      value: undefined,
                       previousValue: ["france"],
-                      currentValue: undefined,
                       status: "deleted",
                     },
                     {
-                      property: "golf",
+                      key: "golf",
+                      value: ["st andrews"],
                       previousValue: undefined,
-                      currentValue: ["st andrews"],
                       status: "added",
                     },
                   ],
@@ -417,70 +417,70 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "id",
+          key: "id",
+          value: 54,
           previousValue: 54,
-          currentValue: 54,
           status: "equal",
         },
         {
-          property: "type",
+          key: "type",
+          value: undefined,
           previousValue: "sport",
-          currentValue: undefined,
           status: "deleted",
         },
 
         {
-          property: "user",
+          key: "user",
+          value: {
+            name: "joe",
+            member: false,
+            hobbies: ["football", "golf"],
+            nickname: "super joe",
+          },
           previousValue: {
             name: "joe",
             member: true,
             hobbies: ["golf", "football"],
             age: 66,
           },
-          currentValue: {
-            name: "joe",
-            member: false,
-            hobbies: ["football", "golf"],
-            nickname: "super joe",
-          },
           status: "updated",
           diff: [
             {
-              property: "name",
+              key: "name",
+              value: "joe",
               previousValue: "joe",
-              currentValue: "joe",
               status: "equal",
             },
             {
-              property: "member",
+              key: "member",
+              value: false,
               previousValue: true,
-              currentValue: false,
               status: "updated",
             },
             {
-              property: "hobbies",
+              key: "hobbies",
+              value: ["football", "golf"],
               previousValue: ["golf", "football"],
-              currentValue: ["football", "golf"],
               status: "equal",
             },
             {
-              property: "age",
+              key: "age",
+              value: undefined,
               previousValue: 66,
-              currentValue: undefined,
               status: "deleted",
             },
             {
-              property: "nickname",
+              key: "nickname",
+              value: "super joe",
               previousValue: undefined,
-              currentValue: "super joe",
               status: "added",
             },
           ],
         },
         {
-          property: "country",
+          key: "country",
+          value: "us",
           previousValue: undefined,
-          currentValue: "us",
           status: "added",
         },
       ],
@@ -516,9 +516,9 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "country",
+          key: "country",
+          value: "us",
           previousValue: undefined,
-          currentValue: "us",
           status: "added",
         },
       ],
@@ -559,45 +559,45 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "type",
+          key: "type",
+          value: undefined,
           previousValue: "sport",
-          currentValue: undefined,
           status: "deleted",
         },
         {
-          property: "user",
+          key: "user",
+          value: {
+            name: "joe",
+            member: false,
+            hobbies: ["golf", "chess"],
+            nickname: "super joe",
+          },
           previousValue: {
             name: "joe",
             member: true,
             hobbies: ["golf", "football"],
             age: 66,
           },
-          currentValue: {
-            name: "joe",
-            member: false,
-            hobbies: ["golf", "chess"],
-            nickname: "super joe",
-          },
           status: "updated",
           diff: [
             {
-              property: "age",
+              key: "age",
+              value: undefined,
               previousValue: 66,
-              currentValue: undefined,
               status: "deleted",
             },
             {
-              property: "nickname",
+              key: "nickname",
+              value: "super joe",
               previousValue: undefined,
-              currentValue: "super joe",
               status: "added",
             },
           ],
         },
         {
-          property: "country",
+          key: "country",
+          value: "us",
           previousValue: undefined,
-          currentValue: "us",
           status: "added",
         },
       ],
@@ -644,7 +644,17 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "user",
+          key: "user",
+          value: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                football: ["psg", "nantes"],
+                golf: ["st andrews"],
+              },
+            },
+          },
           previousValue: {
             name: "joe",
             data: {
@@ -655,20 +665,17 @@ describe("getObjectDiff", () => {
               },
             },
           },
-          currentValue: {
-            name: "joe",
-            data: {
-              member: true,
-              hobbies: {
-                football: ["psg", "nantes"],
-                golf: ["st andrews"],
-              },
-            },
-          },
           status: "updated",
           diff: [
             {
-              property: "data",
+              key: "data",
+              value: {
+                member: true,
+                hobbies: {
+                  football: ["psg", "nantes"],
+                  golf: ["st andrews"],
+                },
+              },
               previousValue: {
                 member: true,
                 hobbies: {
@@ -676,31 +683,24 @@ describe("getObjectDiff", () => {
                   rugby: ["france"],
                 },
               },
-              currentValue: {
-                member: true,
-                hobbies: {
-                  football: ["psg", "nantes"],
-                  golf: ["st andrews"],
-                },
-              },
               status: "updated",
               diff: [
                 {
-                  property: "hobbies",
+                  key: "hobbies",
+                  value: {
+                    football: ["psg", "nantes"],
+                    golf: ["st andrews"],
+                  },
                   previousValue: {
                     football: ["psg"],
                     rugby: ["france"],
                   },
-                  currentValue: {
-                    football: ["psg", "nantes"],
-                    golf: ["st andrews"],
-                  },
                   status: "updated",
                   diff: [
                     {
-                      property: "football",
+                      key: "football",
+                      value: ["psg", "nantes"],
                       previousValue: ["psg"],
-                      currentValue: ["psg", "nantes"],
                       status: "updated",
                     },
                   ],
@@ -752,17 +752,8 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          property: "user",
-          previousValue: {
-            name: "joe",
-            data: {
-              member: true,
-              hobbies: {
-                rugby: ["france"],
-              },
-            },
-          },
-          currentValue: {
+          key: "user",
+          value: {
             name: "joe",
             data: {
               member: true,
@@ -772,46 +763,55 @@ describe("getObjectDiff", () => {
               },
             },
           },
+          previousValue: {
+            name: "joe",
+            data: {
+              member: true,
+              hobbies: {
+                rugby: ["france"],
+              },
+            },
+          },
           status: "updated",
           diff: [
             {
-              property: "data",
-              previousValue: {
-                member: true,
-                hobbies: {
-                  rugby: ["france"],
-                },
-              },
-              currentValue: {
+              key: "data",
+              value: {
                 member: true,
                 hobbies: {
                   football: ["psg", "nantes"],
                   golf: ["st andrews"],
                 },
               },
+              previousValue: {
+                member: true,
+                hobbies: {
+                  rugby: ["france"],
+                },
+              },
               status: "updated",
               diff: [
                 {
-                  property: "hobbies",
-                  previousValue: {
-                    rugby: ["france"],
-                  },
-                  currentValue: {
+                  key: "hobbies",
+                  value: {
                     football: ["psg", "nantes"],
                     golf: ["st andrews"],
+                  },
+                  previousValue: {
+                    rugby: ["france"],
                   },
                   status: "updated",
                   diff: [
                     {
-                      property: "football",
+                      key: "football",
+                      value: ["psg", "nantes"],
                       previousValue: undefined,
-                      currentValue: ["psg", "nantes"],
                       status: "added",
                     },
                     {
-                      property: "golf",
+                      key: "golf",
+                      value: ["st andrews"],
                       previousValue: undefined,
-                      currentValue: ["st andrews"],
                       status: "added",
                     },
                   ],
@@ -823,7 +823,7 @@ describe("getObjectDiff", () => {
       ],
     });
   });
-  it("returns an empty diff if no property match the required statuses output", () => {
+  it("returns an empty diff if no key match the required statuses output", () => {
     expect(
       getObjectDiff(
         null,
@@ -857,27 +857,27 @@ describe("getObjectDiff", () => {
       status: "deleted",
       diff: [
         {
-          property: "name",
+          key: "name",
+          value: undefined,
           previousValue: "joe",
-          currentValue: undefined,
           status: "deleted",
         },
         {
-          property: "age",
+          key: "age",
+          value: undefined,
           previousValue: 54,
-          currentValue: undefined,
           status: "deleted",
         },
         {
-          property: "hobbies",
+          key: "hobbies",
+          value: undefined,
           previousValue: ["golf", "football"],
-          currentValue: undefined,
           status: "deleted",
         },
       ],
     });
   });
-  it("detects changes when comparing an array value property to a non-array value property", () => {
+  it("detects changes when comparing an array value key to a non-array value key", () => {
     expect(
       getObjectDiff(
         {
@@ -896,27 +896,27 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          currentValue: "joe",
+          value: "joe",
           previousValue: "joe",
-          property: "name",
+          key: "name",
           status: "equal",
         },
         {
-          currentValue: 55,
+          value: 55,
           previousValue: 55,
-          property: "age",
+          key: "age",
           status: "equal",
         },
         {
-          currentValue: null,
+          value: null,
           previousValue: ["golf", "football"],
-          property: "hobbies",
+          key: "hobbies",
           status: "updated",
         },
       ],
     });
   });
-  it("detects changes when comparing a non-array value property to an array value property", () => {
+  it("detects changes when comparing a non-array value key to an array value key", () => {
     expect(
       getObjectDiff(
         {
@@ -935,21 +935,21 @@ describe("getObjectDiff", () => {
       status: "updated",
       diff: [
         {
-          currentValue: "joe",
+          value: "joe",
           previousValue: "joe",
-          property: "name",
+          key: "name",
           status: "equal",
         },
         {
-          currentValue: 55,
+          value: 55,
           previousValue: 55,
-          property: "age",
+          key: "age",
           status: "equal",
         },
         {
-          currentValue: ["golf", "football"],
+          value: ["golf", "football"],
           previousValue: null,
-          property: "hobbies",
+          key: "hobbies",
           status: "updated",
         },
       ],

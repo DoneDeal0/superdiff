@@ -6,7 +6,7 @@ import {
   FilePath,
   ListStreamOptions,
   READABLE_STREAM_ALERT,
-  ReferenceProperty,
+  ReferenceKey,
   StreamEvent,
   StreamListener,
 } from "@models/stream";
@@ -29,7 +29,7 @@ async function getArrayFromStream<T>(
 export async function generateWorker<T extends Record<string, unknown>>(
   prevList: Readable | FilePath | T[],
   nextList: Readable | FilePath | T[],
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   options: ListStreamOptions,
   emitter: IEmitter<T>,
 ) {
@@ -41,7 +41,7 @@ export async function generateWorker<T extends Record<string, unknown>>(
       nextList = await getArrayFromStream(nextList, options?.showWarnings);
     }
     const worker = new Worker(path.resolve(__dirname, "./node-worker.cjs"));
-    worker.postMessage({ prevList, nextList, referenceProperty, options });
+    worker.postMessage({ prevList, nextList, referenceKey, options });
     worker.on(WorkerEvent.Message, (e: NodeWorkerMessage<T>) => {
       const { event, chunk, error } = e;
       if (event === StreamEvent.Data) {
@@ -65,13 +65,12 @@ export async function generateWorker<T extends Record<string, unknown>>(
 export function workerDiff<T extends Record<string, unknown>>(
   prevList: FilePath | T[],
   nextList: FilePath | T[],
-  referenceProperty: ReferenceProperty<T>,
+  referenceKey: ReferenceKey<T>,
   options: ListStreamOptions,
 ): StreamListener<T> {
   const emitter = new EventEmitter<EmitterEvents<T>>();
   setTimeout(
-    () =>
-      generateStream(prevList, nextList, referenceProperty, options, emitter),
+    () => generateStream(prevList, nextList, referenceKey, options, emitter),
     0,
   );
   return emitter as StreamListener<T>;

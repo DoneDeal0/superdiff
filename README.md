@@ -1,4 +1,4 @@
-<img width="722" alt="superdiff-logo" src="https://user-images.githubusercontent.com/43271780/209532864-24d7449e-1185-4810-9423-be5df1fe877f.png">
+<img width="1166" height="388" alt="superdiff logo" src="https://github.com/user-attachments/assets/518ddef4-a3c0-43ce-a229-b3008cb2058f" />
 
 
 [![CI](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml)
@@ -6,7 +6,6 @@
 ![NPM Downloads](https://img.shields.io/npm/dy/%40donedeal0%2Fsuperdiff?logo=npm)
 ![GitHub Tag](https://img.shields.io/github/v/tag/DoneDeal0/superdiff?label=latest%20release)
 [![Sponsor](https://img.shields.io/badge/Show%20your%20support-0d1117?style=flat&logo=github-sponsors&logoColor=ea4aaa&color=3F4851)](https://github.com/sponsors/DoneDeal0)
-
 
 
 <hr/>
@@ -21,13 +20,11 @@
 
 ## FEATURES
 
-**Superdiff** exports 5 functions:
+**Superdiff** exports 3 functions:
 
 - [getObjectDiff](#getobjectdiff)
 - [getListDiff](#getlistdiff)
 - [streamListDiff](#streamlistdiff)
-- [isEqual](#isequal)
-- [isObject](#isobject)
 
 <hr/>
 
@@ -39,6 +36,7 @@
 | List diff                      | ✅         | ❌               | ✅        |
 | Streaming for huge datasets    | ✅         | ❌               | ❌        |
 | Move detection                 | ✅         | ❌               | ❌        |
+| Output refinement              | ✅         | ❌               | ❌        |
 | Zero dependencies              | ✅         | ✅               | ❌        |
 
 ## 📊 BENCHMARK
@@ -127,9 +125,9 @@ type ObjectDiff = {
 };
 
 type Diff = {
-  property: string;
+  key: string;
+  value: unknown;
   previousValue: unknown;
-  currentValue: unknown;
   status: "added" | "deleted" | "equal" | "updated";
   // recursive diff in case of subproperties
   diff?: Diff[];
@@ -170,49 +168,49 @@ getObjectDiff(
 +     status: "updated",
       diff: [
         {
-          property: "id",
+          key: "id",
+          value: 54,
           previousValue: 54,
-          currentValue: 54,
           status: "equal",
         },
         {
-          property: "user",
+          key: "user",
+          value: {
+            name: "joe",
+            member: false,
+            hobbies: ["golf", "chess"],
+            age: 66,
+          },
           previousValue: {
             name: "joe",
             member: true,
             hobbies: ["golf", "football"],
             age: 66,
           },
-          currentValue: {
-            name: "joe",
-            member: false,
-            hobbies: ["golf", "chess"],
-            age: 66,
-          },
 +         status: "updated",
           diff: [
             {
-              property: "name",
+              key: "name",
+              value: "joe",
               previousValue: "joe",
-              currentValue: "joe",
               status: "equal",
             },
 +           {
-+             property: "member",
++             key: "member",
++             value: false,
 +             previousValue: true,
-+             currentValue: false,
 +             status: "updated",
 +           },
 +           {
-+             property: "hobbies",
++             key: "hobbies",
++             value: ["golf", "chess"],
 +             previousValue: ["golf", "football"],
-+             currentValue: ["golf", "chess"],
 +             status: "updated",
 +           },
             {
-              property: "age",
+              key: "age",
+              value: 66,
               previousValue: 66,
-              currentValue: 66,
               status: "equal",
             },
           ],
@@ -239,7 +237,7 @@ Compares two arrays and returns a diff for each entry. Supports duplicate values
   nextList: T[];
   options?: {
     showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
-    referenceProperty?: string, // "" by default
+    referenceKey?: string, // "" by default
     ignoreArrayOrder?: boolean, // false by default,
     considerMoveAsUpdate?: boolean // false by default
   }
@@ -248,7 +246,7 @@ Compares two arrays and returns a diff for each entry. Supports duplicate values
 - `nextList`: the new list.
 - `options`
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-  - `referenceProperty` will consider an object to be `updated` rather than `added` or `deleted` if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
+  - `referenceKey` will consider an object to be `updated` rather than `added` or `deleted` if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
   - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
   - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
 
@@ -260,9 +258,8 @@ type ListDiff = {
   status: "added" | "deleted" | "equal" | "moved" | "updated";
   diff: {
     value: unknown;
-    prevIndex: number | null;
-    newIndex: number | null;
-    indexDiff: number | null;
+    index: number | null;
+    previousIndex: number | null;
     status: "added" | "deleted" | "equal" | "moved" | "updated";
   }[];
 };
@@ -287,37 +284,32 @@ getListDiff(
       diff: [
         {
           value: "mbappe",
-          prevIndex: 0,
-          newIndex: 0,
-          indexDiff: 0,
+          index: 0,
+          previousIndex: 0,
           status: "equal",
         },
 -       {
 -         value: "mendes",
--         prevIndex: 1,
--         newIndex: null,
--         indexDiff: null,
+-         index: null,
+-         previousIndex: 1,
 -         status: "deleted",
 -       },
 -       {
 -         value: "verratti",
--         prevIndex: 2,
--         newIndex: null,
--         indexDiff: null,
+-         index: null,
+-         previousIndex: 2,
 -         status: "deleted",
 -       },
 +       {
 +         value: "messi",
-+         prevIndex: null,
-+         newIndex: 1,
-+         indexDiff: null,
++         index: 1,
++         previousIndex: null,
 +         status: "added",
 +       },
 +       {
 +         value: "ruiz",
-+         prevIndex: 3,
-+         newIndex: 2,
-+         indexDiff: -1,
++         index: 2,
++         previousIndex: 3,
 +         status: "moved",
         },
       ],
@@ -349,7 +341,7 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 ```ts
  prevList: Readable | FilePath | Record<string, unknown>[],
  nextList: Readable | FilePath | Record<string, unknown>[],
- referenceProperty: keyof Record<string, unknown>,
+ referenceKey: keyof Record<string, unknown>,
  options: {
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
   chunksSize?: number, // 0 by default
@@ -366,7 +358,7 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 ```ts
  prevList: ReadableStream<Record<string, unknown>> | File | Record<string, unknown>[],
  nextList: ReadableStream<Record<string, unknown>> | File | Record<string, unknown>[],
- referenceProperty: keyof Record<string, unknown>,
+ referenceKey: keyof Record<string, unknown>,
  options: {
   showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
   chunksSize?: number, // 0 by default
@@ -379,7 +371,7 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 
 - `prevList`: the original object list.
 - `nextList`: the new object list.
-- `referenceProperty`: a property common to all objects in your lists (e.g. `id`).
+- `referenceKey`: a key common to all objects in your lists (e.g. `id`).
 - `options`
   - `chunksSize` the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff per chunk, `10` = 10 object diffs per chunk).
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
@@ -404,11 +396,10 @@ interface StreamListener<T> {
 }
 
 type StreamListDiff<T extends Record<string, unknown>> = {
-  currentValue: T | null;
+  value: T | null;
+  index: number | null;
   previousValue: T | null;
-  prevIndex: number | null;
-  newIndex: number | null;
-  indexDiff: number | null;
+  previousIndex: number | null;
   status: "added" | "deleted" | "moved" | "updated" | "equal";
 };
 ```
@@ -475,39 +466,35 @@ diff.on("data", (chunk) => {
       // first chunk received (2 object diffs)
       [
 +       {
++         value: { id: 0, name: "Item 0" },
++         index: 0,
 +         previousValue: null,
-+         currentValue: { id: 0, name: 'Item 0' },
-+         prevIndex: null,
-+         newIndex: 0,
-+         indexDiff: null,
-+         status: 'added'
++         previousIndex: null,
++         status: "added"
 +       },
 -       {
--         previousValue: { id: 1, name: 'Item 1' },
--         currentValue: null,
--         prevIndex: 0,
--         newIndex: null,
--         indexDiff: null,
--         status: 'deleted'
+-         value: null,
+-         index: null,
+-         previousValue: { id: 1, name: "Item 1" },
+-         previousIndex: 0,
+-         status: "deleted"
 -       }
       ]
     // second chunk received (2 object diffs)
       [
         {
-          previousValue: { id: 2, name: 'Item 2' },
-          currentValue: { id: 2, name: 'Item 2' },
-          prevIndex: 1,
-          newIndex: 1,
-          indexDiff: 0,
-          status: 'equal'
+          value: { id: 2, name: "Item 2" },
+          index: 1,
+          previousValue: { id: 2, name: "Item 2" },
+          previousIndex: 1,
+          status: "equal"
         },
 +       {
-+         previousValue: { id: 3, name: 'Item 3' },
-+         currentValue: { id: 3, name: 'Item Three' },
-+         prevIndex: 2,
-+         newIndex: 2,
-+         indexDiff: 0,
-+         status: 'updated'
++         value: { id: 3, name: "Item Three" },
++         index: 2,
++         previousValue: { id: 3, name: "Item 3" },
++         previousIndex: 2,
++         status: "updated"
 +       },
      ]
 });
@@ -518,88 +505,7 @@ diff.on("error", (err) => console.log(err))
 
 <hr/>
 
-### isEqual
-
-```js
-import { isEqual } from "@donedeal0/superdiff";
-```
-
-Tests whether two values are equal.
-
-#### FORMAT
-
-**Input**
-
-```ts
-a: unknown,
-b: unknown,
-options: { 
-    ignoreArrayOrder: boolean; // false by default
-     },
-```
-- `a`: the value to be compared to the value `b`.
-- `b`: the value to be compared to the value `a`.
-- `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
-
-#### USAGE
-
-
-```ts
-isEqual(
-  [
-    { name: "joe", age: 99 },
-    { name: "nina", age: 23 },
-  ],
-  [
-    { name: "joe", age: 98 },
-    { name: "nina", age: 23 },
-  ],
-);
-```
-
-**Output**
-
-```ts
-false;
-```
-<hr/>
-
-### isObject
-
-```js
-import { isObject } from "@donedeal0/superdiff";
-```
-
-Tests whether a value is an object.
-
-#### FORMAT
-
-**Input**
-
-```ts
-value: unknown;
-```
-
-- `value`: the value whose type will be checked.
-
-#### USAGE
-
-**Input**
-
-```ts
-isObject(["hello", "world"]);
-```
-
-**Output**
-
-```ts
-false;
-```
-
-<hr/>
-
 ### ℹ️ More examples are available in the source code tests.
-
 
 <hr/>
 

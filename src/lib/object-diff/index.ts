@@ -23,9 +23,9 @@ function getLeanDiff(
       const subDiff = getLeanDiff(entry.diff, showOnly);
       if (subDiff.length > 0) {
         res.push({
-          property: entry.property,
+          key: entry.key,
+          value: entry.value,
           previousValue: entry.previousValue,
-          currentValue: entry.currentValue,
           status: entry.status,
           diff: subDiff,
         });
@@ -64,24 +64,24 @@ function formatSingleObjectDiff(
       const subDiff: Diff[] = [];
       for (const subKey in value) {
         subDiff.push({
-          property: subKey,
+          key: subKey,
+          value: added ? value[subKey] : undefined,
           previousValue: added ? undefined : value[subKey],
-          currentValue: added ? value[subKey] : undefined,
           status,
         });
       }
       diff.push({
-        property: key,
+        key,
+        value: added ? value : undefined,
         previousValue: added ? undefined : data[key],
-        currentValue: added ? value : undefined,
         status,
         diff: subDiff,
       });
     } else {
       diff.push({
-        property: key,
+        key,
+        value: added ? value : undefined,
         previousValue: added ? undefined : data[key],
-        currentValue: added ? value : undefined,
         status,
       });
     }
@@ -105,9 +105,9 @@ function getDiff(
 
     if (!Object.prototype.hasOwnProperty.call(nextData, key)) {
       diff.push({
-        property: key,
+        key,
+        value: undefined,
         previousValue: prevVal,
-        currentValue: undefined,
         status: ObjectStatus.DELETED,
       });
       continue;
@@ -129,16 +129,16 @@ function getDiff(
       diff.push(
         updated
           ? {
-              property: key,
+              key,
+              value: nextVal,
               previousValue: prevVal,
-              currentValue: nextVal,
               status: ObjectStatus.UPDATED,
               diff: subDiff,
             }
           : {
-              property: key,
+              key,
+              value: nextVal,
               previousValue: prevVal,
-              currentValue: nextVal,
               status: ObjectStatus.EQUAL,
             },
       );
@@ -148,9 +148,9 @@ function getDiff(
         : ObjectStatus.UPDATED;
 
       diff.push({
-        property: key,
+        key,
+        value: nextVal,
         previousValue: prevVal,
-        currentValue: nextVal,
         status,
       });
     }
@@ -159,9 +159,9 @@ function getDiff(
   for (const key in nextData) {
     if (Object.prototype.hasOwnProperty.call(prevData, key)) continue;
     diff.push({
-      property: key,
+      key,
+      value: nextData[key],
       previousValue: undefined,
-      currentValue: nextData[key],
       status: ObjectStatus.ADDED,
     });
   }
