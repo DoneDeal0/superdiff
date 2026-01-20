@@ -80,7 +80,7 @@ function getNextStatus(
  * @param {Array<T>} nextList - The new array.
  * @param {ListOptions} options - Options to refine your output.
     - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-    - `referenceKey` will consider an object to be updated instead of added or deleted if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
+    - `referenceKey` will consider an object to be updated instead of added or deleted if one of its keys remains stable, such as its `id`. This option has no effect on other datatypes.
     - `considerMoveAsUpdate` if set to `true` a `moved` value will be considered as `updated`.
     - `ignoreArrayOrder` if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
  * @returns ListDiff

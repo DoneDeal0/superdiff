@@ -121,8 +121,8 @@ options?: {
 
     - `statuses`: status you want to see in the output (e.g. `["added", "equal"]`)
       - `granularity`:
-        - `basic` returns only the main properties whose status matches your query.
-        - `deep` can return main properties if some of their subproperties' status match your request. The subproperties are filtered accordingly.
+        - `basic` returns only the main keys whose status matches your query.
+        - `deep` can return main keys if some of their nested keys' status match your request. The nested keys are filtered accordingly.
 
 **Output**
 
@@ -138,7 +138,7 @@ type Diff = {
   value: unknown;
   previousValue: unknown;
   status: "added" | "deleted" | "equal" | "updated";
-  // recursive diff in case of subproperties
+  // recursive diff in case of nested keys
   diff?: Diff[];
 };
 ```
@@ -255,7 +255,7 @@ Compares two arrays and returns a diff for each entry. Supports duplicate values
 - `nextList`: the new list.
 - `options`
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-  - `referenceKey` will consider an object to be `updated` rather than `added` or `deleted` if one of its properties remains stable, such as its `id`. This option has no effect on other datatypes.
+  - `referenceKey` will consider an object to be `updated` rather than `added` or `deleted` if one of its keys remains stable, such as its `id`. This option has no effect on other datatypes.
   - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
   - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
 
@@ -536,7 +536,8 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
   options?: {
     showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default.
     separation?: "character" | "word" | "sentence", // "word" by default
-    mode?: "visual" | "strict", // "visual" by default
+    accuracy?: "normal" | "strict", // "normal" by default
+    detectMoves?: boolean // false by default
     ignoreCase?: boolean, // false by default
     ignorePunctuation?: boolean, // false by default
     locale?: Intl.Locale | string // undefined by default
@@ -548,9 +549,12 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
     - `moved` and `updated` are only available in `strict` mode.
   - `separation` whether you want a `character`, `word` or `sentence` based diff.
-  - `mode`: 
-    - `visual` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
-    - `strict`: tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality).
+  - `accuracy`: 
+    - `normal` (default): fastest mode, simple tokenization of your text.
+    - `strict`: slower mode, exact tokenization of your text, handle all language subtleties (Unicode, CJK scripts, locale-aware sentence segmentation if a locale is provided, etc.).
+  - `detectMoves`: 
+    - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
+    - `true`: tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality).
   - `ignoreCase`: if set to `true` `hello` and `HELLO` will be considered equal.
   - `ignorePunctuation`: if set to `true` `hello!` and `hello` will be considered equal.
   - `locale`: the locale of your text. Enables locale‑aware segmentation.
@@ -563,10 +567,10 @@ type TextDiff = {
   status: "added" | "deleted" | "equal" | "updated";
   diff: {
     value: string;
+    index: number | null;
     previousValue?: string
-    status: "added" | "deleted" | "equal" | "moved" | "updated";
-    currentIndex: number | null;
     previousIndex: number | null;
+    status: "added" | "deleted" | "equal" | "moved" | "updated";
   }[];
 };
 ```

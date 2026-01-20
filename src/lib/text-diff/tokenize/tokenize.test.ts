@@ -7,18 +7,18 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText(base, { separation: "sentence" });
 
     expect(tokens).toEqual([
-      { value: "hello wrld!", normalizedValue: "hello wrld!", currentIndex: 0 },
+      { value: "hello wrld!", normalizedValue: "hello wrld!", index: 0 },
       {
         value: "It's a  great day...",
         normalizedValue: "It's a  great day...",
-        currentIndex: 1,
+        index: 1,
       },
       {
         value: "A wonderful day!",
         normalizedValue: "A wonderful day!",
-        currentIndex: 2,
+        index: 2,
       },
-      { value: "Yeah.", normalizedValue: "Yeah.", currentIndex: 3 },
+      { value: "Yeah.", normalizedValue: "Yeah.", index: 3 },
     ]);
   });
 
@@ -26,16 +26,16 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText(base, { separation: "word" });
 
     expect(tokens).toEqual([
-      { value: "hello", normalizedValue: "hello", currentIndex: 0 },
-      { value: "wrld!", normalizedValue: "wrld!", currentIndex: 1 },
-      { value: "It's", normalizedValue: "It's", currentIndex: 2 },
-      { value: "a", normalizedValue: "a", currentIndex: 3 },
-      { value: "great", normalizedValue: "great", currentIndex: 4 },
-      { value: "day...", normalizedValue: "day...", currentIndex: 5 },
-      { value: "A", normalizedValue: "A", currentIndex: 6 },
-      { value: "wonderful", normalizedValue: "wonderful", currentIndex: 7 },
-      { value: "day!", normalizedValue: "day!", currentIndex: 8 },
-      { value: "Yeah.", normalizedValue: "Yeah.", currentIndex: 9 },
+      { value: "hello", normalizedValue: "hello", index: 0 },
+      { value: "wrld!", normalizedValue: "wrld!", index: 1 },
+      { value: "It's", normalizedValue: "It's", index: 2 },
+      { value: "a", normalizedValue: "a", index: 3 },
+      { value: "great", normalizedValue: "great", index: 4 },
+      { value: "day...", normalizedValue: "day...", index: 5 },
+      { value: "A", normalizedValue: "A", index: 6 },
+      { value: "wonderful", normalizedValue: "wonderful", index: 7 },
+      { value: "day!", normalizedValue: "day!", index: 8 },
+      { value: "Yeah.", normalizedValue: "Yeah.", index: 9 },
     ]);
   });
 
@@ -43,10 +43,10 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText("abc!", { separation: "character" });
 
     expect(tokens).toEqual([
-      { value: "a", normalizedValue: "a", currentIndex: 0 },
-      { value: "b", normalizedValue: "b", currentIndex: 1 },
-      { value: "c", normalizedValue: "c", currentIndex: 2 },
-      { value: "!", normalizedValue: "!", currentIndex: 3 },
+      { value: "a", normalizedValue: "a", index: 0 },
+      { value: "b", normalizedValue: "b", index: 1 },
+      { value: "c", normalizedValue: "c", index: 2 },
+      { value: "!", normalizedValue: "!", index: 3 },
     ]);
   });
 
@@ -54,8 +54,8 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText("hello   world");
 
     expect(tokens).toEqual([
-      { value: "hello", normalizedValue: "hello", currentIndex: 0 },
-      { value: "world", normalizedValue: "world", currentIndex: 1 },
+      { value: "hello", normalizedValue: "hello", index: 0 },
+      { value: "world", normalizedValue: "world", index: 1 },
     ]);
   });
 
@@ -66,8 +66,8 @@ describe("tokenizeText", () => {
     });
 
     expect(tokens).toEqual([
-      { value: "Hello", normalizedValue: "hello", currentIndex: 0 },
-      { value: "WORLD!", normalizedValue: "world!", currentIndex: 1 },
+      { value: "Hello", normalizedValue: "hello", index: 0 },
+      { value: "WORLD!", normalizedValue: "world!", index: 1 },
     ]);
   });
 
@@ -78,8 +78,8 @@ describe("tokenizeText", () => {
     });
 
     expect(tokens).toEqual([
-      { value: "hello", normalizedValue: "hello", currentIndex: 0 },
-      { value: "world!", normalizedValue: "world", currentIndex: 1 },
+      { value: "hello", normalizedValue: "hello", index: 0 },
+      { value: "world!", normalizedValue: "world", index: 1 },
     ]);
   });
 
@@ -91,8 +91,8 @@ describe("tokenizeText", () => {
     });
 
     expect(tokens).toEqual([
-      { value: "Hello", normalizedValue: "hello", currentIndex: 0 },
-      { value: "WORLD!", normalizedValue: "world", currentIndex: 1 },
+      { value: "Hello", normalizedValue: "hello", index: 0 },
+      { value: "WORLD!", normalizedValue: "world", index: 1 },
     ]);
   });
 
@@ -112,7 +112,7 @@ describe("tokenizeText", () => {
       {
         value: "今日はいい天気ですね。",
         normalizedValue: "今日はいい天気ですね。",
-        currentIndex: 0,
+        index: 0,
       },
     ]);
   });
@@ -124,10 +124,10 @@ describe("tokenizeText", () => {
     });
 
     expect(tokens).toEqual([
-      { value: "私", normalizedValue: "私", currentIndex: 0 },
-      { value: "は", normalizedValue: "は", currentIndex: 1 },
-      { value: "学生", normalizedValue: "学生", currentIndex: 2 },
-      { value: "です。", normalizedValue: "です。", currentIndex: 3 },
+      { value: "私", normalizedValue: "私", index: 0 },
+      { value: "は", normalizedValue: "は", index: 1 },
+      { value: "学生", normalizedValue: "学生", index: 2 },
+      { value: "です。", normalizedValue: "です。", index: 3 },
     ]);
   });
 
@@ -140,12 +140,12 @@ describe("tokenizeText", () => {
       {
         value: "Hello world!",
         normalizedValue: "Hello world!",
-        currentIndex: 0,
+        index: 0,
       },
       {
         value: "This   is fine.",
         normalizedValue: "This   is fine.",
-        currentIndex: 1,
+        index: 1,
       },
     ]);
   });
@@ -153,17 +153,17 @@ describe("tokenizeText", () => {
   it("merges multiple punctuation marks", () => {
     const tokens = tokenizeText("Wait!!! Really??", { separation: "word" });
     expect(tokens).toEqual([
-      { value: "Wait!!!", normalizedValue: "Wait!!!", currentIndex: 0 },
-      { value: "Really??", normalizedValue: "Really??", currentIndex: 1 },
+      { value: "Wait!!!", normalizedValue: "Wait!!!", index: 0 },
+      { value: "Really??", normalizedValue: "Really??", index: 1 },
     ]);
   });
 
   it("keeps emojis as standalone tokens", () => {
     const tokens = tokenizeText("Hello 😊 world!", { separation: "word" });
     expect(tokens).toEqual([
-      { value: "Hello", normalizedValue: "Hello", currentIndex: 0 },
-      { value: "😊", normalizedValue: "😊", currentIndex: 1 },
-      { value: "world!", normalizedValue: "world!", currentIndex: 2 },
+      { value: "Hello", normalizedValue: "Hello", index: 0 },
+      { value: "😊", normalizedValue: "😊", index: 1 },
+      { value: "world!", normalizedValue: "world!", index: 2 },
     ]);
   });
 
@@ -171,10 +171,10 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText("Version 2.0 is out!", { separation: "word" });
 
     expect(tokens).toEqual([
-      { value: "Version", normalizedValue: "Version", currentIndex: 0 },
-      { value: "2.0", normalizedValue: "2.0", currentIndex: 1 },
-      { value: "is", normalizedValue: "is", currentIndex: 2 },
-      { value: "out!", normalizedValue: "out!", currentIndex: 3 },
+      { value: "Version", normalizedValue: "Version", index: 0 },
+      { value: "2.0", normalizedValue: "2.0", index: 1 },
+      { value: "is", normalizedValue: "is", index: 2 },
+      { value: "out!", normalizedValue: "out!", index: 3 },
     ]);
   });
 
@@ -182,8 +182,8 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText("Hello 世界!", { separation: "word" });
 
     expect(tokens).toEqual([
-      { value: "Hello", normalizedValue: "Hello", currentIndex: 0 },
-      { value: "世界!", normalizedValue: "世界!", currentIndex: 1 },
+      { value: "Hello", normalizedValue: "Hello", index: 0 },
+      { value: "世界!", normalizedValue: "世界!", index: 1 },
     ]);
   });
 
@@ -191,18 +191,18 @@ describe("tokenizeText", () => {
     const tokens = tokenizeText("hello + world", { separation: "word" });
 
     expect(tokens).toEqual([
-      { value: "hello", normalizedValue: "hello", currentIndex: 0 },
-      { value: "+", normalizedValue: "+", currentIndex: 1 },
-      { value: "world", normalizedValue: "world", currentIndex: 2 },
+      { value: "hello", normalizedValue: "hello", index: 0 },
+      { value: "+", normalizedValue: "+", index: 1 },
+      { value: "world", normalizedValue: "world", index: 2 },
     ]);
   });
 
   it("handles unicode punctuation like em-dash and ellipsis", () => {
     const tokens = tokenizeText("Is Jean-Claude cool?", { separation: "word" });
     expect(tokens).toEqual([
-      { value: "Is", normalizedValue: "Is", currentIndex: 0 },
-      { value: "Jean-Claude", normalizedValue: "Jean-Claude", currentIndex: 1 },
-      { value: "cool?", normalizedValue: "cool?", currentIndex: 2 },
+      { value: "Is", normalizedValue: "Is", index: 0 },
+      { value: "Jean-Claude", normalizedValue: "Jean-Claude", index: 1 },
+      { value: "cool?", normalizedValue: "cool?", index: 2 },
     ]);
   });
 
@@ -216,7 +216,7 @@ describe("tokenizeText", () => {
       {
         value: "Wait—really…?",
         normalizedValue: "Waitreally",
-        currentIndex: 0,
+        index: 0,
       },
     ]);
   });

@@ -1,6 +1,7 @@
 export const DEFAULT_TEXT_DIFF_OPTIONS: TextDiffOptions = {
   showOnly: [],
-  mode: "visual",
+  accuracy: "normal",
+  detectMoves: false,
   separation: "word",
   ignoreCase: false,
   ignorePunctuation: false,
@@ -10,15 +11,15 @@ export const DEFAULT_TEXT_DIFF_OPTIONS: TextDiffOptions = {
 export type TextToken = {
   value: string;
   normalizedValue: string;
-  currentIndex: number;
+  index: number;
 };
 
 export type TextTokenDiff = {
   value: string;
+  index: number | null;
   previousValue?: string;
-  status: TextStatus;
-  currentIndex: number | null;
   previousIndex: number | null;
+  status: TextStatus;
 };
 
 export enum TextStatus {
@@ -32,7 +33,8 @@ export enum TextStatus {
 export type TextDiffOptions = {
   showOnly?: `${TextStatus}`[];
   separation?: "character" | "word" | "sentence";
-  mode?: "visual" | "strict";
+  accuracy?: "normal" | "strict";
+  detectMoves?: boolean;
   ignoreCase?: boolean;
   ignorePunctuation?: boolean;
   locale?: Intl.Locale | string;
@@ -47,9 +49,9 @@ export type TextDiff = {
     | TextStatus.UPDATED;
   diff: {
     value: string;
+    index: number | null;
     previousValue?: string;
-    status: TextStatus;
-    currentIndex: number | null;
     previousIndex: number | null;
+    status: TextStatus;
   }[];
 };

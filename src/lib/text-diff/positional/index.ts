@@ -1,7 +1,7 @@
 import { TextDiff, TextToken, TextTokenDiff, TextStatus } from "@models/text";
 import { getDiffStatus } from "../utils/status";
 
-export function getStrictTextDiff(
+export function getPositionalTextDiff(
   previousTokens: TextToken[],
   currentTokens: TextToken[],
 ): TextDiff {
@@ -29,17 +29,15 @@ export function getStrictTextDiff(
     if (prevArr && prevArr.length > 0) {
       const prev = prevArr[0];
       const status =
-        prev.currentIndex === token.currentIndex
-          ? TextStatus.EQUAL
-          : TextStatus.MOVED;
+        prev.index === token.index ? TextStatus.EQUAL : TextStatus.MOVED;
 
       statusSet.add(status);
 
       diff.push({
         value: token.value,
+        index: token.index,
+        previousIndex: prev.index,
         status,
-        currentIndex: token.currentIndex,
-        previousIndex: prev.currentIndex,
       });
 
       if (prevArr.length === 1) {
@@ -48,13 +46,13 @@ export function getStrictTextDiff(
         prevArr.shift();
       }
     } else {
-      addedTokensMap.set(token.currentIndex, token);
+      addedTokensMap.set(token.index, token);
       statusSet.add(TextStatus.ADDED);
       diff.push({
         value: token.value,
-        status: TextStatus.ADDED,
-        currentIndex: token.currentIndex,
+        index: token.index,
         previousIndex: null,
+        status: TextStatus.ADDED,
       });
     }
   }
@@ -62,24 +60,24 @@ export function getStrictTextDiff(
   for (const previousTokens of previousTokensMap.values()) {
     for (let i = 0; i < previousTokens.length; i++) {
       const previousToken = previousTokens[i];
-      const added = addedTokensMap.get(previousToken.currentIndex);
+      const added = addedTokensMap.get(previousToken.index);
 
       if (added) {
         statusSet.add(TextStatus.UPDATED);
-        diff[previousToken.currentIndex] = {
+        diff[previousToken.index] = {
           value: added.value,
+          index: added.index,
           previousValue: previousToken.value,
-          status: TextStatus.UPDATED,
           previousIndex: null,
-          currentIndex: added.currentIndex,
+          status: TextStatus.UPDATED,
         };
       } else {
         statusSet.add(TextStatus.DELETED);
         diff.push({
           value: previousToken.value,
+          index: null,
+          previousIndex: previousToken.index,
           status: TextStatus.DELETED,
-          previousIndex: previousToken.currentIndex,
-          currentIndex: null,
         });
       }
     }

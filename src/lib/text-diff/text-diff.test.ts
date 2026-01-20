@@ -6,9 +6,9 @@ describe("getTextDiff - general", () => {
       type: "text",
       status: "equal",
       diff: [
-        { value: "A", status: "equal", currentIndex: 0, previousIndex: 0 },
-        { value: "B", status: "equal", currentIndex: 1, previousIndex: 1 },
-        { value: "C", status: "equal", currentIndex: 2, previousIndex: 2 },
+        { value: "A", index: 0, previousIndex: 0, status: "equal" },
+        { value: "B", index: 1, previousIndex: 1, status: "equal" },
+        { value: "C", index: 2, previousIndex: 2, status: "equal" },
       ],
     });
   });
@@ -18,8 +18,8 @@ describe("getTextDiff - general", () => {
       type: "text",
       status: "added",
       diff: [
-        { value: "A", status: "added", currentIndex: 0, previousIndex: null },
-        { value: "B", status: "added", currentIndex: 1, previousIndex: null },
+        { value: "A", index: 0, previousIndex: null, status: "added" },
+        { value: "B", index: 1, previousIndex: null, status: "added" },
       ],
     });
   });
@@ -29,8 +29,8 @@ describe("getTextDiff - general", () => {
       type: "text",
       status: "deleted",
       diff: [
-        { value: "A", status: "deleted", currentIndex: null, previousIndex: 0 },
-        { value: "B", status: "deleted", currentIndex: null, previousIndex: 1 },
+        { value: "A", index: null, previousIndex: 0, status: "deleted" },
+        { value: "B", index: null, previousIndex: 1, status: "deleted" },
       ],
     });
   });
@@ -42,20 +42,20 @@ describe("getTextDiff – visual", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "A", status: "equal", currentIndex: 0, previousIndex: 0 },
+        { value: "A", index: 0, previousIndex: 0, status: "equal" },
         {
           value: "B",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 1,
+          status: "deleted",
         },
         {
           value: "X",
-          status: "added",
-          currentIndex: 1,
+          index: 1,
           previousIndex: null,
+          status: "added",
         },
-        { value: "C", status: "equal", currentIndex: 2, previousIndex: 2 },
+        { value: "C", index: 2, previousIndex: 2, status: "equal" },
       ],
     });
   });
@@ -65,12 +65,12 @@ describe("getTextDiff – visual", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "A", status: "equal", currentIndex: 0, previousIndex: 0 },
-        { value: "B", status: "equal", currentIndex: 1, previousIndex: 1 },
-        { value: "C", status: "deleted", currentIndex: null, previousIndex: 2 },
-        { value: "A", status: "equal", currentIndex: 2, previousIndex: 3 },
-        { value: "B", status: "equal", currentIndex: 3, previousIndex: 4 },
-        { value: "C", status: "added", currentIndex: 4, previousIndex: null },
+        { value: "A", index: 0, previousIndex: 0, status: "equal" },
+        { value: "B", index: 1, previousIndex: 1, status: "equal" },
+        { value: "C", index: null, previousIndex: 2, status: "deleted" },
+        { value: "A", index: 2, previousIndex: 3, status: "equal" },
+        { value: "B", index: 3, previousIndex: 4, status: "equal" },
+        { value: "C", index: 4, previousIndex: null, status: "added" },
       ],
     });
   });
@@ -86,51 +86,51 @@ describe("getTextDiff – visual", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "He,", status: "added", currentIndex: 0, previousIndex: null },
+        { value: "He,", index: 0, previousIndex: null, status: "added" },
         {
           value: "solemnly",
-          status: "equal",
-          currentIndex: 1,
+          index: 1,
           previousIndex: 0,
+          status: "equal",
         },
         {
           value: "he",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 1,
+          status: "deleted",
         },
-        { value: "came", status: "equal", currentIndex: 2, previousIndex: 2 },
-        { value: "and", status: "equal", currentIndex: 3, previousIndex: 3 },
-        { value: "he", status: "added", currentIndex: 4, previousIndex: null },
+        { value: "came", index: 2, previousIndex: 2, status: "equal" },
+        { value: "and", index: 3, previousIndex: 3, status: "equal" },
+        { value: "he", index: 4, previousIndex: null, status: "added" },
         {
           value: "mounted",
-          status: "equal",
-          currentIndex: 5,
+          index: 5,
           previousIndex: 4,
+          status: "equal",
         },
         {
           value: "the",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 5,
+          status: "deleted",
         },
         {
           value: "rounded",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 6,
+          status: "deleted",
         },
         {
           value: "square",
-          status: "added",
-          currentIndex: 6,
+          index: 6,
           previousIndex: null,
+          status: "added",
         },
         {
           value: "gunrest.",
-          status: "equal",
-          currentIndex: 7,
+          index: 7,
           previousIndex: 7,
+          status: "equal",
         },
       ],
     });
@@ -145,28 +145,28 @@ describe("getTextDiff – visual", () => {
       diff: [
         {
           value: "a",
-          status: "deleted",
+          index: null,
           previousIndex: 0,
-          currentIndex: null,
+          status: "deleted",
         },
         {
           value: "b",
-          status: "deleted",
+          index: null,
           previousIndex: 1,
-          currentIndex: null,
+          status: "deleted",
         },
         {
           value: "x",
-          status: "added",
-          currentIndex: 0,
+          index: 0,
           previousIndex: null,
+          status: "added",
         },
-        { value: "c", status: "equal", currentIndex: 1, previousIndex: 2 },
+        { value: "c", index: 1, previousIndex: 2, status: "equal" },
         {
           value: "y",
-          status: "added",
-          currentIndex: 2,
+          index: 2,
           previousIndex: null,
+          status: "added",
         },
       ],
     });
@@ -185,33 +185,33 @@ describe("getTextDiff – visual", () => {
       diff: [
         {
           value: "Hello world.",
-          status: "equal",
-          currentIndex: 0,
+          index: 0,
           previousIndex: 0,
+          status: "equal",
         },
         {
           value: "I like turtles.",
-          status: "deleted",
+          index: null,
           previousIndex: 1,
-          currentIndex: null,
+          status: "deleted",
         },
         {
           value: "Goodbye moon.",
-          status: "deleted",
+          index: null,
           previousIndex: 2,
-          currentIndex: null,
+          status: "deleted",
         },
         {
           value: "I love turtles.",
-          status: "added",
-          currentIndex: 1,
+          index: 1,
           previousIndex: null,
+          status: "added",
         },
         {
           value: "Welcome sun.",
-          status: "added",
-          currentIndex: 2,
+          index: 2,
           previousIndex: null,
+          status: "added",
         },
       ],
     });
@@ -240,20 +240,20 @@ describe("getTextDiff – visual", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "a", status: "equal", currentIndex: 0, previousIndex: 0 },
+        { value: "a", index: 0, previousIndex: 0, status: "equal" },
         {
           value: "b",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 1,
+          status: "deleted",
         },
         {
           value: "x",
-          status: "added",
-          currentIndex: 1,
+          index: 1,
           previousIndex: null,
+          status: "added",
         },
-        { value: "c", status: "equal", currentIndex: 2, previousIndex: 2 },
+        { value: "c", index: 2, previousIndex: 2, status: "equal" },
       ],
     });
   });
@@ -269,21 +269,21 @@ describe("getTextDiff – visual", () => {
       diff: [
         {
           value: "Hello world.",
-          status: "equal",
-          currentIndex: 0,
+          index: 0,
           previousIndex: 0,
+          status: "equal",
         },
         {
           value: "How are you?",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 1,
+          status: "deleted",
         },
         {
           value: "I'm fine.",
-          status: "added",
-          currentIndex: 1,
+          index: 1,
           previousIndex: null,
+          status: "added",
         },
       ],
     });
@@ -296,15 +296,15 @@ describe("getTextDiff – strict", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "A", status: "equal", currentIndex: 0, previousIndex: 0 },
+        { value: "A", status: "equal", index: 0, previousIndex: 0 },
         {
           value: "X",
+          index: 1,
           previousValue: "B",
-          status: "updated",
-          currentIndex: 1,
           previousIndex: null,
+          status: "updated",
         },
-        { value: "C", status: "equal", currentIndex: 2, previousIndex: 2 },
+        { value: "C", index: 2, previousIndex: 2, status: "equal" },
       ],
     });
   });
@@ -319,8 +319,8 @@ describe("getTextDiff – strict", () => {
       type: "text",
       status: "equal",
       diff: [
-        { value: "hello", status: "equal", currentIndex: 0, previousIndex: 0 },
-        { value: "world", status: "equal", currentIndex: 1, previousIndex: 1 },
+        { value: "hello", index: 0, previousIndex: 0, status: "equal" },
+        { value: "world", index: 1, previousIndex: 1, status: "equal" },
       ],
     });
   });
@@ -335,8 +335,8 @@ describe("getTextDiff – strict", () => {
       type: "text",
       status: "equal",
       diff: [
-        { value: "Hello", status: "equal", currentIndex: 0, previousIndex: 0 },
-        { value: "world", status: "equal", currentIndex: 1, previousIndex: 1 },
+        { value: "Hello", index: 0, previousIndex: 0, status: "equal" },
+        { value: "world", index: 1, previousIndex: 1, status: "equal" },
       ],
     });
   });
@@ -352,40 +352,40 @@ describe("getTextDiff – strict", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "He,", status: "added", currentIndex: 0, previousIndex: null },
+        { value: "He,", index: 0, previousIndex: null, status: "added" },
         {
           value: "solemnly",
-          status: "moved",
-          currentIndex: 1,
+          index: 1,
           previousIndex: 0,
+          status: "moved",
         },
-        { value: "came", status: "equal", currentIndex: 2, previousIndex: 2 },
-        { value: "and", status: "equal", currentIndex: 3, previousIndex: 3 },
-        { value: "he", status: "moved", currentIndex: 4, previousIndex: 1 },
+        { value: "came", index: 2, previousIndex: 2, status: "equal" },
+        { value: "and", index: 3, previousIndex: 3, status: "equal" },
+        { value: "he", index: 4, previousIndex: 1, status: "moved" },
         {
           value: "mounted",
-          status: "moved",
-          currentIndex: 5,
+          index: 5,
           previousIndex: 4,
+          status: "moved",
         },
         {
           value: "square",
+          index: 6,
           previousValue: "rounded",
-          status: "updated",
-          currentIndex: 6,
           previousIndex: null,
+          status: "updated",
         },
         {
           value: "gunrest.",
-          status: "equal",
-          currentIndex: 7,
+          index: 7,
           previousIndex: 7,
+          status: "equal",
         },
         {
           value: "the",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 5,
+          status: "deleted",
         },
       ],
     });
@@ -403,35 +403,35 @@ describe("getTextDiff – strict", () => {
       diff: [
         {
           value: "x",
+          index: 0,
           previousValue: "a",
-          status: "updated",
-          currentIndex: 0,
           previousIndex: null,
+          status: "updated",
         },
         {
           value: "b",
-          status: "equal",
-          currentIndex: 1,
+          index: 1,
           previousIndex: 1,
+          status: "equal",
         },
         {
           value: "c",
-          status: "equal",
-          currentIndex: 2,
+          index: 2,
           previousIndex: 2,
+          status: "equal",
         },
         {
           value: "y",
+          index: 3,
           previousValue: "d",
-          status: "updated",
-          currentIndex: 3,
           previousIndex: null,
+          status: "updated",
         },
         {
           value: "z",
-          status: "deleted",
-          currentIndex: null,
+          index: null,
           previousIndex: 4,
+          status: "deleted",
         },
       ],
     });
@@ -450,28 +450,28 @@ describe("getTextDiff – strict", () => {
       diff: [
         {
           value: "B two.",
-          status: "moved",
-          currentIndex: 0,
+          index: 0,
           previousIndex: 1,
+          status: "moved",
         },
         {
           value: "A ONE.",
-          status: "moved",
-          currentIndex: 1,
+          index: 1,
           previousIndex: 0,
+          status: "moved",
         },
         {
           value: "C three.",
-          status: "equal",
-          currentIndex: 2,
+          index: 2,
           previousIndex: 2,
+          status: "equal",
         },
         {
           value: "E five.",
+          index: 3,
           previousValue: "D four.",
-          status: "updated",
           previousIndex: null,
-          currentIndex: 3,
+          status: "updated",
         },
       ],
     });
@@ -484,11 +484,11 @@ describe("getTextDiff – strict", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "A", status: "equal", currentIndex: 0, previousIndex: 0 },
-        { value: "B", status: "equal", currentIndex: 1, previousIndex: 1 },
-        { value: "A", status: "moved", currentIndex: 2, previousIndex: 3 },
-        { value: "B", status: "moved", currentIndex: 3, previousIndex: 4 },
-        { value: "C", status: "moved", currentIndex: 4, previousIndex: 2 },
+        { value: "A", index: 0, previousIndex: 0, status: "equal" },
+        { value: "B", index: 1, previousIndex: 1, status: "equal" },
+        { value: "A", index: 2, previousIndex: 3, status: "moved" },
+        { value: "B", index: 3, previousIndex: 4, status: "moved" },
+        { value: "C", index: 4, previousIndex: 2, status: "moved" },
       ],
     });
   });

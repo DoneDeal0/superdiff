@@ -16,9 +16,9 @@ export function getLCSTextDiff(
     if (edit.status === TextStatus.EQUAL) {
       diff.push({
         value: currentTokens[edit.curr].value,
-        status: TextStatus.EQUAL,
-        currentIndex: edit.curr,
+        index: edit.curr,
         previousIndex: edit.prev,
+        status: TextStatus.EQUAL,
       });
       statusSet.add(TextStatus.EQUAL);
     }
@@ -26,9 +26,9 @@ export function getLCSTextDiff(
     if (edit.status === TextStatus.ADDED) {
       diff.push({
         value: currentTokens[edit.curr].value,
-        status: TextStatus.ADDED,
-        currentIndex: edit.curr,
+        index: edit.curr,
         previousIndex: null,
+        status: TextStatus.ADDED,
       });
       statusSet.add(TextStatus.ADDED);
     }
@@ -36,9 +36,9 @@ export function getLCSTextDiff(
     if (edit.status === TextStatus.DELETED) {
       diff.push({
         value: previousTokens[edit.prev].value,
-        status: TextStatus.DELETED,
+        index: null,
         previousIndex: edit.prev,
-        currentIndex: null,
+        status: TextStatus.DELETED,
       });
       statusSet.add(TextStatus.DELETED);
     }

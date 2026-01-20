@@ -34,27 +34,14 @@ function normalizeToken(token: string, options: TextDiffOptions): string {
   return normalizedToken;
 }
 
-export const tokenizeText = (
+export const tokenizeStrictText = (
   text: string | null | undefined,
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
 ): TextToken[] => {
   const result: TextToken[] = [];
   if (!text || !text.trim()) return result;
 
-  const { separation, locale, ignoreCase, ignorePunctuation } = options;
-
-  if (separation === "word" && !ignoreCase && !ignorePunctuation && !locale) {
-    const tokens = text.match(/\S+/g) || [];
-    for (let i = 0; i < tokens.length; i++) {
-      const value = tokens[i];
-      result.push({
-        value,
-        normalizedValue: value,
-        index: i,
-      });
-    }
-    return result;
-  }
+  const { separation, locale } = options;
 
   if (separation === "character") {
     let index = 0;
@@ -68,40 +55,6 @@ export const tokenizeText = (
         });
       }
       index++;
-    }
-    return result;
-  }
-
-  if (separation === "sentence" && locale) {
-    const segmenter = getSegmenter(locale, "sentence");
-    let index = 0;
-    for (const data of segmenter.segment(text)) {
-      const trimmedSentence = data.segment.trim();
-      if (trimmedSentence) {
-        result.push({
-          value: trimmedSentence,
-          normalizedValue: normalizeToken(trimmedSentence, options),
-          index: index,
-        });
-        index++;
-      }
-    }
-    return result;
-  }
-
-  if (separation === "sentence" && !locale) {
-    const sentences = text.match(/[^.!?]+[.!?]+|\S+/g) || [];
-    let index = 0;
-    for (const data of sentences) {
-      const trimmedSentence = data.trim();
-      if (trimmedSentence) {
-        result.push({
-          value: trimmedSentence,
-          normalizedValue: normalizeToken(trimmedSentence, options),
-          index: index,
-        });
-        index++;
-      }
     }
     return result;
   }
@@ -159,19 +112,20 @@ export const tokenizeText = (
     }
 
     return result;
-  }
-  console.log("reached", text);
-  const parts = text.split(/\s+/u);
-  for (let i = 0; i < parts.length; i++) {
-    const token = parts[i];
-    if (token) {
-      result.push({
-        value: token,
-        normalizedValue: normalizeToken(token, options),
-        index: i,
-      });
+  } else {
+    const segmenter = getSegmenter(locale, "sentence");
+    let index = 0;
+    for (const data of segmenter.segment(text)) {
+      const trimmedSentence = data.segment.trim();
+      if (trimmedSentence) {
+        result.push({
+          value: trimmedSentence,
+          normalizedValue: normalizeToken(trimmedSentence, options),
+          index: index,
+        });
+        index++;
+      }
     }
+    return result;
   }
-
-  return result;
 };
