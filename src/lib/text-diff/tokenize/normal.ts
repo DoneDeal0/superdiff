@@ -21,10 +21,11 @@ export const tokenizeNormalText = (
   text: string | null | undefined,
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
 ): TextToken[] => {
+  const separation = options.separation || DEFAULT_TEXT_DIFF_OPTIONS.separation;
   const result: TextToken[] = [];
   if (!text || !text.trim()) return result;
 
-  if (options.separation === "character") {
+  if (separation === "character") {
     let index = 0;
     for (const char of text) {
       const trimmedChar = char.trim();
@@ -40,7 +41,7 @@ export const tokenizeNormalText = (
     return result;
   }
 
-  if (options.separation === "word") {
+  if (separation === "word") {
     const tokens = text.match(/\S+/g) || [];
     for (let i = 0; i < tokens.length; i++) {
       const value = tokens[i];

@@ -1,10 +1,10 @@
-import { tokenizeText } from ".";
+import { tokenizeStrictText } from "./strict";
 
 describe("tokenizeText", () => {
   const base = "hello wrld! It's a  great day... A wonderful day! Yeah.";
 
   it("splits text into sentences", () => {
-    const tokens = tokenizeText(base, { separation: "sentence" });
+    const tokens = tokenizeStrictText(base, { separation: "sentence" });
 
     expect(tokens).toEqual([
       { value: "hello wrld!", normalizedValue: "hello wrld!", index: 0 },
@@ -23,7 +23,7 @@ describe("tokenizeText", () => {
   });
 
   it("splits text into words and merges punctuation", () => {
-    const tokens = tokenizeText(base, { separation: "word" });
+    const tokens = tokenizeStrictText(base, { separation: "word" });
 
     expect(tokens).toEqual([
       { value: "hello", normalizedValue: "hello", index: 0 },
@@ -40,7 +40,7 @@ describe("tokenizeText", () => {
   });
 
   it("splits text into characters", () => {
-    const tokens = tokenizeText("abc!", { separation: "character" });
+    const tokens = tokenizeStrictText("abc!", { separation: "character" });
 
     expect(tokens).toEqual([
       { value: "a", normalizedValue: "a", index: 0 },
@@ -51,7 +51,7 @@ describe("tokenizeText", () => {
   });
 
   it("splits text by words when separation type is unknown", () => {
-    const tokens = tokenizeText("hello   world");
+    const tokens = tokenizeStrictText("hello   world");
 
     expect(tokens).toEqual([
       { value: "hello", normalizedValue: "hello", index: 0 },
@@ -60,7 +60,7 @@ describe("tokenizeText", () => {
   });
 
   it("normalizes tokens by lowercasing when ignoreCase is true", () => {
-    const tokens = tokenizeText("Hello WORLD!", {
+    const tokens = tokenizeStrictText("Hello WORLD!", {
       separation: "word",
       ignoreCase: true,
     });
@@ -72,7 +72,7 @@ describe("tokenizeText", () => {
   });
 
   it("removes punctuation in normalizedValue when ignorePunctuation is true", () => {
-    const tokens = tokenizeText("hello world!", {
+    const tokens = tokenizeStrictText("hello world!", {
       separation: "word",
       ignorePunctuation: true,
     });
@@ -84,7 +84,7 @@ describe("tokenizeText", () => {
   });
 
   it("applies both ignoreCase and ignorePunctuation", () => {
-    const tokens = tokenizeText("Hello WORLD!", {
+    const tokens = tokenizeStrictText("Hello WORLD!", {
       separation: "word",
       ignoreCase: true,
       ignorePunctuation: true,
@@ -97,13 +97,13 @@ describe("tokenizeText", () => {
   });
 
   it("returns empty array for empty input", () => {
-    expect(tokenizeText("", { separation: "word" })).toEqual([]);
-    expect(tokenizeText(null, { separation: "word" })).toEqual([]);
-    expect(tokenizeText(undefined, { separation: "word" })).toEqual([]);
+    expect(tokenizeStrictText("", { separation: "word" })).toEqual([]);
+    expect(tokenizeStrictText(null, { separation: "word" })).toEqual([]);
+    expect(tokenizeStrictText(undefined, { separation: "word" })).toEqual([]);
   });
 
   it("handles locale-specific segmentation (Japanese)", () => {
-    const tokens = tokenizeText("今日はいい天気ですね。", {
+    const tokens = tokenizeStrictText("今日はいい天気ですね。", {
       separation: "sentence",
       locale: "ja",
     });
@@ -118,7 +118,7 @@ describe("tokenizeText", () => {
   });
 
   it("handles CJK word segmentation", () => {
-    const tokens = tokenizeText("私は学生です。", {
+    const tokens = tokenizeStrictText("私は学生です。", {
       separation: "word",
       locale: "ja",
     });
@@ -132,7 +132,7 @@ describe("tokenizeText", () => {
   });
 
   it("trims extra spacing in sentences", () => {
-    const tokens = tokenizeText("  Hello world!   This   is fine. ", {
+    const tokens = tokenizeStrictText("  Hello world!   This   is fine. ", {
       separation: "sentence",
     });
 
@@ -151,7 +151,9 @@ describe("tokenizeText", () => {
   });
 
   it("merges multiple punctuation marks", () => {
-    const tokens = tokenizeText("Wait!!! Really??", { separation: "word" });
+    const tokens = tokenizeStrictText("Wait!!! Really??", {
+      separation: "word",
+    });
     expect(tokens).toEqual([
       { value: "Wait!!!", normalizedValue: "Wait!!!", index: 0 },
       { value: "Really??", normalizedValue: "Really??", index: 1 },
@@ -159,7 +161,9 @@ describe("tokenizeText", () => {
   });
 
   it("keeps emojis as standalone tokens", () => {
-    const tokens = tokenizeText("Hello 😊 world!", { separation: "word" });
+    const tokens = tokenizeStrictText("Hello 😊 world!", {
+      separation: "word",
+    });
     expect(tokens).toEqual([
       { value: "Hello", normalizedValue: "Hello", index: 0 },
       { value: "😊", normalizedValue: "😊", index: 1 },
@@ -168,7 +172,9 @@ describe("tokenizeText", () => {
   });
 
   it("handles numbers and punctuation", () => {
-    const tokens = tokenizeText("Version 2.0 is out!", { separation: "word" });
+    const tokens = tokenizeStrictText("Version 2.0 is out!", {
+      separation: "word",
+    });
 
     expect(tokens).toEqual([
       { value: "Version", normalizedValue: "Version", index: 0 },
@@ -179,7 +185,7 @@ describe("tokenizeText", () => {
   });
 
   it("handles mixed scripts", () => {
-    const tokens = tokenizeText("Hello 世界!", { separation: "word" });
+    const tokens = tokenizeStrictText("Hello 世界!", { separation: "word" });
 
     expect(tokens).toEqual([
       { value: "Hello", normalizedValue: "Hello", index: 0 },
@@ -188,7 +194,7 @@ describe("tokenizeText", () => {
   });
 
   it("does not merge symbols that are not punctuation", () => {
-    const tokens = tokenizeText("hello + world", { separation: "word" });
+    const tokens = tokenizeStrictText("hello + world", { separation: "word" });
 
     expect(tokens).toEqual([
       { value: "hello", normalizedValue: "hello", index: 0 },
@@ -198,7 +204,9 @@ describe("tokenizeText", () => {
   });
 
   it("handles unicode punctuation like em-dash and ellipsis", () => {
-    const tokens = tokenizeText("Is Jean-Claude cool?", { separation: "word" });
+    const tokens = tokenizeStrictText("Is Jean-Claude cool?", {
+      separation: "word",
+    });
     expect(tokens).toEqual([
       { value: "Is", normalizedValue: "Is", index: 0 },
       { value: "Jean-Claude", normalizedValue: "Jean-Claude", index: 1 },
@@ -207,7 +215,7 @@ describe("tokenizeText", () => {
   });
 
   it("ignorePunctuation removes unicode punctuation", () => {
-    const tokens = tokenizeText("Wait—really…?", {
+    const tokens = tokenizeStrictText("Wait—really…?", {
       separation: "word",
       ignorePunctuation: true,
     });

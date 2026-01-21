@@ -41,7 +41,8 @@ export const tokenizeStrictText = (
   const result: TextToken[] = [];
   if (!text || !text.trim()) return result;
 
-  const { separation, locale } = options;
+  const separation = options.separation || DEFAULT_TEXT_DIFF_OPTIONS.separation;
+  const locale = options.locale;
 
   if (separation === "character") {
     let index = 0;

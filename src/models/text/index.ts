@@ -1,5 +1,4 @@
 export const DEFAULT_TEXT_DIFF_OPTIONS: TextDiffOptions = {
-  showOnly: [],
   accuracy: "normal",
   detectMoves: false,
   separation: "word",
@@ -31,9 +30,8 @@ export enum TextStatus {
 }
 
 export type TextDiffOptions = {
-  showOnly?: `${TextStatus}`[];
   separation?: "character" | "word" | "sentence";
-  accuracy?: "normal" | "strict";
+  accuracy?: "normal" | "high";
   detectMoves?: boolean;
   ignoreCase?: boolean;
   ignorePunctuation?: boolean;
@@ -42,11 +40,7 @@ export type TextDiffOptions = {
 
 export type TextDiff = {
   type: "text";
-  status:
-    | TextStatus.ADDED
-    | TextStatus.DELETED
-    | TextStatus.EQUAL
-    | TextStatus.UPDATED;
+  status: "added" | "equal" | "deleted" | "updated";
   diff: {
     value: string;
     index: number | null;

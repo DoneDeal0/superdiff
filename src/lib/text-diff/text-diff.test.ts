@@ -36,7 +36,7 @@ describe("getTextDiff - general", () => {
   });
 });
 
-describe("getTextDiff – visual", () => {
+describe("getTextDiff – normal accuracy", () => {
   it("merges delete + add at same position into updated", () => {
     expect(getTextDiff("A B C", "A X C")).toStrictEqual({
       type: "text",
@@ -138,7 +138,10 @@ describe("getTextDiff – visual", () => {
 
   it("handles moves, updates, adds and deletes correctly - by character", () => {
     expect(
-      getTextDiff("abc", "xcy", { separation: "character", mode: "visual" }),
+      getTextDiff("abc", "xcy", {
+        separation: "character",
+        accuracy: "normal",
+      }),
     ).toStrictEqual({
       type: "text",
       status: "updated",
@@ -177,7 +180,7 @@ describe("getTextDiff – visual", () => {
       getTextDiff(
         "Hello world. I like turtles. Goodbye moon.",
         "Hello world. I love turtles. Welcome sun.",
-        { separation: "sentence", mode: "visual" },
+        { separation: "sentence", accuracy: "normal" },
       ),
     ).toStrictEqual({
       type: "text",
@@ -290,9 +293,9 @@ describe("getTextDiff – visual", () => {
   });
 });
 
-describe("getTextDiff – strict", () => {
+describe("getTextDiff – high accuracy", () => {
   it("merges delete + add at same position into updated", () => {
-    expect(getTextDiff("A B C", "A X C", { mode: "strict" })).toStrictEqual({
+    expect(getTextDiff("A B C", "A X C", { detectMoves: true })).toStrictEqual({
       type: "text",
       status: "updated",
       diff: [
@@ -313,7 +316,7 @@ describe("getTextDiff – strict", () => {
     expect(
       getTextDiff("Hello World", "hello world", {
         ignoreCase: true,
-        mode: "strict",
+        detectMoves: true,
       }),
     ).toStrictEqual({
       type: "text",
@@ -329,7 +332,7 @@ describe("getTextDiff – strict", () => {
     expect(
       getTextDiff("Hello, world!", "Hello world", {
         ignorePunctuation: true,
-        mode: "strict",
+        detectMoves: true,
       }),
     ).toStrictEqual({
       type: "text",
@@ -346,7 +349,7 @@ describe("getTextDiff – strict", () => {
       getTextDiff(
         "Solemnly he came and mounted the rounded gunrest.",
         "He, solemnly came and he mounted square gunrest.",
-        { ignoreCase: true, separation: "word", mode: "strict" },
+        { ignoreCase: true, separation: "word", detectMoves: true },
       ),
     ).toStrictEqual({
       type: "text",
@@ -395,7 +398,7 @@ describe("getTextDiff – strict", () => {
     expect(
       getTextDiff("abcdz", "xbcy", {
         separation: "character",
-        mode: "strict",
+        detectMoves: true,
       }),
     ).toStrictEqual({
       type: "text",
@@ -442,7 +445,7 @@ describe("getTextDiff – strict", () => {
       getTextDiff(
         "A one. B two. C three. D four.",
         "B two. A ONE. C three. E five.",
-        { separation: "sentence", mode: "strict", ignoreCase: true },
+        { separation: "sentence", detectMoves: true, ignoreCase: true },
       ),
     ).toStrictEqual({
       type: "text",
@@ -479,7 +482,7 @@ describe("getTextDiff – strict", () => {
 
   it("detects moves with duplicates", () => {
     expect(
-      getTextDiff("A B C A B", "A B A B C", { mode: "strict" }),
+      getTextDiff("A B C A B", "A B A B C", { detectMoves: true }),
     ).toStrictEqual({
       type: "text",
       status: "updated",

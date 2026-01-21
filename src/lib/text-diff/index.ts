@@ -15,13 +15,14 @@ export function getTextDiff(
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
 ): TextDiff {
   const previousTokens =
-    options?.accuracy === "normal"
-      ? tokenizeNormalText(previousText, options)
-      : tokenizeStrictText(previousText, options);
+    options?.accuracy === "high"
+      ? tokenizeStrictText(previousText, options)
+      : tokenizeNormalText(previousText, options);
   const currentTokens =
-    options?.accuracy === "normal"
-      ? tokenizeNormalText(currentText, options)
-      : tokenizeStrictText(currentText, options);
+    options?.accuracy === "high"
+      ? tokenizeStrictText(currentText, options)
+      : tokenizeNormalText(currentText, options);
+
   if (!previousText && !currentText) {
     return { type: "text", status: TextStatus.EQUAL, diff: [] };
   }

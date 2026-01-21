@@ -534,7 +534,6 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
   previousText: string | null | undefined,
   currentText: string | null | undefined,
   options?: {
-    showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default.
     separation?: "character" | "word" | "sentence", // "word" by default
     accuracy?: "normal" | "strict", // "normal" by default
     detectMoves?: boolean // false by default
@@ -546,12 +545,10 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
 - `previousText`: the original text.
 - `currentText`: the new text.
 - `options`
-  - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-    - `moved` and `updated` are only available in `strict` mode.
   - `separation` whether you want a `character`, `word` or `sentence` based diff.
   - `accuracy`: 
     - `normal` (default): fastest mode, simple tokenization of your text.
-    - `strict`: slower mode, exact tokenization of your text, handle all language subtleties (Unicode, CJK scripts, locale-aware sentence segmentation if a locale is provided, etc.).
+    - `high`: slower mode, exact tokenization of your text, handle all language subtleties (Unicode, CJK scripts, locale-aware sentence segmentation if a locale is provided, etc.).
   - `detectMoves`: 
     - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
     - `true`: tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality).
@@ -577,11 +574,11 @@ type TextDiff = {
 
 #### USAGE
 
-**VISUAL MODE**
+**NORMAL ACCURACY**
 
-`visual` is optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing). Token updates are rendered as two `added` and `deleted` entries. 
+This mode is optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing). Token updates are rendered as two `added` and `deleted` entries. 
 
-This mode is based on a [longest common subsequence (LCS) computation](https://en.wikipedia.org/wiki/Longest_common_subsequence), similar to Git and GitHub diffs.
+The algorithm is based on a [longest common subsequence (LCS) computation](https://en.wikipedia.org/wiki/Longest_common_subsequence), similar to Git and GitHub diffs.
 
 **Input**
 
@@ -652,9 +649,9 @@ getTextDiff(
     }
 ```
 
-**STRICT MODE**
+**HIGH ACCURACY MODE**
 
-`strict` tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality). It also considers direct token swaps as `updated`.
+This mode tracks token moves exactly. Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality). It also considers direct token swaps as `updated`.
 
 **Input**
 
