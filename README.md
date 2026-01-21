@@ -66,10 +66,14 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 | Scenario                | Superdiff    | diff       |
 | ----------------------- | ------------ | ---------- |
-| 10k words               | **2.20 ms**  | 4.11 ms    | 
-| 10k sentences           | 1.55 ms      | **0.62 ms**|
+| 10k words               | **1.13 ms**  | 3.68 ms    | 
+| 100k words              | **21.68 ms** | 45.93 ms   | 
+| 10k sentences           | **2.30 ms**  | 5.61 ms    |
+| 100k sentences          | **21.95 ms** | 62.03 ms   |
 
-👉 Despite providing a full structural diff with a richer output, **Superdiff is the fastest** for arrays and objects diff. It also offers very strong performance for text diff. Finally, it also scales linearly, even with deeply nested data.
+<sub>(Superdiff uses its `normal` accuracy settings to match diff's behavior)</sub>
+
+👉 Despite providing a full structural diff with a richer output, **Superdiff is the fastest**. It also scales linearly, even with deeply nested data.
 
 <hr/>
 
@@ -522,7 +526,7 @@ import { getTextDiff } from "@donedeal0/superdiff";
 
 Compares two texts and returns a structured diff at the character, word, or sentence level.
 
-The output is optimized by default to produce a readable, visual diff (like GitHub or Git). A strict mode that tracks exact token moves and updates is also available. 
+The output is optimized by default to produce a readable, visual diff (like GitHub or Git). A high accuracy mode that tracks exact token moves and updates is also available. 
 
 All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentation, etc.) are handled.
 
@@ -535,7 +539,7 @@ All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentatio
   currentText: string | null | undefined,
   options?: {
     separation?: "character" | "word" | "sentence", // "word" by default
-    accuracy?: "normal" | "strict", // "normal" by default
+    accuracy?: "normal" | "high", // "normal" by default
     detectMoves?: boolean // false by default
     ignoreCase?: boolean, // false by default
     ignorePunctuation?: boolean, // false by default
@@ -586,7 +590,7 @@ The algorithm is based on a [longest common subsequence (LCS) computation](https
 getTextDiff(
 - "The brown fox jumped high",
 + "The orange cat has jumped",
-{ mode: "visual", separation: "word" }
+{ accuracy: "normal", separation: "word" }
 );
 ```
 
@@ -659,7 +663,7 @@ This mode tracks token moves exactly. Semantically precise, but noisier (a simpl
 getTextDiff(
 - "The brown fox jumped high",
 + "The orange cat has jumped",
-{ mode: "strict", separation: "word" }
+{ accuracy: "high", separation: "word" }
 );
 ```
 
