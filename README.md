@@ -18,6 +18,20 @@
 
 <hr/>
 
+# WHY SUPERDIFF?
+
+Superdiff focuses on producing **diffs that are useful**, not just technically correct.
+It’s built for real‑world scenarios where you need:
+
+- output that’s **easy to read**
+- **performance that scales**
+- **options** that adapt to your data
+- **consistency** across arrays, objects, and text
+
+✅ If you’ve ever been frustrated by noisy diffs, missing move detection, or slow deep comparisons, **Superdiff is designed to fix that**.
+
+<hr/>
+
 ## FEATURES
 
 **Superdiff** exports 4 functions:
@@ -31,7 +45,7 @@
 
 ## ⚔ COMPETITORS
 
-| Feature                        | Superdiff | deep-object-diff | deep-diff | diff      | microdiff |
+| Feature                        | superdiff | deep-object-diff | deep-diff | diff      | microdiff |
 | ------------------------------ | --------- | ---------------- | --------- | --------- | --------- | 
 | Object diff                    | ✅         | ✅               | ✅        | ❌        | ✅       |
 | List diff                      | ✅         | ❌               | ⚠️        | ❌        | ⚠️        |
@@ -51,14 +65,14 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 ### List diff
 
-| Scenario                  | Superdiff     | arr-diff   | deep-diff |
+| Scenario                  | superdiff     | arr-diff   | deep-diff |
 | ------------------------- | ------------- | ---------- | --------- |
 | 10k items array           | **1.84 ms**   | 32.95 ms   | 4.74 ms   |
 | 100k items array          | **17.43 ms**  | 3363.15 ms | 50.36 ms  |
 
 ### Object diff
 
-| Scenario                       | Superdiff | deep-object-diff | deep-diff | microdiff  |
+| Scenario                       | superdiff | deep-object-diff | deep-diff | microdiff  |
 | ------------------------------ | --------- | ---------------- | --------- | ---------- |
 | 10k flat object keys           | 2.27 ms   | 2.44 ms          | 39.37 ms  | **2.24 ms**|
 | 100k flat object keys          | **29.23 ms**  | 31.86 ms     | 3784.50 ms| 29.51 ms   |
@@ -66,7 +80,7 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 ### Text diff
 
-| Scenario                | Superdiff    | diff       |
+| Scenario                | superdiff    | diff       |
 | ----------------------- | ------------ | ---------- |
 | 10k words               | **1.13 ms**  | 3.68 ms    | 
 | 100k words              | **21.68 ms** | 45.93 ms   | 
@@ -75,7 +89,7 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 <sub>(Superdiff uses its `normal` accuracy settings to match diff's behavior)</sub>
 
-👉 Despite providing a full structural diff with a richer output, **Superdiff consistently outperforms or matches the fastest diff libraries**. It also scales linearly, even with deeply nested data.
+> 👉 Despite providing a full structural diff with a richer output, **Superdiff consistently outperforms or matches the fastest diff libraries**. It also scales linearly, even with deeply nested data.
 
 <hr/>
 
@@ -122,7 +136,7 @@ options?: {
 - `prevData`: the original object.
 - `nextData`: the new object.
 - `options`
-  - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
+  - `ignoreArrayOrder`: if `true`, `["hello", "world"]` and `["world", "hello"]` are considered `equal`, because the two arrays contain the same values, just in a different order.
   - `showOnly`: returns only the values whose status you are interested in. It takes two parameters:
 
     - `statuses`: status you want to see in the output (e.g. `["added", "equal"]`)
@@ -262,8 +276,8 @@ Compares two arrays and returns a diff for each entry. Supports duplicate values
 - `options`
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
   - `referenceKey` will consider an object to be `updated` rather than `added` or `deleted` if one of its keys remains stable, such as its `id`. This option has no effect on other datatypes.
-  - `ignoreArrayOrder`: if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays contain the same values, just in a different order.
-  - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
+  - `ignoreArrayOrder`: if `true`, `["hello", "world"]` and `["world", "hello"]` are considered `equal`, because the two arrays contain the same values, just in a different order.
+  - `considerMoveAsUpdate`: if `true`, a `moved` value is considered `updated`.
 
 **Output**
 
@@ -390,9 +404,9 @@ Streams the diff of two object lists, ideal for large lists and maximum performa
 - `options`
   - `chunksSize` the number of object diffs returned by each streamed chunk. (e.g. `0` = 1 object diff per chunk, `10` = 10 object diffs per chunk).
   - `showOnly` gives you the option to return only the values whose status you are interested in (e.g. `["added", "equal"]`).
-  - `considerMoveAsUpdate`: if set to `true` a `moved` value will be considered as `updated`.
-  - `useWorker`: if set to `true`, the diff will be run in a worker for maximum performance. Only recommended for large lists (e.g. +100,000 items).
-  - `showWarnings`: if set to `true`, potential warnings will be displayed in the console. 
+  - `considerMoveAsUpdate`: if `true` a `moved` value is considered `updated`.
+  - `useWorker`: if `true`, the diff will be run in a worker for maximum performance. Only recommended for large lists (e.g. +100,000 items).
+  - `showWarnings`: if `true`, potential warnings will be displayed in the console. 
 
 > ⚠️ Warning: using Readable streams may impact workers' performance since they need to be converted to arrays. Consider using arrays or files for optimal performance. Alternatively, you can turn the `useWorker` option off.
 
@@ -528,14 +542,6 @@ import { getTextDiff } from "@donedeal0/superdiff";
 
 Compares two texts and returns a structured diff at a character, word, or sentence level.
 
-You have two accuracy options:
-
-**Normal accuracy (default)**
-Fast and optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing). Token updates are rendered as two entries (`added` + `deleted`). Uses [longest common subsequence (LCS)](https://en.wikipedia.org/wiki/Longest_common_subsequence) algorithm, similar to GitHub diffs.
-
-***High accuracy**
-Semantically precise, but noisier (a simple addition will move all the next tokens, breaking equality). Direct token swaps are considered `updated`. All language subtleties (Unicode, CJK scripts, locale-aware sentence segmentation, etc.) are handled. Recommended for prose.
-
 #### FORMAT
 
 **Input**
@@ -553,7 +559,7 @@ Semantically precise, but noisier (a simple addition will move all the next toke
   }
 ```
 - `previousText`: the original text.
-- `currentText`: the new text.
+- `currentText`: the current text.
 - `options`
   - `separation` whether you want a `character`, `word` or `sentence` based diff.
   - `accuracy`: 
@@ -562,9 +568,9 @@ Semantically precise, but noisier (a simple addition will move all the next toke
   - `detectMoves`: 
     - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
     - `true`: semantically precise, but noisier — a single insertion shifts all following tokens, breaking equality.
-  - `ignoreCase`: if set to `true` `hello` and `HELLO` will be considered equal.
-  - `ignorePunctuation`: if set to `true` `hello!` and `hello` will be considered equal.
-  - `locale`: the locale of your text. Enables locale‑aware segmentationb in high accuracy mode.
+  - `ignoreCase`: if `true`, `hello` and `HELLO` are considered equal.
+  - `ignorePunctuation`: if `true`, `hello!` and `hello` are considered equal.
+  - `locale`: the locale of your text. Enables locale‑aware segmentation in high accuracy mode.
 
 **Output**
 
@@ -575,7 +581,7 @@ type TextDiff = {
   diff: {
     value: string;
     index: number | null;
-    previousValue?: string
+    previousValue?: string;
     previousIndex: number | null;
     status: "added" | "deleted" | "equal" | "moved" | "updated";
   }[];
@@ -584,7 +590,9 @@ type TextDiff = {
 
 #### USAGE
 
-**NORMAL ACCURACY**
+**WITHOUT MOVES DETECTION**
+
+This is the default output. Token moves are ignored so insertions don’t cascade and break equality. Updates are rendered as two entries (`added` + `deleted`). The algorithm uses [longest common subsequence (LCS)](https://en.wikipedia.org/wiki/Longest_common_subsequence), similar to GitHub diffs.
 
 **Input**
 
@@ -592,7 +600,7 @@ type TextDiff = {
 getTextDiff(
 - "The brown fox jumped high",
 + "The orange cat has jumped",
-{ accuracy: "normal", separation: "word" }
+{ detectMoves: false, separation: "word" }
 );
 ```
 
@@ -606,7 +614,7 @@ getTextDiff(
         {
           value: 'The',
           index: 0,
-          previousIndex: 0
+          previousIndex: 0,
           status: 'equal',
         },
 -       {
@@ -655,7 +663,9 @@ getTextDiff(
     }
 ```
 
-**HIGH ACCURACY**
+**WITH MOVE DETECTION**
+
+If you prefer a semantically precise diff, activate the `detectMoves` option. Direct token swaps are considered `updated`.
 
 **Input**
 
@@ -663,7 +673,7 @@ getTextDiff(
 getTextDiff(
 - "The brown fox jumped high",
 + "The orange cat has jumped",
-{ accuracy: "high", separation: "word" }
+{ detectMoves: true, separation: "word" }
 );
 ```
 
@@ -677,7 +687,7 @@ getTextDiff(
         {
           value: 'The',
           index: 0,
-          previousIndex: 0
+          previousIndex: 0,
           status: 'equal',
         },
 +       {

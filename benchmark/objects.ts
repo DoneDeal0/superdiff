@@ -78,7 +78,7 @@ export function runObjectBench10K() {
   const curr = generateFlatObject(10_000, true);
   console.log(`\nObject diff – 10k keys`);
   const deep = bench("deep-diff", 20, () => deepDiff.diff(prev, curr));
-  const micro = bench("mircodiff", 20, () => microDiff(prev, curr));
+  const micro = bench("microdiff", 20, () => microDiff(prev, curr));
   const deepObject = bench("deep-object-diff", 20, () =>
     deepObjectDiff(prev, curr),
   );
@@ -91,7 +91,7 @@ export function runObjectBench100K() {
   const curr = generateFlatObject(100_000, true);
   console.log("\nObject diff – 100k keys");
   const deep = bench("deep-diff", 20, () => deepDiff.diff(prev, curr));
-  const micro = bench("mircodiff", 20, () => microDiff(prev, curr));
+  const micro = bench("microdiff", 20, () => microDiff(prev, curr));
   const deepObject = bench("deep-object-diff", 20, () =>
     deepObjectDiff(prev, curr),
   );

@@ -9,6 +9,23 @@ import { getLCSTextDiff } from "./lcs";
 import { tokenizeNormalText } from "./tokenize/normal";
 import { tokenizeStrictText } from "./tokenize/strict";
 
+/**
+ *Compares two texts and returns a structured diff at a character, word, or sentence level.
+ * @param {string | null | undefined} previousText - The original text.
+ * @param {string | null | undefined} currentText - The current text.
+ * @param {TextDiffOptions} options - Options to refine your output.
+  - `separation` whether you want a `character`, `word` or `sentence` based diff.
+  - `accuracy`: 
+    - `normal` (default): fastest mode, simple tokenization.
+    - `high`: slower but exact tokenization. Handles all language subtleties (Unicode, emoji, CJK scripts, locale‑aware segmentation when a locale is provided).
+  - `detectMoves`: 
+    - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
+    - `true`: semantically precise, but noisier — a single insertion shifts all following tokens, breaking equality.
+  - `ignoreCase`: if `true`, `hello` and `HELLO` are considered equal.
+  - `ignorePunctuation`: if `true`, `hello!` and `hello` are considered equal.
+  - `locale`: the locale of your text. Enables locale‑aware segmentationb in high accuracy mode.
+ * @returns TextDiff
+ */
 export function getTextDiff(
   previousText: string | null | undefined,
   currentText: string | null | undefined,

@@ -28,7 +28,6 @@ function backtrack(
     const prevX = v.get(prevK) ?? 0;
     const prevY = prevX - prevK;
 
-    // Snake (equal)
     while (x > prevX && y > prevY) {
       edits.push({
         status: TextStatus.EQUAL,
@@ -41,7 +40,6 @@ function backtrack(
 
     if (d === 0) break;
 
-    // Edit step
     if (x === prevX) {
       edits.push({
         status: TextStatus.ADDED,
@@ -76,16 +74,13 @@ export function myersDiff(a: TextToken[], b: TextToken[]): MyersEdit[] {
       let x: number;
 
       if (k === -d || (k !== d && (v.get(k - 1) ?? 0) < (v.get(k + 1) ?? 0))) {
-        // Down (insert)
         x = v.get(k + 1) ?? 0;
       } else {
-        // Right (delete)
         x = (v.get(k - 1) ?? 0) + 1;
       }
 
       let y = x - k;
 
-      // Snake (match)
       while (x < N && y < M && a[x].normalizedValue === b[y].normalizedValue) {
         x++;
         y++;
