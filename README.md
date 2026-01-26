@@ -18,20 +18,6 @@
 
 <hr/>
 
-# WHY SUPERDIFF?
-
-Superdiff focuses on producing **diffs that are useful**, not just technically correct.
-It’s built for real‑world scenarios where you need:
-
-- output that’s **easy to read**
-- **performance that scales**
-- **options** that adapt to your data
-- **consistency** across arrays, objects, and text
-
-✅ If you’ve ever been frustrated by noisy diffs, missing move detection, or slow deep comparisons, **Superdiff is designed to fix that**.
-
-<hr/>
-
 ## FEATURES
 
 **Superdiff** exports 4 functions:
@@ -55,7 +41,7 @@ It’s built for real‑world scenarios where you need:
 | Output refinement              | ✅         | ❌               | ❌        | ❌        | ❌        |
 | Zero dependencies              | ✅         | ✅               | ❌        | ✅        | ✅        |
 
-<sub>Some libraries claim to support array diffing, but their output is based on index‑by‑index comparison and does not detect moves, insertions, or deletions correctly — hence the warning sign.</sub>
+<sub>Some libraries perform array diffing using index-by-index comparison. This approach cannot reliably detect insertions, deletions, or moves correctly. In those cases, support is marked as partial.</sub>
 
 ## 📊 BENCHMARK
 
