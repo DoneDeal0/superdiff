@@ -7,15 +7,11 @@
 ![GitHub Tag](https://img.shields.io/github/v/tag/DoneDeal0/superdiff?label=latest%20release)
 [![Sponsor](https://img.shields.io/badge/Show%20your%20support-0d1117?style=flat&logo=github-sponsors&logoColor=ea4aaa&color=3F4851)](https://github.com/sponsors/DoneDeal0)
 
+<hr/>
 
+# WHAT IS IT? 
 
 **Superdiff** provides a rich and readable diff for **arrays**, **objects** and **texts**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offers a **top-tier performance**. 
-
-![superdiff-streaming](https://github.com/user-attachments/assets/734823ae-6e5e-48c7-a151-61b2f2760043)
-
-<p align="center">
-<sub>Superdiff smoothly comparing 1.8 million fictionnal votes in real time using <code>streamListDiff</code></sub>
-</p>
 
 ℹ️ The documentation is also available on our [website](https://superdiff.gitbook.io/donedeal0-superdiff)!
 
@@ -30,7 +26,11 @@
 - [streamListDiff](#streamlistdiff)
 - [getTextDiff](#getextdiff)
 
-<caption>
+![superdiff-streaming](https://github.com/user-attachments/assets/734823ae-6e5e-48c7-a151-61b2f2760043)
+
+<p align="center">
+<sub>Superdiff smoothly comparing 1.8 million fictionnal votes in real time using <code>streamListDiff</code></sub>
+</p>
 
 <hr/>
 
@@ -613,13 +613,13 @@ getTextDiff(
 -         index: null,
 -         previousIndex: 1,
 -         status: "deleted",
--       }
+-       },
 -       {
 -         value: "fox",
 -         index: null,
 -         previousIndex: 2,
 -         status: "deleted",
--       }
+-       },
 +       {
 +         value: "orange",
 +         index: 1,

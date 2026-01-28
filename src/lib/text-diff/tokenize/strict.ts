@@ -49,13 +49,16 @@ export const tokenizeStrictText = (
     for (const char of text) {
       const trimmedChar = char.trim();
       if (trimmedChar) {
-        result.push({
-          value: trimmedChar,
-          normalizedValue: normalizeToken(trimmedChar, options),
-          index: index,
-        });
+        const normalizedValue = normalizeToken(trimmedChar, options);
+        if (normalizedValue) {
+          result.push({
+            value: trimmedChar,
+            normalizedValue,
+            index: index,
+          });
+          index++;
+        }
       }
-      index++;
     }
     return result;
   }

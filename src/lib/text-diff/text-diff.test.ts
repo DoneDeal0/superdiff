@@ -36,21 +36,47 @@ describe("getTextDiff - general", () => {
   });
 });
 
-describe("getTextDiff – normal accuracy", () => {
-  it("merges delete + add at same position into updated", () => {
-    expect(getTextDiff("A B C", "A X C")).toStrictEqual({
+describe("getTextDiff – without moves detection", () => {
+  it("character - no options", () => {
+    expect(
+      getTextDiff("abc", "axc", { separation: "character" }),
+    ).toStrictEqual({
       type: "text",
       status: "updated",
       diff: [
-        { value: "A", index: 0, previousIndex: 0, status: "equal" },
+        { value: "a", index: 0, previousIndex: 0, status: "equal" },
         {
-          value: "B",
+          value: "b",
           index: null,
           previousIndex: 1,
           status: "deleted",
         },
         {
-          value: "X",
+          value: "x",
+          index: 1,
+          previousIndex: null,
+          status: "added",
+        },
+        { value: "c", index: 2, previousIndex: 2, status: "equal" },
+      ],
+    });
+  });
+  it("character - ignore casing", () => {
+    expect(
+      getTextDiff("Abc", "axC", { separation: "character", ignoreCase: true }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: "a", index: 0, previousIndex: 0, status: "equal" },
+        {
+          value: "b",
+          index: null,
+          previousIndex: 1,
+          status: "deleted",
+        },
+        {
+          value: "x",
           index: 1,
           previousIndex: null,
           status: "added",
@@ -59,9 +85,65 @@ describe("getTextDiff – normal accuracy", () => {
       ],
     });
   });
-
-  it("represents reordering as delete + add in visual mode", () => {
-    expect(getTextDiff("A B C A B", "A B A B C")).toStrictEqual({
+  it("character - ignore punctuation", () => {
+    expect(
+      getTextDiff("a;(b?c!", "a,xc", {
+        separation: "character",
+        ignorePunctuation: true,
+      }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: "a", index: 0, previousIndex: 0, status: "equal" },
+        {
+          value: "b",
+          index: null,
+          previousIndex: 1,
+          status: "deleted",
+        },
+        {
+          value: "x",
+          index: 1,
+          previousIndex: null,
+          status: "added",
+        },
+        { value: "c", index: 2, previousIndex: 2, status: "equal" },
+      ],
+    });
+  });
+  it("character - ignore punctuation and casing", () => {
+    expect(
+      getTextDiff("A;(b?c!", "a,xC", {
+        separation: "character",
+        ignorePunctuation: true,
+        ignoreCase: true,
+      }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: "a", index: 0, previousIndex: 0, status: "equal" },
+        {
+          value: "b",
+          index: null,
+          previousIndex: 1,
+          status: "deleted",
+        },
+        {
+          value: "x",
+          index: 1,
+          previousIndex: null,
+          status: "added",
+        },
+        { value: "C", index: 2, previousIndex: 2, status: "equal" },
+      ],
+    });
+  });
+  it("character - a moved character breaking a sequence appears as deleted + updated", () => {
+    expect(
+      getTextDiff("ABCAB", "ABABC", { separation: "character" }),
+    ).toStrictEqual({
       type: "text",
       status: "updated",
       diff: [
@@ -74,8 +156,145 @@ describe("getTextDiff – normal accuracy", () => {
       ],
     });
   });
+  it("character - handles duplicates", () => {
+    expect(
+      getTextDiff("AABA", "ABAAC", { separation: "character" }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: "A", index: 0, previousIndex: 0, status: "equal" },
+        { value: "A", index: null, previousIndex: 1, status: "deleted" },
+        { value: "B", index: 1, previousIndex: 2, status: "equal" },
+        { value: "A", index: 2, previousIndex: 3, status: "equal" },
+        { value: "A", index: 3, previousIndex: null, status: "added" },
+        { value: "C", index: 4, previousIndex: null, status: "added" },
+      ],
+    });
+  });
+  it("character - handles moves, equality, updates, adds and deletes correctly", () => {
+    expect(
+      getTextDiff("abc", "xcy", { separation: "character" }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        {
+          value: "a",
+          index: null,
+          previousIndex: 0,
+          status: "deleted",
+        },
+        {
+          value: "b",
+          index: null,
+          previousIndex: 1,
+          status: "deleted",
+        },
+        {
+          value: "x",
+          index: 0,
+          previousIndex: null,
+          status: "added",
+        },
+        { value: "c", index: 1, previousIndex: 2, status: "equal" },
+        {
+          value: "y",
+          index: 2,
+          previousIndex: null,
+          status: "added",
+        },
+      ],
+    });
+  });
 
-  it("handles moves, updates, adds and deletes correctly - by word", () => {
+  it("word - no options", () => {
+    expect(
+      getTextDiff(
+        "Solemnly he came and mounted the rounded gunrest.",
+        "He, solemnly came and he mounted square gunrest.",
+        { separation: "word" },
+      ),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        {
+          value: "Solemnly",
+          index: null,
+          previousIndex: 0,
+          status: "deleted",
+        },
+        {
+          value: "he",
+          index: null,
+          previousIndex: 1,
+          status: "deleted",
+        },
+        {
+          value: "He,",
+          index: 0,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "solemnly",
+          index: 1,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "came",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
+        },
+        {
+          value: "and",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
+        },
+        {
+          value: "he",
+          index: 4,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "mounted",
+          index: 5,
+          previousIndex: 4,
+          status: "equal",
+        },
+        {
+          value: "the",
+          index: null,
+          previousIndex: 5,
+          status: "deleted",
+        },
+        {
+          value: "rounded",
+          index: null,
+          previousIndex: 6,
+          status: "deleted",
+        },
+        {
+          value: "square",
+          index: 6,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "gunrest.",
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
+        },
+      ],
+    });
+  });
+  it("word - ignore casing", () => {
     expect(
       getTextDiff(
         "Solemnly he came and mounted the rounded gunrest.",
@@ -135,47 +354,174 @@ describe("getTextDiff – normal accuracy", () => {
       ],
     });
   });
-
-  it("handles moves, updates, adds and deletes correctly - by character", () => {
+  it("word - ignore punctuation", () => {
     expect(
-      getTextDiff("abc", "xcy", {
-        separation: "character",
-        accuracy: "normal",
-      }),
+      getTextDiff(
+        "Solemnly he(! came and mounted the rounded gunrest.",
+        "He, solemnly came and; he mounted:?! square gunrest.",
+        { ignorePunctuation: true, separation: "word" },
+      ),
     ).toStrictEqual({
       type: "text",
       status: "updated",
       diff: [
         {
-          value: "a",
+          value: "Solemnly",
           index: null,
           previousIndex: 0,
           status: "deleted",
         },
         {
-          value: "b",
+          value: "he(!",
           index: null,
           previousIndex: 1,
           status: "deleted",
         },
         {
-          value: "x",
+          value: "He,",
           index: 0,
           previousIndex: null,
           status: "added",
         },
-        { value: "c", index: 1, previousIndex: 2, status: "equal" },
         {
-          value: "y",
-          index: 2,
+          value: "solemnly",
+          index: 1,
           previousIndex: null,
           status: "added",
+        },
+        {
+          value: "came",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
+        },
+        {
+          value: "and;",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
+        },
+        {
+          value: "he",
+          index: 4,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "mounted:?!",
+          index: 5,
+          previousIndex: 4,
+          status: "equal",
+        },
+        {
+          value: "the",
+          index: null,
+          previousIndex: 5,
+          status: "deleted",
+        },
+        {
+          value: "rounded",
+          index: null,
+          previousIndex: 6,
+          status: "deleted",
+        },
+        {
+          value: "square",
+          index: 6,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "gunrest.",
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
+        },
+      ],
+    });
+  });
+  it("word - ignore punctuation and casing", () => {
+    expect(
+      getTextDiff(
+        "Solemnly he came and mounted the rounded gunrest.",
+        "He, solemnly came and he mounted square gunrest.",
+        { ignorePunctuation: true, ignoreCase: true, separation: "word" },
+      ),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        {
+          value: "Solemnly",
+          index: null,
+          previousIndex: 0,
+          status: "deleted",
+        },
+        {
+          value: "He,",
+          index: 0,
+          previousIndex: 1,
+          status: "equal",
+        },
+        {
+          value: "solemnly",
+          index: 1,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "came",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
+        },
+        {
+          value: "and",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
+        },
+        {
+          value: "he",
+          index: 4,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "mounted",
+          index: 5,
+          previousIndex: 4,
+          status: "equal",
+        },
+        {
+          value: "the",
+          index: null,
+          previousIndex: 5,
+          status: "deleted",
+        },
+        {
+          value: "rounded",
+          index: null,
+          previousIndex: 6,
+          status: "deleted",
+        },
+        {
+          value: "square",
+          index: 6,
+          previousIndex: null,
+          status: "added",
+        },
+        {
+          value: "gunrest.",
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
         },
       ],
     });
   });
 
-  it("handles moves, updates, adds and deletes correctly - by sentence", () => {
+  it("sentences - handles moves, updates, adds and deletes correctly - by sentence", () => {
     expect(
       getTextDiff(
         "Hello world. I like turtles. Goodbye moon.",
@@ -219,49 +565,7 @@ describe("getTextDiff – normal accuracy", () => {
       ],
     });
   });
-
-  it("ignores case when ignoreCase is true", () => {
-    const diff = getTextDiff("Hello WORLD", "hello world", {
-      ignoreCase: true,
-    });
-
-    expect(diff.diff.every((d) => d.status === "equal")).toBe(true);
-  });
-
-  it("ignores punctuation when ignorePunctuation is true", () => {
-    const diff = getTextDiff("hello!", "hello", {
-      ignorePunctuation: true,
-    });
-
-    expect(diff.diff[0].status).toBe("equal");
-  });
-
-  it("handles character separation", () => {
-    expect(
-      getTextDiff("abc", "axc", { separation: "character" }),
-    ).toStrictEqual({
-      type: "text",
-      status: "updated",
-      diff: [
-        { value: "a", index: 0, previousIndex: 0, status: "equal" },
-        {
-          value: "b",
-          index: null,
-          previousIndex: 1,
-          status: "deleted",
-        },
-        {
-          value: "x",
-          index: 1,
-          previousIndex: null,
-          status: "added",
-        },
-        { value: "c", index: 2, previousIndex: 2, status: "equal" },
-      ],
-    });
-  });
-
-  it("handles sentence separation", () => {
+  it("sentences - handles sentence separation", () => {
     expect(
       getTextDiff("Hello world. How are you?", "Hello world. I'm fine.", {
         separation: "sentence",
@@ -293,7 +597,7 @@ describe("getTextDiff – normal accuracy", () => {
   });
 });
 
-describe("getTextDiff – high accuracy", () => {
+describe("getTextDiff – with moves detection", () => {
   it("merges delete + add at same position into updated", () => {
     expect(getTextDiff("A B C", "A X C", { detectMoves: true })).toStrictEqual({
       type: "text",
