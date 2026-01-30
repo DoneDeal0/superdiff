@@ -1,12 +1,10 @@
 import {
   DEFAULT_TEXT_DIFF_OPTIONS,
+  EMOJI_SPLIT_REGEX,
+  PUNCTUATION_REGEX,
   TextDiffOptions,
   TextToken,
 } from "@models/text";
-
-const PUNCTUATION_REGEX = /[",;:!?“”‘’'«»()[\]{}…—–-]/g;
-const EMOJI_SPLIT_REGEX =
-  /(\p{Emoji_Presentation}|\p{Extended_Pictographic}|[+\\/*=<>%&|^~@#$€£¥])/gu;
 
 const segmenterCache = new Map<string, Intl.Segmenter>();
 
@@ -102,7 +100,6 @@ export const tokenizeStrictText = (
           pushSplit(trimmedWord);
         }
       }
-
       lastEndIndex = endIndex;
     }
 

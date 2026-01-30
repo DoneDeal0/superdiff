@@ -1,3 +1,8 @@
+export const PUNCTUATION_REGEX = /[",;:!?“”‘’'«»()[\]{}…—–-]/g;
+
+export const EMOJI_SPLIT_REGEX =
+  /(\p{Emoji_Presentation}|\p{Extended_Pictographic}|[+\\/*=<>%&|^~@#$€£¥])/gu;
+
 export const DEFAULT_TEXT_DIFF_OPTIONS: TextDiffOptions = {
   accuracy: "normal",
   detectMoves: false,

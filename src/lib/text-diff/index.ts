@@ -20,7 +20,7 @@ import { tokenizeStrictText } from "./tokenize/strict";
     - `high`: slower but exact tokenization. Handles all language subtleties (Unicode, emoji, CJK scripts, locale‑aware segmentation when a locale is provided).
   - `detectMoves`: 
     - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
-    - `true`: semantically precise, but noisier — a single insertion shifts all following tokens, breaking equality.
+    - `true`: semantically precise, but slower — a single insertion shifts all following tokens, breaking equality.
   - `ignoreCase`: if `true`, `hello` and `HELLO` are considered equal.
   - `ignorePunctuation`: if `true`, `hello!` and `hello` are considered equal.
   - `locale`: the locale of your text. Enables locale‑aware segmentationb in high accuracy mode.
