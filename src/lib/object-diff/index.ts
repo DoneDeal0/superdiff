@@ -175,7 +175,7 @@ function getDiff(
  * @param {ObjectOptions} options - Options to refine your output.
     - `showOnly`: returns only the values whose status you are interested in. It takes two parameters: `statuses` and `granularity`
        `statuses` are the status you want to see in the output (e.g. `["added", "equal"]`)
-      `granularity` can be either `basic` (to return only the main properties whose status matches your query) or `deep` (to return the main properties if some of their subproperties' status match your request. The subproperties are filtered accordingly).
+      `granularity` can be either `basic` (to return only the main keys whose status matches your query) or `deep` (to return the main keys if some of their nested keys' status match your request. The nested keys are filtered accordingly).
     - `ignoreArrayOrder` if set to `true`, `["hello", "world"]` and `["world", "hello"]` will be treated as `equal`, because the two arrays have the same value, just not in the same order.
  * @returns ObjectDiff
  */
