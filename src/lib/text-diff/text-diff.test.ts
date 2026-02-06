@@ -1186,20 +1186,24 @@ describe("getTextDiff – without moves detection", () => {
     expect(getTextDiff(prevThai, currThai, { separation: "word", accuracy: "high", locale: "th" }))
       .toStrictEqual(resultThai);
   });
-  // it("word - handles quoted text", () => {
-  //   const prev = `He said "hello world" loudly.`;
-  //   const curr = `He said "howdy world" loudly.`;
-  //   console.log("quoptte", JSON.stringify(getTextDiff(prev, curr, { separation: "word", accuracy: "high", ignorePunctuation: true }), null, 2))
-  //   expect(getTextDiff(prev, curr, { separation: "word", accuracy: "high" })).toMatchObject({
-  //     diff: expect.arrayContaining([
-  //       { value: "\"hello", status: "deleted" }, // or "hello" depending on quote handling
-  //       { value: "world\"", status: "deleted" },
-  //       { value: "\"hi", status: "added" },
-  //       { value: "universe\"", status: "added" },
-  //       // quotes usually stay attached or separate
-  //     ]),
-  //   });
-  // });
+  it("word - handles quoted text", () => {
+    const prev = `He said "hello... world" loudly.`;
+    const curr = `He said "howdy world" loudly.`;
+    const result = {
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: 'He', index: 0, previousIndex: 0, status: 'equal' },
+        { value: 'said', index: 1, previousIndex: 1, status: 'equal' },
+        { value: '"hello...', index: null, previousIndex: 2, status: 'deleted' },
+        { value: '"howdy', index: 2, previousIndex: null, status: 'added' },
+        { value: 'world"', index: 3, previousIndex: 3, status: 'equal' },
+        { value: 'loudly.', index: 4, previousIndex: 4, status: 'equal' }
+      ],
+    }
+    expect(getTextDiff(prev, curr, { separation: "word", accuracy: "normal" })).toStrictEqual(result);
+    expect(getTextDiff(prev, curr, { separation: "word", accuracy: "high" })).toStrictEqual(result);
+  });
   // SENTENCES
   it("sentence - no options", () => {
     const result = {
@@ -2898,6 +2902,23 @@ describe("getTextDiff – with moves detection", () => {
       .toStrictEqual(resultChinese);
     expect(getTextDiff(prevThai, currThai, { separation: "word", accuracy: "high", locale: "th", detectMoves: true }))
       .toStrictEqual(resultThai);
+  });
+  it("word - handles quoted text", () => {
+    const prev = `He said "hello... world" loudly.`;
+    const curr = `He said "howdy world" loudly.`;
+    const result = {
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: 'He', index: 0, previousIndex: 0, status: 'equal' },
+        { value: 'said', index: 1, previousIndex: 1, status: 'equal' },
+        { value: '"howdy', index: 2, previousValue: '"hello...', previousIndex: null, status: 'updated' },
+        { value: 'world"', index: 3, previousIndex: 3, status: 'equal' },
+        { value: 'loudly.', index: 4, previousIndex: 4, status: 'equal' }
+      ],
+    }
+    expect(getTextDiff(prev, curr, { separation: "word", accuracy: "normal", detectMoves: true })).toStrictEqual(result);
+    expect(getTextDiff(prev, curr, { separation: "word", accuracy: "high", detectMoves: true })).toStrictEqual(result);
   });
   // SENTENCES
   it("sentence - no options", () => {

@@ -7,6 +7,7 @@ import {
 } from "@models/text";
 
 const segmenterCache = new Map<string, Intl.Segmenter>();
+const QUOTES = new Set(['"', "'", "“", "”", "‘", "’"]);
 
 function getSegmenter(
   locale: Intl.Locale | string | undefined,
@@ -64,43 +65,80 @@ export const tokenizeStrictText = (
   if (separation === "word") {
     const segmenter = getSegmenter(locale, "word");
     const validWords: string[] = [];
-    let lastEndIndex: number | null = null;
+
+    let lastNonSpaceEndIndex: number | null = null;
+    let lastNonSpaceWasWordLike = false;
+    let pendingPrefix = "";
+
+    const pushSplit = (word: string) => {
+      const parts = word.split(EMOJI_SPLIT_REGEX);
+      for (let i = 0; i < parts.length; i++) {
+        if (parts[i]) validWords.push(parts[i]);
+      }
+    };
 
     for (const data of segmenter.segment(text)) {
-      const word = data.segment;
-      const trimmedWord = word.trim();
-      if (!trimmedWord) {
-        lastEndIndex = data.index + word.length;
+      const seg = data.segment;
+      const endIndex = data.index + seg.length;
+      const trimmed = seg.trim();
+
+      if (!trimmed) {
         continue;
       }
 
-      const endIndex = data.index + word.length;
-      const isAdjacent = lastEndIndex === data.index;
-      const prevWord =
-        validWords.length > 0 ? validWords[validWords.length - 1] : "";
-      const endsWithDash = /[—–-]$/.test(prevWord);
+      const isWord = data.isWordLike;
 
-      const pushSplit = (word: string) => {
-        const parts = word.split(EMOJI_SPLIT_REGEX).filter(Boolean);
-        for (let i = 0; i < parts.length; i++) validWords.push(parts[i]);
-      };
+      if (QUOTES.has(trimmed)) {
+        const isClosingQuote =
+          lastNonSpaceWasWordLike && lastNonSpaceEndIndex === data.index;
 
-      if (data.isWordLike) {
-        if (validWords.length > 0 && isAdjacent && endsWithDash) {
-          const prevToken = validWords.pop()!;
-          pushSplit(prevToken + trimmedWord);
+        if (isClosingQuote && validWords.length > 0) {
+          const prev = validWords.pop()!;
+          pushSplit(prev + trimmed);
         } else {
-          pushSplit(trimmedWord);
+          pendingPrefix += trimmed;
         }
-      } else {
-        if (validWords.length > 0) {
-          const prevToken = validWords.pop()!;
-          pushSplit(prevToken + trimmedWord);
-        } else {
-          pushSplit(trimmedWord);
-        }
+        lastNonSpaceEndIndex = endIndex;
+        lastNonSpaceWasWordLike = false;
+        continue;
       }
-      lastEndIndex = endIndex;
+
+      if (isWord) {
+        const isAdjacentToPrev =
+          lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
+
+        const prevWord =
+          validWords.length > 0 ? validWords[validWords.length - 1] : "";
+        const endsWithDash =
+          prevWord.length > 0 &&
+          (prevWord.endsWith("-") || prevWord.endsWith("–") || prevWord.endsWith("—"));
+
+        let token = trimmed;
+
+        if (validWords.length > 0 && isAdjacentToPrev && endsWithDash) {
+          const prev = validWords.pop()!;
+          token = prev + token;
+        }
+
+        if (pendingPrefix) {
+          token = pendingPrefix + token;
+          pendingPrefix = "";
+        }
+
+        pushSplit(token);
+        lastNonSpaceEndIndex = endIndex;
+        lastNonSpaceWasWordLike = true;
+        continue;
+      }
+
+      if (validWords.length > 0) {
+        const prev = validWords.pop()!;
+        pushSplit(prev + trimmed);
+      } else {
+        pushSplit(trimmed);
+      }
+      lastNonSpaceEndIndex = endIndex;
+      lastNonSpaceWasWordLike = false;
     }
 
     for (let i = 0; i < validWords.length; i++) {
@@ -113,7 +151,8 @@ export const tokenizeStrictText = (
     }
 
     return result;
-  } else {
+  }
+  else {
     const segmenter = getSegmenter(locale, "sentence");
     let index = 0;
     for (const data of segmenter.segment(text)) {
