@@ -32,8 +32,8 @@ function generateSentences(sentenceCount: number, mutate = false): string {
 }
 
 export function runTextBench10KWords() {
-  const prev = generateText(100_000);
-  const curr = generateText(100_000, true);
+  const prev = generateText(10_000);
+  const curr = generateText(10_000, true);
   console.log("\nText diff – 10k words");
 
   const diff = bench("diff", 1, () => diffWords(prev, curr));

@@ -73,7 +73,7 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 | Scenario                | superdiff    | diff       |
 | ----------------------- | ------------ | ---------- |
-| 10k words               | **1.13 ms**  | 3.68 ms    | 
+| 10k words               | **1.38 ms**  | 3.86 ms    | 
 | 100k words              | **21.68 ms** | 45.93 ms   | 
 | 10k sentences           | **2.30 ms**  | 5.61 ms    |
 | 100k sentences          | **21.95 ms** | 62.03 ms   |

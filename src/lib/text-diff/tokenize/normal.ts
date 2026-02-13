@@ -1,10 +1,9 @@
 import {
   DEFAULT_TEXT_DIFF_OPTIONS,
+  PUNCTUATION_REGEX,
   TextDiffOptions,
   TextToken,
 } from "@models/text";
-
-const PUNCTUATION_REGEX = /[",;:!?“”‘’'«»()[\]{}…—–-]/g;
 
 function normalizeToken(token: string, options: TextDiffOptions): string {
   let normalizedToken = token;

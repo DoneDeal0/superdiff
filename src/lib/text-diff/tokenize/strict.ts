@@ -7,7 +7,6 @@ import {
 } from "@models/text";
 
 const segmenterCache = new Map<string, Intl.Segmenter>();
-const QUOTES = new Set(['"', "'", "“", "”", "‘", "’"]);
 
 function getSegmenter(
   locale: Intl.Locale | string | undefined,
@@ -64,13 +63,18 @@ export const tokenizeStrictText = (
 
   if (separation === "word") {
     const segmenter = getSegmenter(locale, "word");
+    const QUOTES = new Set(['"', "'", "“", "”", "‘", "’", "«", "»", "„"]);
     const validWords: string[] = [];
 
     let lastNonSpaceEndIndex: number | null = null;
-    let lastNonSpaceWasWordLike = false;
     let pendingPrefix = "";
 
-    const pushSplit = (word: string) => {
+    const pushSplit = (word: string, splitEmoji: boolean = true) => {
+      if (!word) return;
+      if (!splitEmoji) {
+        validWords.push(word);
+        return;
+      }
       const parts = word.split(EMOJI_SPLIT_REGEX);
       for (let i = 0; i < parts.length; i++) {
         if (parts[i]) validWords.push(parts[i]);
@@ -83,38 +87,25 @@ export const tokenizeStrictText = (
       const trimmed = seg.trim();
 
       if (!trimmed) {
+        lastNonSpaceEndIndex = null;
         continue;
       }
 
-      const isWord = data.isWordLike;
-
-      if (QUOTES.has(trimmed)) {
-        const isClosingQuote =
-          lastNonSpaceWasWordLike && lastNonSpaceEndIndex === data.index;
-
-        if (isClosingQuote && validWords.length > 0) {
-          const prev = validWords.pop()!;
-          pushSplit(prev + trimmed);
-        } else {
-          pendingPrefix += trimmed;
-        }
-        lastNonSpaceEndIndex = endIndex;
-        lastNonSpaceWasWordLike = false;
-        continue;
-      }
-
-      if (isWord) {
-        const isAdjacentToPrev =
-          lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
+      // WORD or EMOJI
+      if (data.isWordLike || EMOJI_SPLIT_REGEX.test(trimmed)) {
+        const isAdjacentToPrev = lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
 
         const prevWord =
           validWords.length > 0 ? validWords[validWords.length - 1] : "";
         const endsWithDash =
           prevWord.length > 0 &&
-          (prevWord.endsWith("-") || prevWord.endsWith("–") || prevWord.endsWith("—"));
+          (prevWord.endsWith("-") ||
+            prevWord.endsWith("–") ||
+            prevWord.endsWith("—"));
 
         let token = trimmed;
 
+        // Merge hyphenated words
         if (validWords.length > 0 && isAdjacentToPrev && endsWithDash) {
           const prev = validWords.pop()!;
           token = prev + token;
@@ -127,18 +118,35 @@ export const tokenizeStrictText = (
 
         pushSplit(token);
         lastNonSpaceEndIndex = endIndex;
-        lastNonSpaceWasWordLike = true;
         continue;
       }
 
-      if (validWords.length > 0) {
+      // NON-WORD (punctuation, etc.)
+      const isAdjacent =
+        !QUOTES.has(trimmed) && lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
+
+      if (isAdjacent && validWords.length > 0) {
         const prev = validWords.pop()!;
-        pushSplit(prev + trimmed);
+        let token = prev;
+
+        if (pendingPrefix) {
+          token += pendingPrefix;
+          pendingPrefix = "";
+        }
+
+        token += trimmed;
+        // IMPORTANT: don't split emoji when merging suffix punctuation
+        pushSplit(token, false);
       } else {
-        pushSplit(trimmed);
+        if (pendingPrefix) {
+          pushSplit(pendingPrefix + trimmed);
+          pendingPrefix = "";
+        } else {
+          pushSplit(trimmed);
+        }
       }
+
       lastNonSpaceEndIndex = endIndex;
-      lastNonSpaceWasWordLike = false;
     }
 
     for (let i = 0; i < validWords.length; i++) {
@@ -151,8 +159,7 @@ export const tokenizeStrictText = (
     }
 
     return result;
-  }
-  else {
+  } else {
     const segmenter = getSegmenter(locale, "sentence");
     let index = 0;
     for (const data of segmenter.segment(text)) {
