@@ -25,7 +25,7 @@ export const DEFAULT_OBJECT_DIFF_OPTIONS = {
   showOnly: { statuses: [], granularity: Granularity.BASIC },
 };
 
-/** recursive diff in case of subproperties */
+/** recursive diff in case of nested keys */
 export type Diff = {
   key: string;
   value: unknown;
