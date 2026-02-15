@@ -11,7 +11,7 @@
 
 # WHAT IS IT? 
 
-**Superdiff** provides a rich and readable diff for **arrays**, **objects** and **texts**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offers a **top-tier performance**. 
+**Superdiff** provides a rich and readable diff for **arrays**, **objects**, **texts** and **coordinates**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offers a **top-tier performance**. 
 
 ℹ️ The documentation is also available on our [website](https://superdiff.gitbook.io/donedeal0-superdiff)!
 
@@ -25,6 +25,7 @@
 - [getListDiff](#getlistdiff)
 - [streamListDiff](#streamlistdiff)
 - [getTextDiff](#gettextdiff)
+- [getGeoDiff](#getgeodiff)
 
 <hr/>
 
@@ -44,6 +45,7 @@
 | List diff                      | ✅         | ❌               | ⚠️        | ❌        | ⚠️        |
 | Text diff                      | ✅         | ❌               | ✅        | ✅        | ❌        |
 | Streaming for huge datasets    | ✅         | ❌               | ❌        | ❌        | ❌        |
+| Geo diff                       | ✅         | ❌               | ❌        | ❌        | ❌        |
 | Move detection                 | ✅         | ❌               | ❌        | ❌        | ❌        |
 | Output refinement              | ✅         | ❌               | ❌        | ❌        | ❌        |
 | Zero dependencies              | ✅         | ✅               | ❌        | ✅        | ✅        |
@@ -560,7 +562,7 @@ Compares two texts and returns a structured diff at a character, word, or senten
     - `high`: slower but exact tokenization. Handles all language subtleties (Unicode, emoji, CJK scripts, locale‑aware segmentation when a locale is provided).
   - `detectMoves`: 
     - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
-    - `true`: semantically precise, but noiser — a single insertion shifts all following tokens, breaking equality.
+    - `true`: semantically precise, but noisier — a single insertion shifts all following tokens, breaking equality.
   - `ignoreCase`: if `true`, `hello` and `HELLO` are considered equal.
   - `ignorePunctuation`: if `true`, `hello!` and `hello` are considered equal.
   - `locale`: the locale of your text. Enables locale‑aware segmentation in high accuracy mode.
@@ -719,6 +721,85 @@ getTextDiff(
     }
 ```
 
+<hr/>
+
+### getGeoDiff
+
+```js
+import { getGeoDiff } from "@donedeal0/superdiff";
+```
+
+Returns a structured diff between two geographical coordinates. Supports 9 distance units (centimeters, feet, inches, kilometers, meters, miles, Scandinavian miles, millimeters, yards), locale-aware response, and two accuracy modes. 
+
+The high accuracy mode is based on the [Vincenty formulae](https://en.wikipedia.org/wiki/Vincenty%27s_formulae) (ellipsoidal Earth model, higher precision). The normal mode is based on the [Haversine formulae](https://en.wikipedia.org/wiki/Haversine_formula) (spherical Earth model, faster, slightly less precise).
+
+#### FORMAT
+
+**Input**
+
+```ts
+  previousCoordinates: [number, number] | null | undefined;
+  coordinates: [number, number] | null | undefined;
+  options?: {
+    unit?: "centimeter", "foot", "inch", "kilometer", "meter", "mile", "mile-scandinavian", "millimeter" | "yard", //  "kilometers" by default
+    accuracy?: "normal" | "high", // "normal" by default
+    maxDecimals?: number, // 2 by default,
+    locale?: Intl.Locale | string // "en-US" by default
+  }
+```
+- `previousCoordinates`: the original list (`[Longitude, Latitude]`).
+- `coordinates`: the new list (`[Longitude, Latitude]`).
+- `options`
+    - `unit`: centimeter, foot, inch, kilometer, meter, mile, mile-scandinavian, millimeter or yard.
+  - `accuracy`: 
+    - `normal` (default): fastest mode, with a small error margin, based on Haversine formula.
+    - `high`: slower but exact distance. Based on Vincenty formula.
+  - `maxDecimals`: maximal decimals for the distance. Defaults to 2.
+  - `locale`: the locale of your distance. Enables a locale‑aware distance label.
+
+**Output**
+
+```ts
+type GeoDiff = {
+    type: "geo";
+    status: "added" | "deleted" | "error" | "equal" | "updated";
+    diff: {
+        coordinates: [number, number] | null;
+        previousCoordinates: [number, number] | null;
+        distance: number;
+        unit: "centimeters", "feet", "inches", "kilometers", "meters", "miles", "scandinavian miles", "millimeters" | "yards";
+        label: string,
+        direction: "east" | "north" |"south" | "west" | "north-east" | "north-west" | "south-east" | "south-west" | "stationary";
+    };
+}
+```
+#### USAGE
+
+**Input**
+
+```diff
+getGeoDiff(
+- [2.3522, 48.8566],
++ [-0.1278, 51.5074]
+);
+```
+
+**Output**
+
+```diff
+{
+      type: "geo",
++     status: "updated",
+      diff: {
++          coordinates: [-0.1278, 51.5074],
+           previousCoordinates": [2.3522, 48.8566],
++          direction: "north-west",
++          distance: 343.56,
++          label: "343.56 kilometers",
++          unit: "kilometer"
+        }
+}
+```
 <hr/>
 
 ### ℹ️ More examples are available in the source code tests.
