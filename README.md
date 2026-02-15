@@ -26,6 +26,8 @@
 - [streamListDiff](#streamlistdiff)
 - [getTextDiff](#gettextdiff)
 
+<hr/>
+
 ![superdiff-stream-demo-gif](https://github.com/user-attachments/assets/7ed08988-0636-4877-a5ab-398a15f43a04)
 
 <p align="center">
