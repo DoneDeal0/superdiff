@@ -41,7 +41,6 @@ describe("tokenizeText", () => {
 
   it("splits text into characters", () => {
     const tokens = tokenizeNormalText("abc!", { separation: "character" });
-
     expect(tokens).toEqual([
       { value: "a", normalizedValue: "a", index: 0 },
       { value: "b", normalizedValue: "b", index: 1 },
@@ -64,7 +63,6 @@ describe("tokenizeText", () => {
       separation: "word",
       ignoreCase: true,
     });
-
     expect(tokens).toEqual([
       { value: "Hello", normalizedValue: "hello", index: 0 },
       { value: "WORLD!", normalizedValue: "world!", index: 1 },

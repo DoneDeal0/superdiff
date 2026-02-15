@@ -24,12 +24,12 @@
 - [getObjectDiff](#getobjectdiff)
 - [getListDiff](#getlistdiff)
 - [streamListDiff](#streamlistdiff)
-- [getTextDiff](#getextdiff)
+- [getTextDiff](#gettextdiff)
 
-![superdiff-streaming](https://github.com/user-attachments/assets/734823ae-6e5e-48c7-a151-61b2f2760043)
+![superdiff-stream-demo-gif](https://github.com/user-attachments/assets/7ed08988-0636-4877-a5ab-398a15f43a04)
 
 <p align="center">
-<sub>Superdiff smoothly comparing 1.8 million fictionnal votes in real time using <code>streamListDiff</code></sub>
+<sub>Superdiff smoothly comparing 1.8 million fictional votes in real time using <code>streamListDiff</code> in the browser</sub>
 </p>
 
 <hr/>
@@ -38,7 +38,7 @@
 
 | Feature                        | superdiff | deep-object-diff | deep-diff | diff      | microdiff |
 | ------------------------------ | --------- | ---------------- | --------- | --------- | --------- | 
-| Object diff                    | ✅         | ✅               | ✅        | ❌        | ✅       |
+| Object diff                    | ✅         | ✅               | ✅        | ❌        | ✅        |
 | List diff                      | ✅         | ❌               | ⚠️        | ❌        | ⚠️        |
 | Text diff                      | ✅         | ❌               | ✅        | ✅        | ❌        |
 | Streaming for huge datasets    | ✅         | ❌               | ❌        | ❌        | ❌        |
@@ -558,7 +558,7 @@ Compares two texts and returns a structured diff at a character, word, or senten
     - `high`: slower but exact tokenization. Handles all language subtleties (Unicode, emoji, CJK scripts, locale‑aware segmentation when a locale is provided).
   - `detectMoves`: 
     - `false` (default): optimized for readability. Token moves are ignored so insertions don’t cascade and break equality (recommended for UI diffing).
-    - `true`: semantically precise, but slower — a single insertion shifts all following tokens, breaking equality.
+    - `true`: semantically precise, but noiser — a single insertion shifts all following tokens, breaking equality.
   - `ignoreCase`: if `true`, `hello` and `HELLO` are considered equal.
   - `ignorePunctuation`: if `true`, `hello!` and `hello` are considered equal.
   - `locale`: the locale of your text. Enables locale‑aware segmentation in high accuracy mode.
