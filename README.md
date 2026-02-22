@@ -92,7 +92,7 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 I am grateful to the generous donors of Superdiff!
 
- <div style="display: flex;>
+ <div style="display: flex;">
 
 <a href="https://github.com/AlexisAnzieu" target="_blank"><img alt="AlexisAnzieu" src="https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/donor-anzieu.png" width="72px" height="72px"/></a>
 <a href="https://github.com/omonk" target="_blank"><img alt="omonk" src="https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/donor-monk.png" width="72px" height="72px"/></a>
