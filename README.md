@@ -1,4 +1,4 @@
-<img width="1166" height="388" alt="superdiff logo" src="https://github.com/user-attachments/assets/518ddef4-a3c0-43ce-a229-b3008cb2058f" />
+<img width="1166" height="388" alt="superdiff logo" src="https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/superdiff-banner.png" />
 
 
 [![CI](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml/badge.svg)](https://github.com/DoneDeal0/superdiff/actions/workflows/ci.yml)
@@ -29,7 +29,7 @@
 
 <hr/>
 
-![superdiff-stream-demo-gif](https://github.com/user-attachments/assets/7ed08988-0636-4877-a5ab-398a15f43a04)
+![superdiff-stream-demo-gif](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/stream-list-diff-demo.gif)
 
 <p align="center">
 <sub>Superdiff smoothly comparing 1.8 million fictional votes in real time using <code>streamListDiff</code> in the browser</sub>
@@ -94,9 +94,9 @@ I am grateful to the generous donors of Superdiff!
 
  <div style="display: flex;>
 
-<a href="https://github.com/AlexisAnzieu" target="_blank"><img alt="AlexisAnzieu" src="https://github.com/DoneDeal0/superdiff/assets/43271780/8e9fb627-36ec-479d-87d4-3ca2cb2a796c" width="72px" height="72px"/></a>
-<a href="https://github.com/omonk" target="_blank"><img alt="omonk" src="https://github.com/DoneDeal0/superdiff/assets/43271780/6c040ab4-f6eb-49bf-a737-d138264abbd7" width="72px" height="72px"/></a>
-<a href="https://github.com/sneko" target="_blank"><img alt="sneko" src="https://github.com/DoneDeal0/superdiff/assets/43271780/2caaa70b-9586-44d6-8b3a-3755bba7b1ca" width="72px" height="72px"/></a>
+<a href="https://github.com/AlexisAnzieu" target="_blank"><img alt="AlexisAnzieu" src="https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/donor-anzieu.png" width="72px" height="72px"/></a>
+<a href="https://github.com/omonk" target="_blank"><img alt="omonk" src="https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/donor-monk.png" width="72px" height="72px"/></a>
+<a href="https://github.com/sneko" target="_blank"><img alt="sneko" src="https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/donor-sneko.png" width="72px" height="72px"/></a>
 
  </div>
 
