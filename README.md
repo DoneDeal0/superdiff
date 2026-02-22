@@ -29,7 +29,7 @@
 
 <hr/>
 
-![superdiff-stream-demo-gif](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/stream-list-diff-demo.gif)
+![superdiff-stream-gif](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/stream-list-diff.gif)
 
 <p align="center">
 <sub>Superdiff smoothly comparing 1.8 million fictional votes in real time using <code>streamListDiff</code> in the browser</sub>
