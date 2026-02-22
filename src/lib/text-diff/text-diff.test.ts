@@ -737,13 +737,11 @@ describe("getTextDiff – without moves detection", () => {
           status: "deleted",
         },
         {
-          value: '»',
+          value: "»",
           index: 6,
           previousIndex: null,
           status: "added",
         },
-
-
       ],
     };
     expect(
@@ -1486,59 +1484,59 @@ describe("getTextDiff – without moves detection", () => {
       ],
     };
     const strictResult = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "He",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "He",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "said",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "said",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": '"',
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: '"',
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "hello...",
-          "index": null,
-          "previousIndex": 3,
-          "status": "deleted"
+          value: "hello...",
+          index: null,
+          previousIndex: 3,
+          status: "deleted",
         },
         {
-          "value": "howdy",
-          "index": 3,
-          "previousIndex": null,
-          "status": "added"
+          value: "howdy",
+          index: 3,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "world",
-          "index": 4,
-          "previousIndex": 4,
-          "status": "equal"
+          value: "world",
+          index: 4,
+          previousIndex: 4,
+          status: "equal",
         },
         {
-          "value": '"',
-          "index": 5,
-          "previousIndex": 5,
-          "status": "equal"
+          value: '"',
+          index: 5,
+          previousIndex: 5,
+          status: "equal",
         },
         {
-          "value": "loudly.",
-          "index": 6,
-          "previousIndex": 6,
-          "status": "equal"
-        }
-      ]
-    }
+          value: "loudly.",
+          index: 6,
+          previousIndex: 6,
+          status: "equal",
+        },
+      ],
+    };
     expect(
       getTextDiff(prev, curr, { separation: "word", accuracy: "normal" }),
     ).toStrictEqual(result);
@@ -1604,71 +1602,71 @@ describe("getTextDiff – without moves detection", () => {
       ],
     };
     const resultHigh = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "He",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "He",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "said",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "said",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "“",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "“",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "you're",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "you're",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": "damn",
-          "index": 4,
-          "previousIndex": null,
-          "status": "added"
+          value: "damn",
+          index: 4,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "fine",
-          "index": 5,
-          "previousIndex": 4,
-          "status": "equal"
+          value: "fine",
+          index: 5,
+          previousIndex: 4,
+          status: "equal",
         },
         {
-          "value": "😊",
-          "index": 6,
-          "previousIndex": 5,
-          "status": "equal"
+          value: "😊",
+          index: 6,
+          previousIndex: 5,
+          status: "equal",
         },
         {
-          "value": "”",
-          "index": 7,
-          "previousIndex": 6,
-          "status": "equal"
+          value: "”",
+          index: 7,
+          previousIndex: 6,
+          status: "equal",
         },
         {
-          "value": "loudly.",
-          "index": null,
-          "previousIndex": 7,
-          "status": "deleted"
+          value: "loudly.",
+          index: null,
+          previousIndex: 7,
+          status: "deleted",
         },
         {
-          "value": "softly.",
-          "index": 8,
-          "previousIndex": null,
-          "status": "added"
-        }
-      ]
-    }
+          value: "softly.",
+          index: 8,
+          previousIndex: null,
+          status: "added",
+        },
+      ],
+    };
     expect(
       getTextDiff(prev, curr, { separation: "word", accuracy: "normal" }),
     ).toStrictEqual(resultNormal);
@@ -1700,7 +1698,7 @@ describe("getTextDiff – without moves detection", () => {
         { value: "She", index: 0, previousIndex: null, status: "added" },
         { value: "said", index: 1, previousIndex: 1, status: "equal" },
         { value: '"', index: 2, previousIndex: 2, status: "equal" },
-        { value: 'she', index: 3, previousIndex: 3, status: "equal" },
+        { value: "she", index: 3, previousIndex: 3, status: "equal" },
         { value: "said", index: 4, previousIndex: 4, status: "equal" },
         { value: `'`, index: 5, previousIndex: 5, status: "equal" },
         { value: `hello`, index: 6, previousIndex: 6, status: "equal" },
@@ -1825,356 +1823,360 @@ describe("getTextDiff – without moves detection", () => {
     const curr = `const userProfile = fetchUserData(user.id, "detailedProfile", false, { cache: true });`;
 
     const resultNormal = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "const",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "const",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "userProfile",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "userProfile",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "=",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "=",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "fetchUserData(user.id,",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "fetchUserData(user.id,",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": '"profile",',
-          "index": null,
-          "previousIndex": 4,
-          "status": "deleted"
+          value: '"profile",',
+          index: null,
+          previousIndex: 4,
+          status: "deleted",
         },
         {
-          "value": "true);",
-          "index": null,
-          "previousIndex": 5,
-          "status": "deleted"
+          value: "true);",
+          index: null,
+          previousIndex: 5,
+          status: "deleted",
         },
         {
-          "value": '"detailedProfile",',
-          "index": 4,
-          "previousIndex": null,
-          "status": "added"
+          value: '"detailedProfile",',
+          index: 4,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "false,",
-          "index": 5,
-          "previousIndex": null,
-          "status": "added"
+          value: "false,",
+          index: 5,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "{",
-          "index": 6,
-          "previousIndex": null,
-          "status": "added"
+          value: "{",
+          index: 6,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "cache:",
-          "index": 7,
-          "previousIndex": null,
-          "status": "added"
+          value: "cache:",
+          index: 7,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "true",
-          "index": 8,
-          "previousIndex": null,
-          "status": "added"
+          value: "true",
+          index: 8,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "});",
-          "index": 9,
-          "previousIndex": null,
-          "status": "added"
-        }
-      ]
-    }
+          value: "});",
+          index: 9,
+          previousIndex: null,
+          status: "added",
+        },
+      ],
+    };
 
     const resultHigh = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "const",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "const",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "userProfile",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "userProfile",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "=",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "=",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "fetchUserData(",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "fetchUserData(",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": "user.id,",
-          "index": 4,
-          "previousIndex": 4,
-          "status": "equal"
+          value: "user.id,",
+          index: 4,
+          previousIndex: 4,
+          status: "equal",
         },
         {
-          "value": '"',
-          "index": 5,
-          "previousIndex": 5,
-          "status": "equal"
+          value: '"',
+          index: 5,
+          previousIndex: 5,
+          status: "equal",
         },
         {
-          "value": "profile",
-          "index": null,
-          "previousIndex": 6,
-          "status": "deleted"
+          value: "profile",
+          index: null,
+          previousIndex: 6,
+          status: "deleted",
         },
         {
-          "value": "detailedProfile",
-          "index": 6,
-          "previousIndex": null,
-          "status": "added"
+          value: "detailedProfile",
+          index: 6,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": '",',
-          "index": 7,
-          "previousIndex": 7,
-          "status": "equal"
+          value: '",',
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
         },
         {
-          "value": "true);",
-          "index": null,
-          "previousIndex": 8,
-          "status": "deleted"
+          value: "true);",
+          index: null,
+          previousIndex: 8,
+          status: "deleted",
         },
         {
-          "value": "false,",
-          "index": 8,
-          "previousIndex": null,
-          "status": "added"
+          value: "false,",
+          index: 8,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "{",
-          "index": 9,
-          "previousIndex": null,
-          "status": "added"
+          value: "{",
+          index: 9,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "cache:",
-          "index": 10,
-          "previousIndex": null,
-          "status": "added"
+          value: "cache:",
+          index: 10,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "true",
-          "index": 11,
-          "previousIndex": null,
-          "status": "added"
+          value: "true",
+          index: 11,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "});",
-          "index": 12,
-          "previousIndex": null,
-          "status": "added"
-        }
-      ]
-    }
+          value: "});",
+          index: 12,
+          previousIndex: null,
+          status: "added",
+        },
+      ],
+    };
     expect(
       getTextDiff(prev, curr, {
         separation: "word",
         accuracy: "normal",
-      })
+      }),
     ).toStrictEqual(resultNormal);
 
     expect(
       getTextDiff(prev, curr, {
         separation: "word",
         accuracy: "high",
-      })
+      }),
     ).toStrictEqual(resultHigh);
   });
   it("word - handles jsx code line", () => {
     const prev = `return <UserCard name={\`admin-\${role}\`} active={true} />;`;
     const curr = `return <UserCard name={\`admin-\${role}\`} active={false} title="Panel" />;`;
     const resultNormal = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "return",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "return",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "<UserCard",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "<UserCard",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "name={`admin-${role}`}",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "name={`admin-${role}`}",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "active={true}",
-          "index": null,
-          "previousIndex": 3,
-          "status": "deleted"
+          value: "active={true}",
+          index: null,
+          previousIndex: 3,
+          status: "deleted",
         },
         {
-          "value": "active={false}",
-          "index": 3,
-          "previousIndex": null,
-          "status": "added"
+          value: "active={false}",
+          index: 3,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": 'title="Panel"',
-          "index": 4,
-          "previousIndex": null,
-          "status": "added"
+          value: 'title="Panel"',
+          index: 4,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "/>;",
-          "index": 5,
-          "previousIndex": 4,
-          "status": "equal"
-        }
-      ]
-    }
+          value: "/>;",
+          index: 5,
+          previousIndex: 4,
+          status: "equal",
+        },
+      ],
+    };
     const resultHigh = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "return",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "return",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "<",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "<",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "UserCard",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "UserCard",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "name={`",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "name={`",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": "admin-",
-          "index": 4,
-          "previousIndex": 4,
-          "status": "equal"
+          value: "admin-",
+          index: 4,
+          previousIndex: 4,
+          status: "equal",
         },
         {
-          "value": "${",
-          "index": 5,
-          "previousIndex": 5,
-          "status": "equal"
+          value: "${",
+          index: 5,
+          previousIndex: 5,
+          status: "equal",
         },
         {
-          "value": "role}`}",
-          "index": 6,
-          "previousIndex": 6,
-          "status": "equal"
+          value: "role}`}",
+          index: 6,
+          previousIndex: 6,
+          status: "equal",
         },
         {
-          "value": "active",
-          "index": 7,
-          "previousIndex": 7,
-          "status": "equal"
+          value: "active",
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
         },
         {
-          "value": "={",
-          "index": 8,
-          "previousIndex": 8,
-          "status": "equal"
+          value: "={",
+          index: 8,
+          previousIndex: 8,
+          status: "equal",
         },
         {
-          "value": "true}",
-          "index": null,
-          "previousIndex": 9,
-          "status": "deleted"
+          value: "true}",
+          index: null,
+          previousIndex: 9,
+          status: "deleted",
         },
         {
-          "value": "false}",
-          "index": 9,
-          "previousIndex": null,
-          "status": "added"
+          value: "false}",
+          index: 9,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "title",
-          "index": 10,
-          "previousIndex": null,
-          "status": "added"
+          value: "title",
+          index: 10,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "=",
-          "index": 11,
-          "previousIndex": null,
-          "status": "added"
+          value: "=",
+          index: 11,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": '"',
-          "index": 12,
-          "previousIndex": null,
-          "status": "added"
+          value: '"',
+          index: 12,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "Panel",
-          "index": 13,
-          "previousIndex": null,
-          "status": "added"
+          value: "Panel",
+          index: 13,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": '"',
-          "index": 14,
-          "previousIndex": null,
-          "status": "added"
+          value: '"',
+          index: 14,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "/>;",
-          "index": 15,
-          "previousIndex": 10,
-          "status": "equal"
-        }
-      ]
-    }
-    expect(getTextDiff(prev, curr, { accuracy: "normal", separation: "word" })).toStrictEqual(resultNormal)
-    expect(getTextDiff(prev, curr, { accuracy: "high", separation: "word" })).toStrictEqual(resultHigh)
-  })
+          value: "/>;",
+          index: 15,
+          previousIndex: 10,
+          status: "equal",
+        },
+      ],
+    };
+    expect(
+      getTextDiff(prev, curr, { accuracy: "normal", separation: "word" }),
+    ).toStrictEqual(resultNormal);
+    expect(
+      getTextDiff(prev, curr, { accuracy: "high", separation: "word" }),
+    ).toStrictEqual(resultHigh);
+  });
   // SENTENCES
   it("sentence - no options", () => {
     const result = {
@@ -3393,7 +3395,7 @@ describe("getTextDiff – with moves detection", () => {
           status: "equal",
         },
         {
-          value: '»',
+          value: "»",
           index: 6,
           previousValue: '"',
           previousIndex: null,
@@ -3405,14 +3407,14 @@ describe("getTextDiff – with moves detection", () => {
       getTextDiff(prev, curr, {
         separation: "character",
         accuracy: "normal",
-        detectMoves: true
+        detectMoves: true,
       }),
     ).toStrictEqual(result);
     expect(
       getTextDiff(prev, curr, {
         separation: "character",
         accuracy: "high",
-        detectMoves: true
+        detectMoves: true,
       }),
     ).toStrictEqual(result);
   });
@@ -4209,11 +4211,11 @@ describe("getTextDiff – with moves detection", () => {
         {
           value: "howdy",
           index: 3,
-          previousValue: 'hello...',
+          previousValue: "hello...",
           previousIndex: null,
           status: "updated",
         },
-        { value: 'world', index: 4, previousIndex: 4, status: "equal" },
+        { value: "world", index: 4, previousIndex: 4, status: "equal" },
         { value: '"', index: 5, previousIndex: 5, status: "equal" },
         { value: "loudly.", index: 6, previousIndex: 6, status: "equal" },
       ],
@@ -4291,76 +4293,84 @@ describe("getTextDiff – with moves detection", () => {
       ],
     };
     const resultHigh = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "He",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "He",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "said",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "said",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "“",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "“",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "you're",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "you're",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": "damn",
-          "index": 4,
-          "previousIndex": null,
-          "status": "added"
+          value: "damn",
+          index: 4,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "fine",
-          "index": 5,
-          "previousIndex": 4,
-          "status": "moved"
+          value: "fine",
+          index: 5,
+          previousIndex: 4,
+          status: "moved",
         },
         {
-          "value": "😊",
-          "index": 6,
-          "previousIndex": 5,
-          "status": "moved"
+          value: "😊",
+          index: 6,
+          previousIndex: 5,
+          status: "moved",
         },
         {
-          "value": "”",
-          "index": 7,
-          "previousIndex": 6,
-          "status": "moved"
+          value: "”",
+          index: 7,
+          previousIndex: 6,
+          status: "moved",
         },
         {
-          "value": "softly.",
-          "index": 8,
-          "previousIndex": null,
-          "status": "added"
+          value: "softly.",
+          index: 8,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "loudly.",
-          "index": null,
-          "previousIndex": 7,
-          "status": "deleted"
+          value: "loudly.",
+          index: null,
+          previousIndex: 7,
+          status: "deleted",
         },
-      ]
-    }
+      ],
+    };
     expect(
-      getTextDiff(prev, curr, { separation: "word", accuracy: "normal", detectMoves: true }),
+      getTextDiff(prev, curr, {
+        separation: "word",
+        accuracy: "normal",
+        detectMoves: true,
+      }),
     ).toStrictEqual(resultNormal);
     expect(
-      getTextDiff(prev, curr, { separation: "word", accuracy: "high", detectMoves: true }),
+      getTextDiff(prev, curr, {
+        separation: "word",
+        accuracy: "high",
+        detectMoves: true,
+      }),
     ).toStrictEqual(resultHigh);
   });
   it("word - handles nested quotes", () => {
@@ -4370,7 +4380,13 @@ describe("getTextDiff – with moves detection", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "She", index: 0, previousValue: "He", previousIndex: null, status: "updated" },
+        {
+          value: "She",
+          index: 0,
+          previousValue: "He",
+          previousIndex: null,
+          status: "updated",
+        },
         { value: "said", index: 1, previousIndex: 1, status: "equal" },
         { value: '"she', index: 2, previousIndex: 2, status: "equal" },
         { value: "said", index: 3, previousIndex: 3, status: "equal" },
@@ -4382,10 +4398,16 @@ describe("getTextDiff – with moves detection", () => {
       type: "text",
       status: "updated",
       diff: [
-        { value: "She", index: 0, previousValue: "He", previousIndex: null, status: "updated" },
+        {
+          value: "She",
+          index: 0,
+          previousValue: "He",
+          previousIndex: null,
+          status: "updated",
+        },
         { value: "said", index: 1, previousIndex: 1, status: "equal" },
         { value: '"', index: 2, previousIndex: 2, status: "equal" },
-        { value: 'she', index: 3, previousIndex: 3, status: "equal" },
+        { value: "she", index: 3, previousIndex: 3, status: "equal" },
         { value: "said", index: 4, previousIndex: 4, status: "equal" },
         { value: `'`, index: 5, previousIndex: 5, status: "equal" },
         { value: `hello`, index: 6, previousIndex: 6, status: "equal" },
@@ -4395,10 +4417,18 @@ describe("getTextDiff – with moves detection", () => {
       ],
     };
     expect(
-      getTextDiff(prev, curr, { separation: "word", accuracy: "normal", detectMoves: true }),
+      getTextDiff(prev, curr, {
+        separation: "word",
+        accuracy: "normal",
+        detectMoves: true,
+      }),
     ).toStrictEqual(resultNormal);
     expect(
-      getTextDiff(prev, curr, { separation: "word", accuracy: "high", detectMoves: true }),
+      getTextDiff(prev, curr, {
+        separation: "word",
+        accuracy: "high",
+        detectMoves: true,
+      }),
     ).toStrictEqual(resultHigh);
   });
   it("word - handles special quotes in high accuracy mode", () => {
@@ -4485,7 +4515,7 @@ describe("getTextDiff – with moves detection", () => {
         separation: "word",
         accuracy: "high",
         locale: "de",
-        detectMoves: true
+        detectMoves: true,
       }),
     ).toStrictEqual(resultGerman);
     expect(
@@ -4493,7 +4523,7 @@ describe("getTextDiff – with moves detection", () => {
         separation: "word",
         accuracy: "high",
         locale: "fr",
-        detectMoves: true
+        detectMoves: true,
       }),
     ).toStrictEqual(resultFrench);
   });
@@ -4502,326 +4532,338 @@ describe("getTextDiff – with moves detection", () => {
     const curr = `const userProfile = fetchUserData(user.id, "detailedProfile", false, { cache: true });`;
 
     const resultNormal = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "const",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "const",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "userProfile",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "userProfile",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "=",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "=",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "fetchUserData(user.id,",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "fetchUserData(user.id,",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": '"detailedProfile",',
-          "index": 4,
-          "previousValue": '"profile",',
-          "previousIndex": null,
-          "status": "updated"
+          value: '"detailedProfile",',
+          index: 4,
+          previousValue: '"profile",',
+          previousIndex: null,
+          status: "updated",
         },
         {
-          "value": "false,",
-          "index": 5,
-          "previousValue": "true);",
-          "previousIndex": null,
-          "status": "updated"
+          value: "false,",
+          index: 5,
+          previousValue: "true);",
+          previousIndex: null,
+          status: "updated",
         },
         {
-          "value": "{",
-          "index": 6,
-          "previousIndex": null,
-          "status": "added"
+          value: "{",
+          index: 6,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "cache:",
-          "index": 7,
-          "previousIndex": null,
-          "status": "added"
+          value: "cache:",
+          index: 7,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "true",
-          "index": 8,
-          "previousIndex": null,
-          "status": "added"
+          value: "true",
+          index: 8,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "});",
-          "index": 9,
-          "previousIndex": null,
-          "status": "added"
-        }
-      ]
-    }
+          value: "});",
+          index: 9,
+          previousIndex: null,
+          status: "added",
+        },
+      ],
+    };
     const resultHigh = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "const",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "const",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "userProfile",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "userProfile",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "=",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "=",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "fetchUserData(",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "fetchUserData(",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": "user.id,",
-          "index": 4,
-          "previousIndex": 4,
-          "status": "equal"
+          value: "user.id,",
+          index: 4,
+          previousIndex: 4,
+          status: "equal",
         },
         {
-          "value": '"',
-          "index": 5,
-          "previousIndex": 5,
-          "status": "equal"
+          value: '"',
+          index: 5,
+          previousIndex: 5,
+          status: "equal",
         },
         {
-          "value": "detailedProfile",
-          "index": 6,
-          "previousValue": "profile",
-          "previousIndex": null,
-          "status": "updated"
+          value: "detailedProfile",
+          index: 6,
+          previousValue: "profile",
+          previousIndex: null,
+          status: "updated",
         },
         {
-          "value": '",',
-          "index": 7,
-          "previousIndex": 7,
-          "status": "equal"
+          value: '",',
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
         },
         {
-          "value": "false,",
-          "index": 8,
-          "previousValue": "true);",
-          "previousIndex": null,
-          "status": "updated"
+          value: "false,",
+          index: 8,
+          previousValue: "true);",
+          previousIndex: null,
+          status: "updated",
         },
         {
-          "value": "{",
-          "index": 9,
-          "previousIndex": null,
-          "status": "added"
+          value: "{",
+          index: 9,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "cache:",
-          "index": 10,
-          "previousIndex": null,
-          "status": "added"
+          value: "cache:",
+          index: 10,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "true",
-          "index": 11,
-          "previousIndex": null,
-          "status": "added"
+          value: "true",
+          index: 11,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "});",
-          "index": 12,
-          "previousIndex": null,
-          "status": "added"
-        }
-      ]
-    }
+          value: "});",
+          index: 12,
+          previousIndex: null,
+          status: "added",
+        },
+      ],
+    };
     expect(
       getTextDiff(prev, curr, {
         separation: "word",
         accuracy: "normal",
-        detectMoves: true
-      })
+        detectMoves: true,
+      }),
     ).toStrictEqual(resultNormal);
     expect(
       getTextDiff(prev, curr, {
         separation: "word",
         accuracy: "high",
-        detectMoves: true
-      })
+        detectMoves: true,
+      }),
     ).toStrictEqual(resultHigh);
   });
   it("word - handles jsx code line", () => {
     const prev = `return <UserCard name={\`admin-\${role}\`} active={true} />;`;
     const curr = `return <UserCard name={\`admin-\${role}\`} active={false} title="Panel" />;`;
     const resultNormal = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "return",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "return",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "<UserCard",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "<UserCard",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "name={`admin-${role}`}",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "name={`admin-${role}`}",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "active={false}",
-          "index": 3,
-          "previousValue": "active={true}",
-          "previousIndex": null,
-          "status": "updated"
+          value: "active={false}",
+          index: 3,
+          previousValue: "active={true}",
+          previousIndex: null,
+          status: "updated",
         },
         {
-          "value": 'title="Panel"',
-          "index": 4,
-          "previousIndex": null,
-          "status": "added"
+          value: 'title="Panel"',
+          index: 4,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "/>;",
-          "index": 5,
-          "previousIndex": 4,
-          "status": "moved"
-        }
-      ]
-    }
+          value: "/>;",
+          index: 5,
+          previousIndex: 4,
+          status: "moved",
+        },
+      ],
+    };
     const resultHigh = {
-      "type": "text",
-      "status": "updated",
-      "diff": [
+      type: "text",
+      status: "updated",
+      diff: [
         {
-          "value": "return",
-          "index": 0,
-          "previousIndex": 0,
-          "status": "equal"
+          value: "return",
+          index: 0,
+          previousIndex: 0,
+          status: "equal",
         },
         {
-          "value": "<",
-          "index": 1,
-          "previousIndex": 1,
-          "status": "equal"
+          value: "<",
+          index: 1,
+          previousIndex: 1,
+          status: "equal",
         },
         {
-          "value": "UserCard",
-          "index": 2,
-          "previousIndex": 2,
-          "status": "equal"
+          value: "UserCard",
+          index: 2,
+          previousIndex: 2,
+          status: "equal",
         },
         {
-          "value": "name={`",
-          "index": 3,
-          "previousIndex": 3,
-          "status": "equal"
+          value: "name={`",
+          index: 3,
+          previousIndex: 3,
+          status: "equal",
         },
         {
-          "value": "admin-",
-          "index": 4,
-          "previousIndex": 4,
-          "status": "equal"
+          value: "admin-",
+          index: 4,
+          previousIndex: 4,
+          status: "equal",
         },
         {
-          "value": "${",
-          "index": 5,
-          "previousIndex": 5,
-          "status": "equal"
+          value: "${",
+          index: 5,
+          previousIndex: 5,
+          status: "equal",
         },
         {
-          "value": "role}`}",
-          "index": 6,
-          "previousIndex": 6,
-          "status": "equal"
+          value: "role}`}",
+          index: 6,
+          previousIndex: 6,
+          status: "equal",
         },
         {
-          "value": "active",
-          "index": 7,
-          "previousIndex": 7,
-          "status": "equal"
+          value: "active",
+          index: 7,
+          previousIndex: 7,
+          status: "equal",
         },
         {
-          "value": "={",
-          "index": 8,
-          "previousIndex": 8,
-          "status": "equal"
+          value: "={",
+          index: 8,
+          previousIndex: 8,
+          status: "equal",
         },
         {
-          "value": "false}",
-          "index": 9,
-          "previousValue": "true}",
-          "previousIndex": null,
-          "status": "updated"
+          value: "false}",
+          index: 9,
+          previousValue: "true}",
+          previousIndex: null,
+          status: "updated",
         },
         {
-          "value": "title",
-          "index": 10,
-          "previousIndex": null,
-          "status": "added"
+          value: "title",
+          index: 10,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "=",
-          "index": 11,
-          "previousIndex": null,
-          "status": "added"
+          value: "=",
+          index: 11,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": '"',
-          "index": 12,
-          "previousIndex": null,
-          "status": "added"
+          value: '"',
+          index: 12,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "Panel",
-          "index": 13,
-          "previousIndex": null,
-          "status": "added"
+          value: "Panel",
+          index: 13,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": '"',
-          "index": 14,
-          "previousIndex": null,
-          "status": "added"
+          value: '"',
+          index: 14,
+          previousIndex: null,
+          status: "added",
         },
         {
-          "value": "/>;",
-          "index": 15,
-          "previousIndex": 10,
-          "status": "moved"
-        }
-      ]
-    }
-    expect(getTextDiff(prev, curr, { accuracy: "normal", separation: "word", detectMoves: true })).toStrictEqual(resultNormal)
-    expect(getTextDiff(prev, curr, { accuracy: "high", separation: "word", detectMoves: true })).toStrictEqual(resultHigh)
-  })
+          value: "/>;",
+          index: 15,
+          previousIndex: 10,
+          status: "moved",
+        },
+      ],
+    };
+    expect(
+      getTextDiff(prev, curr, {
+        accuracy: "normal",
+        separation: "word",
+        detectMoves: true,
+      }),
+    ).toStrictEqual(resultNormal);
+    expect(
+      getTextDiff(prev, curr, {
+        accuracy: "high",
+        separation: "word",
+        detectMoves: true,
+      }),
+    ).toStrictEqual(resultHigh);
+  });
   // SENTENCES
   it("sentence - no options", () => {
     const result = {

@@ -93,7 +93,8 @@ export const tokenizeStrictText = (
 
       // WORD or EMOJI
       if (data.isWordLike || EMOJI_SPLIT_REGEX.test(trimmed)) {
-        const isAdjacentToPrev = lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
+        const isAdjacentToPrev =
+          lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
 
         const prevWord =
           validWords.length > 0 ? validWords[validWords.length - 1] : "";
@@ -123,7 +124,9 @@ export const tokenizeStrictText = (
 
       // NON-WORD (punctuation, etc.)
       const isAdjacent =
-        !QUOTES.has(trimmed) && lastNonSpaceEndIndex !== null && lastNonSpaceEndIndex === data.index;
+        !QUOTES.has(trimmed) &&
+        lastNonSpaceEndIndex !== null &&
+        lastNonSpaceEndIndex === data.index;
 
       if (isAdjacent && validWords.length > 0) {
         const prev = validWords.pop()!;

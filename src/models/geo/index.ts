@@ -4,9 +4,9 @@ export type GeoUnit = "centimeter" | "foot" | "inch" | "kilometer" | "meter" | "
 
 export type GeoDiffOptions = {
     unit?: GeoUnit;
-    maxDecimals?: number;  // distance decimals, default 2
-    accuracy?: "normal" | "high" // normal = haversine, high = vincenty
-    locale?: Intl.Locale | string; // locale to format the distance label based on Intl.NumberFormat
+    maxDecimals?: number;
+    accuracy?: "normal" | "high"
+    locale?: Intl.Locale | string;
 };
 
 export const DEFAULT_GEODIFF_OPTIONS: Required<GeoDiffOptions> = {
