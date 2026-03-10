@@ -21,6 +21,7 @@ describe("isEqual", () => {
     ).toBeTruthy();
   });
   it("return false if data are different", () => {
+    expect(isEqual({}, [])).toBeFalsy()
     expect(isEqual(null, "hello")).toBeFalsy();
     expect(isEqual("hello", undefined)).toBeFalsy();
     expect(isEqual("hello", "howdy")).toBeFalsy();

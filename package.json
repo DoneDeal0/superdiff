@@ -1,6 +1,6 @@
 {
   "name": "@donedeal0/superdiff",
-  "version": "4.2.1",
+  "version": "4.2.2",
   "type": "module",
   "description": "Superdiff provides a rich and readable diff for arrays, objects, texts and coordinates. It supports stream and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offers a top-tier performance.",
   "main": "dist/index.js",
