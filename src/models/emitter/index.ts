@@ -8,11 +8,9 @@ export type EmitterEvents<T extends Record<string, unknown>> = {
   finish: [];
 };
 
-export type IEmitter<T extends Record<string, unknown>> = EventEmitter<{
-  data: [StreamListDiff<T>[]];
-  error: [Error];
-  finish: [];
-}>;
+export type IEmitter<T extends Record<string, unknown>> = EventEmitter<
+  EmitterEvents<T>
+>;
 
 export class EventEmitter<Events extends Record<string, unknown[]>> {
   private events: Record<string, Listener<unknown[]>[]> = {};

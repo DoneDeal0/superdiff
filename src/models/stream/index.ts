@@ -35,8 +35,8 @@ export type StreamReferences<T extends Record<string, unknown>> = Map<
 export type DataBuffer<T extends Record<string, unknown>> = Map<
   ReferenceKey<T>,
   {
-    data: T | null;
-    index: number | null;
+    data: T;
+    index: number;
   }
 >;
 

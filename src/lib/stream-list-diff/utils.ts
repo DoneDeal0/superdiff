@@ -43,7 +43,6 @@ export function outputDiffChunk<T extends Record<string, unknown>>(
   emitter: IEmitter<T>,
 ) {
   let chunks: StreamListDiff<T>[] = [];
-
   function handleDiffChunk(
     chunk: StreamListDiff<T>,
     options: ListStreamOptions,

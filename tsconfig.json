@@ -1,13 +1,15 @@
 {
   "exclude": ["node_modules", "dist"],
-  "include": ["src"],
+  "include": ["src", "jest.setup.ts"],
   "compilerOptions": {
+    "rootDir": ".",
     "declaration": true,
     "declarationDir": "./dist",
     "lib": ["esnext", "dom"],
+   "types": ["jest", "node"],
     "module": "esnext",
     "target": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
@@ -16,7 +18,6 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true ,
-    "baseUrl": ".",
     "paths": {
       "@lib/*": ["./src/lib/*"],
       "@mocks/*": ["./src/mocks/*"],

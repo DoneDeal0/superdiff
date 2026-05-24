@@ -19,12 +19,12 @@ function getDiffStatus(statusMap: Set<ListStatus>): ListStatus {
   return ListStatus.UPDATED;
 }
 
-function getLeanDiff(
-  diff: ListDiff["diff"],
+function getLeanDiff<T>(
+  diff: ListDiff<T>["diff"],
   showOnly: ListDiffOptions["showOnly"] = [],
-): ListDiff["diff"] {
+): ListDiff<T>["diff"] {
   const set = new Set(showOnly);
-  const leanDiff: ListDiff["diff"] = [];
+  const leanDiff: ListDiff<T>["diff"] = [];
   for (let i = 0; i < diff.length; i++) {
     if (set.has(diff[i].status)) {
       leanDiff.push(diff[i]);
@@ -37,8 +37,8 @@ function formatSingleListDiff<T>(
   listData: T[],
   status: ListStatus,
   options: ListDiffOptions,
-): ListDiff {
-  const diff: ListDiff["diff"] = new Array(listData.length);
+): ListDiff<T> {
+  const diff: ListDiff<T>["diff"] = new Array(listData.length);
   const isAdded = status === ListStatus.ADDED;
   for (let i = 0; i < listData.length; i++) {
     diff[i] = {
@@ -88,8 +88,8 @@ function getNextStatus(
 export const getListDiff = <T>(
   prevList: T[] | undefined | null,
   nextList: T[] | undefined | null,
-  options: ListDiffOptions = DEFAULT_LIST_DIFF_OPTIONS,
-): ListDiff => {
+  options: ListDiffOptions<T> = DEFAULT_LIST_DIFF_OPTIONS,
+): ListDiff<T> => {
   if (!prevList && !nextList) {
     return { type: "list", status: ListStatus.EQUAL, diff: [] };
   }
@@ -100,7 +100,7 @@ export const getListDiff = <T>(
     return formatSingleListDiff(prevList as T[], ListStatus.DELETED, options);
   }
 
-  const diff: ListDiff["diff"] = [];
+  const diff: ListDiff<T>["diff"] = [];
   const previousMap = new Map<string, ListData<T>>();
   const statusMap = new Set<ListStatus>();
   const { referenceKey, ignoreArrayOrder } = options;

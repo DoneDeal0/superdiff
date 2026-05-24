@@ -53,7 +53,7 @@ async function getDiffChunks<T extends Record<string, unknown>>(
       nextDataBuffer.delete(ref);
       const isDataEqual =
         JSON.stringify(chunk) === JSON.stringify(relatedChunk.data);
-      const isEqual = (relatedChunk.index as number) - currentPrevIndex === 0;
+      const isEqual = relatedChunk.index - currentPrevIndex === 0;
       if (isDataEqual) {
         handleDiffChunk(
           {
@@ -105,7 +105,7 @@ async function getDiffChunks<T extends Record<string, unknown>>(
       prevDataBuffer.delete(ref);
       const isDataEqual =
         JSON.stringify(chunk) === JSON.stringify(relatedChunk.data);
-      const isEqual = currentNextIndex - (relatedChunk.index as number) === 0;
+      const isEqual = currentNextIndex - relatedChunk.index === 0;
       if (isDataEqual) {
         handleDiffChunk(
           {

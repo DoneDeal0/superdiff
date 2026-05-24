@@ -7,4 +7,5 @@ export default [
   { settings: { react: { version: "detect" } } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  { rules: { "preserve-caught-error": "off" } },
 ];
