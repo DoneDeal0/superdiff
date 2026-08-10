@@ -111,7 +111,7 @@ export function getGeoDiff(
       try {
         distanceKm = getVincentyDistance(previousCoordinates, coordinates);
         if (typeof distanceKm !== "number" || isNaN(distanceKm)) throw Error;
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        // oxlint-disable-next-line no-unused-vars
       } catch (_: unknown) {
         distanceKm = getHaversineDistance(previousCoordinates, coordinates);
       }

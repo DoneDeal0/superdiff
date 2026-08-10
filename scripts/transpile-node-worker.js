@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable no-undef */
 import { execSync } from "child_process";
 import { existsSync } from "fs"
 
@@ -12,6 +10,7 @@ try {
       stdio: "inherit",
     });
   }
+// oxlint-disable-next-line no-unused-vars
 } catch (_) {
   process.exit(1);
 }

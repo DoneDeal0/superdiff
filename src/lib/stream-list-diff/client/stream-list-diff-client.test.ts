@@ -1,16 +1,16 @@
 /**
  * @jest-environment jsdom
  */
-import "blob-polyfill";
-import { ReadableStream } from "web-streams-polyfill";
+import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import prevListFile from "@mocks/prevList.json";
 import nextListFile from "@mocks/nextList.json";
 import { ListStatus } from "@models/list";
 import { StreamListDiff } from "@models/stream";
 import { streamListDiff } from ".";
+import "blob-polyfill";
 
 // @ts-expect-error - the ReadableStream polyfill is necessary to test ReadableStream in a Node environment.
-global.ReadableStream = ReadableStream;
+global.ReadableStream = ReadableStreamPolyfill;
 
 describe("data emission", () => {
   it("emits 'data' event and consider the all the nextList added if no prevList is provided", (done) => {
