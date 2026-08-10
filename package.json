@@ -29,6 +29,10 @@
     "url": "https://github.com/sponsors/DoneDeal0"
   },
   "readme": "./README.md",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
   "release": {
     "branches": [
       "main"
@@ -36,16 +40,11 @@
     "plugins": [
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
-      "@semantic-release/github",
-      [
-        "@semantic-release/npm",
-        {
-          "npmPublish": true
-        }
-      ]
+      "@semantic-release/npm",
+      "@semantic-release/github"
     ]
   },
- "keywords": [
+  "keywords": [
   "array-comparison",
   "array-diff",
   "chunks",
@@ -94,8 +93,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
-    "@semantic-release/exec": "^7.1.0",
-    "@semantic-release/git": "^10.0.1",
     "@swc/core": "^1.15.8",
     "@swc/jest": "^0.2.39",
     "@types/arr-diff": "^4.0.3",
@@ -113,6 +110,7 @@
     "jsdom": "^26.0.0",
     "microdiff": "^1.5.0",
     "prettier": "^3.5.2",
+    "semantic-release": "^25.0.9",
     "swc-loader": "^0.2.6",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
