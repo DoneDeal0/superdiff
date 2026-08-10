@@ -1,6 +1,6 @@
 /node_modules
 dist
-.eslintcache
 .DS_Store
+*.tsbuildinfo
 # Ignore generated worker files
 src/lib/stream-list-diff/server/worker/node-worker.cjs

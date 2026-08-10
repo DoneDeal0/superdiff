@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "ignorePatterns": [
+    "dist",
+    "src/lib/stream-list-diff/server/worker/node-worker.cjs"
+  ],
+  "rules": {
+    "unicorn/no-new-array": "off"
+  }
+}

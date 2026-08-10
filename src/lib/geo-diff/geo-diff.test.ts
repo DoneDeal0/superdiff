@@ -263,7 +263,6 @@ describe("getGeoDiff", () => {
         throw new Error("Vincenty convergence failed");
       }),
     }));
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { getGeoDiff } = require(".");
     expect(getGeoDiff(PARIS, LONDON, { accuracy: "high" })).toStrictEqual({
       type: "geo",
