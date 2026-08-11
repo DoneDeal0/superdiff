@@ -31,14 +31,10 @@ export function getTextDiff(
   currentText: string | null | undefined,
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
 ): TextDiff {
-  const previousTokens =
+  const tokenize = (text: string | null | undefined) =>
     options?.accuracy === "high"
-      ? tokenizeStrictText(previousText, options)
-      : tokenizeNormalText(previousText, options);
-  const currentTokens =
-    options?.accuracy === "high"
-      ? tokenizeStrictText(currentText, options)
-      : tokenizeNormalText(currentText, options);
+      ? tokenizeStrictText(text, options)
+      : tokenizeNormalText(text, options);
 
   if (!previousText && !currentText) {
     return { type: "text", status: TextStatus.EQUAL, diff: [] };
@@ -48,7 +44,7 @@ export function getTextDiff(
     return {
       type: "text",
       status: TextStatus.ADDED,
-      diff: currentTokens.map((token, i) => ({
+      diff: tokenize(currentText).map((token, i) => ({
         value: token.value,
         index: i,
         previousIndex: null,
@@ -60,7 +56,7 @@ export function getTextDiff(
     return {
       type: "text",
       status: TextStatus.DELETED,
-      diff: previousTokens.map((token, i) => ({
+      diff: tokenize(previousText).map((token, i) => ({
         value: token.value,
         index: null,
         previousIndex: i,
@@ -68,6 +64,10 @@ export function getTextDiff(
       })),
     };
   }
+
+  const previousTokens = tokenize(previousText);
+  const currentTokens = tokenize(currentText);
+
   if (options.detectMoves) {
     return getPositionalTextDiff(previousTokens, currentTokens);
   }
