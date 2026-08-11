@@ -51,6 +51,6 @@ export type TextDiff = {
     index: number | null;
     previousValue?: string;
     previousIndex: number | null;
-    status: TextStatus;
+    status: `${TextStatus}`;
   }[];
 };

@@ -3,7 +3,7 @@ export const DEFAULT_LIST_DIFF_OPTIONS = {
   referenceKey: undefined,
   considerMoveAsUpdate: false,
   ignoreArrayOrder: false,
-};
+} satisfies ListDiffOptions;
 
 export enum ListStatus {
   ADDED = "added",
@@ -18,9 +18,9 @@ export enum ListType {
   NEXT = "nextList",
 }
 
-export type ListDiffOptions = {
+export type ListDiffOptions<T = unknown> = {
   showOnly?: `${ListStatus}`[];
-  referenceKey?: string;
+  referenceKey?: T extends Record<string, unknown> ? keyof T & string : string;
   considerMoveAsUpdate?: boolean;
   ignoreArrayOrder?: boolean;
 };
@@ -30,11 +30,11 @@ export type ListData<T> = {
   value: T;
 };
 
-export type ListDiff = {
+export type ListDiff<T = unknown> = {
   type: "list";
   status: `${ListStatus}`;
   diff: {
-    value: unknown;
+    value: T;
     previousIndex: number | null;
     index: number | null;
     status: `${ListStatus}`;

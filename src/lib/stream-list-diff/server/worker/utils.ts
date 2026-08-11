@@ -54,7 +54,7 @@ export async function generateWorker<T extends Record<string, unknown>>(
         worker.terminate();
       }
     });
-    worker.on(WorkerEvent.Error, (err) =>
+    worker.on(WorkerEvent.Error, (err: Error) =>
       emitter.emit(StreamEvent.Error, new Error(err.message)),
     );
   } catch (err) {
