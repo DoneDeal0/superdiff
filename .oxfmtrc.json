@@ -1,0 +1,12 @@
+{
+  "printWidth": 80,
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "dist",
+    ".github",
+    ".husky",
+    "package-lock.json",
+    "README.md",
+    "tsconfig.json"
+  ]
+}

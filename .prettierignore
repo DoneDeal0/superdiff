@@ -1,7 +1,0 @@
-dist
-.github
-.husky
-jest.config.js
-package-lock.json
-README.md
-tsconfig.json
