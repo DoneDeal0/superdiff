@@ -15,7 +15,7 @@ export function isEqual(
   if (a === b) return true;
   if (typeof a !== typeof b) return false;
   const aIsArray = Array.isArray(a);
-  const bIsArray = Array.isArray(b)
+  const bIsArray = Array.isArray(b);
   if (aIsArray !== bIsArray) return false;
   if (a === null || b === null) return a === b;
   if (typeof a !== "object") return a === b;
