@@ -35,6 +35,17 @@
 <sub>Superdiff smoothly comparing 1.8 million fictional votes in real time using <code>streamListDiff</code> in the browser</sub>
 </p>
 
+![superdiff-text-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/text-diff-demo.png)
+
+<p align="center">
+<sub>Detecting text changes using <code>getTextDiff</code></sub>
+</p>
+
+![superdiff-geo-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/geo-diff-demo.png)
+
+<p align="center">
+<sub>Detecting coordinates changes using <code>getGeoDiff</code></sub>
+</p>
 <hr/>
 
 ## ⚔ COMPETITORS
