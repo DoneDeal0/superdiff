@@ -29,23 +29,26 @@
 
 <hr/>
 
-![superdiff-stream-gif](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/stream-list-diff.gif)
+## EXAMPLES
+
+![superdiff-stream-gif](https://raw.githubusercontent.com/DoneDeal0/main/superdiff/main/assets/stream-list-diff.gif)
 
 <p align="center">
-<sub>Superdiff smoothly comparing 1.8 million fictional votes in real time using <code>streamListDiff</code> in the browser</sub>
+<sub>Comparing millions of entries in real time with <code>streamListDiff</code></sub>
 </p>
 
 ![superdiff-text-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/text-diff-demo.png)
 
 <p align="center">
-<sub>Detecting text changes using <code>getTextDiff</code></sub>
+<sub>Detecting text changes with <code>getTextDiff</code></sub>
 </p>
 
 ![superdiff-geo-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/geo-diff-demo.png)
 
 <p align="center">
-<sub>Detecting coordinates changes using <code>getGeoDiff</code></sub>
+<sub>Tracking coordinate changes with <code>getGeoDiff</code></sub>
 </p>
+
 <hr/>
 
 ## ⚔ COMPETITORS
