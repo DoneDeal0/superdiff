@@ -31,19 +31,19 @@
 
 ## EXAMPLES
 
-![superdiff-stream-gif](https://raw.githubusercontent.com/DoneDeal0/main/superdiff/main/assets/stream-list-diff.gif)
+![superdiff-stream-gif](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/stream-list-diff-demo.gif)
 
 <p align="center">
 <sub>Comparing millions of entries in real time with <code>streamListDiff</code></sub>
 </p>
 
-![superdiff-text-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/text-diff-demo.png)
+![superdiff-text-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/get-text-diff-demo.png)
 
 <p align="center">
 <sub>Detecting text changes with <code>getTextDiff</code></sub>
 </p>
 
-![superdiff-geo-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/geo-diff-demo.png)
+![superdiff-geo-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/get-geo-diff-demo.png)
 
 <p align="center">
 <sub>Tracking coordinate changes with <code>getGeoDiff</code></sub>
