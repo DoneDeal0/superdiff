@@ -46,7 +46,7 @@
 
 <br/>
 
-![superdiff-geo-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/get-geo-diff-demo.png)
+![superdiff-geo-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/get-geo-diff-demo-ok.png)
 
 <p align="center">
 <sub>Tracking coordinate changes with <code>getGeoDiff</code></sub>

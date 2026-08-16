@@ -49,7 +49,7 @@ export enum GeoDirection {
 
 export type GeoDiff = {
   type: "geo";
-  status: GeoStatus;
+  status: `${GeoStatus}`;
   diff: {
     coordinates: GeoCoordinates | null;
     previousCoordinates: GeoCoordinates | null;
