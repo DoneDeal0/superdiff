@@ -5,11 +5,15 @@ type MyersEdit =
   | { status: TextStatus.ADDED; curr: number }
   | { status: TextStatus.DELETED; prev: number };
 
-function backtrack(
-  trace: Map<number, number>[],
-  a: TextToken[],
-  b: TextToken[],
-): MyersEdit[] {
+type Trace = Int32Array[];
+
+function readDiagonal(trace: Int32Array, k: number, d: number): number {
+  const index = k + (d + 1);
+  if (index < 0 || index >= trace.length) return 0;
+  return trace[index];
+}
+
+function backtrack(trace: Trace, a: TextToken[], b: TextToken[]): MyersEdit[] {
   let x = a.length;
   let y = b.length;
   const edits: MyersEdit[] = [];
@@ -19,13 +23,16 @@ function backtrack(
     const k = x - y;
 
     let prevK: number;
-    if (k === -d || (k !== d && (v.get(k - 1) ?? 0) < (v.get(k + 1) ?? 0))) {
+    if (
+      k === -d ||
+      (k !== d && readDiagonal(v, k - 1, d) < readDiagonal(v, k + 1, d))
+    ) {
       prevK = k + 1;
     } else {
       prevK = k - 1;
     }
 
-    const prevX = v.get(prevK) ?? 0;
+    const prevX = readDiagonal(v, prevK, d);
     const prevY = prevX - prevK;
 
     while (x > prevX && y > prevY) {
@@ -63,20 +70,20 @@ export function myersDiff(a: TextToken[], b: TextToken[]): MyersEdit[] {
   const M = b.length;
   const max = N + M;
 
-  const trace: Map<number, number>[] = [];
-  const v = new Map<number, number>();
-  v.set(1, 0);
+  const trace: Trace = [];
+  const offset = max + 1;
+  const v = new Int32Array(2 * max + 3);
 
   for (let d = 0; d <= max; d++) {
-    const vSnapshot = new Map(v);
+    trace.push(v.slice(offset - d - 1, offset + d + 2));
 
     for (let k = -d; k <= d; k += 2) {
       let x: number;
 
-      if (k === -d || (k !== d && (v.get(k - 1) ?? 0) < (v.get(k + 1) ?? 0))) {
-        x = v.get(k + 1) ?? 0;
+      if (k === -d || (k !== d && v[offset + k - 1] < v[offset + k + 1])) {
+        x = v[offset + k + 1];
       } else {
-        x = (v.get(k - 1) ?? 0) + 1;
+        x = v[offset + k - 1] + 1;
       }
 
       let y = x - k;
@@ -86,15 +93,12 @@ export function myersDiff(a: TextToken[], b: TextToken[]): MyersEdit[] {
         y++;
       }
 
-      v.set(k, x);
+      v[offset + k] = x;
 
       if (x >= N && y >= M) {
-        trace.push(vSnapshot);
         return backtrack(trace, a, b);
       }
     }
-
-    trace.push(vSnapshot);
   }
 
   return [];

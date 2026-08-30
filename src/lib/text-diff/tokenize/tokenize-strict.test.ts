@@ -228,4 +228,26 @@ describe("tokenizeText", () => {
       },
     ]);
   });
+
+  describe("preserveWhitespace", () => {
+    it("is rejected by the type system, and ignored if forced at runtime", () => {
+      const forced = {
+        separation: "word",
+        preserveWhitespace: true,
+      } as Parameters<typeof tokenizeStrictText>[1];
+
+      expect(tokenizeStrictText("  a  b", forced)).toEqual(
+        tokenizeStrictText("  a  b", { separation: "word" }),
+      );
+    });
+
+    it("never warns", () => {
+      const warn = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+      tokenizeStrictText("  a b", { separation: "word" });
+
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+  });
 });

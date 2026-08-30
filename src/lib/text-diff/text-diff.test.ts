@@ -5565,3 +5565,221 @@ describe("getTextDiff – with moves detection", () => {
     ).toStrictEqual(resultFrench);
   });
 });
+
+describe("getTextDiff - preserveWhitespace", () => {
+  const CODE_LINES: [string, string][] = [
+    ["    const foo = bar(1);", "    const foo = baz(2);"],
+    ["var myVar = 2;", "var myVariable = 3;"],
+    ["a  b\tc", "a  b\tc d"],
+    ["\t\tif (a && b) {  ", "\t\tif (a || b) {  "],
+    ["  return x;", "      return x;"],
+    ["\tif (a) {", "    if (a) {"],
+    ["   ", "      "],
+    ["", "  hello  "],
+    ["  hello  ", ""],
+    ["  hello  ", "  hello  "],
+  ];
+
+  const rebuildBothTexts = (diff: ReturnType<typeof getTextDiff>) => {
+    let previous = "";
+    let current = "";
+    for (const part of diff.diff) {
+      if (part.status === "updated") {
+        previous += part.previousValue ?? "";
+        current += part.value;
+        continue;
+      }
+      if (part.status !== "added") previous += part.value;
+      if (part.status !== "deleted") current += part.value;
+    }
+    return { previous, current };
+  };
+
+  it("keeps the indentation on the surrounding tokens", () => {
+    expect(
+      getTextDiff("  const a = 1;", "  const b = 1;", {
+        separation: "word",
+        preserveWhitespace: true,
+      }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: "  const", index: 0, previousIndex: 0, status: "equal" },
+        { value: " a", index: null, previousIndex: 1, status: "deleted" },
+        { value: " b", index: 1, previousIndex: null, status: "added" },
+        { value: " =", index: 2, previousIndex: 2, status: "equal" },
+        { value: " 1;", index: 3, previousIndex: 3, status: "equal" },
+      ],
+    });
+  });
+
+  it("reports a re-indentation that is invisible by default", () => {
+    expect(
+      getTextDiff("  return x;", "      return x;", { separation: "word" }),
+    ).toStrictEqual({
+      type: "text",
+      status: "equal",
+      diff: [
+        { value: "return", index: 0, previousIndex: 0, status: "equal" },
+        { value: "x;", index: 1, previousIndex: 1, status: "equal" },
+      ],
+    });
+
+    expect(
+      getTextDiff("  return x;", "      return x;", {
+        separation: "word",
+        preserveWhitespace: true,
+      }),
+    ).toStrictEqual({
+      type: "text",
+      status: "updated",
+      diff: [
+        { value: "  return", index: null, previousIndex: 0, status: "deleted" },
+        {
+          value: "      return",
+          index: 0,
+          previousIndex: null,
+          status: "added",
+        },
+        { value: " x;", index: 1, previousIndex: 1, status: "equal" },
+      ],
+    });
+  });
+
+  it("reports tabs converted to spaces", () => {
+    expect(
+      getTextDiff("\tif (a) {", "    if (a) {", {
+        separation: "word",
+        preserveWhitespace: true,
+      }).status,
+    ).toBe("updated");
+  });
+
+  it("stays equal when the spacing is untouched", () => {
+    expect(
+      getTextDiff("  a  b  ", "  a  b  ", {
+        separation: "word",
+        preserveWhitespace: true,
+      }).status,
+    ).toBe("equal");
+  });
+
+  it.each(CODE_LINES)("rebuilds %j and %j - word", (previous, current) => {
+    expect(
+      rebuildBothTexts(
+        getTextDiff(previous, current, {
+          separation: "word",
+          preserveWhitespace: true,
+        }),
+      ),
+    ).toEqual({ previous, current });
+  });
+
+  it.each(CODE_LINES)("rebuilds %j and %j - character", (previous, current) => {
+    expect(
+      rebuildBothTexts(
+        getTextDiff(previous, current, {
+          separation: "character",
+          preserveWhitespace: true,
+        }),
+      ),
+    ).toEqual({ previous, current });
+  });
+
+  it.each(CODE_LINES)(
+    "rebuilds %j and %j - detectMoves",
+    (previous, current) => {
+      expect(
+        rebuildBothTexts(
+          getTextDiff(previous, current, {
+            separation: "word",
+            preserveWhitespace: true,
+            detectMoves: true,
+          }),
+        ),
+      ).toEqual({ previous, current });
+    },
+  );
+
+  it("rebuilds sentences", () => {
+    const previous = "  Hello world.   How are you?  ";
+    const current = "  Hello there.   How are you?  ";
+    expect(
+      rebuildBothTexts(
+        getTextDiff(previous, current, {
+          separation: "sentence",
+          preserveWhitespace: true,
+        }),
+      ),
+    ).toEqual({ previous, current });
+  });
+
+  it("keeps surrogate pairs intact", () => {
+    const previous = "  a😀b";
+    const current = "  a😀c";
+    const diff = getTextDiff(previous, current, {
+      separation: "character",
+      preserveWhitespace: true,
+    });
+
+    expect(rebuildBothTexts(diff)).toEqual({ previous, current });
+    expect(diff.diff.some((part) => part.value === "😀")).toBe(true);
+  });
+
+  it("reports the same statuses as the default when the spacing is unchanged", () => {
+    const previous = "  const foo = bar(1);";
+    const current = "  const foo = baz(2);";
+    const statuses = (diff: ReturnType<typeof getTextDiff>) =>
+      diff.diff.map((part) => part.status);
+
+    expect(
+      statuses(
+        getTextDiff(previous, current, {
+          separation: "word",
+          preserveWhitespace: true,
+        }),
+      ),
+    ).toEqual(statuses(getTextDiff(previous, current, { separation: "word" })));
+  });
+
+  it("still honours ignoreCase", () => {
+    expect(
+      getTextDiff("  Hello", "  hello", {
+        separation: "word",
+        preserveWhitespace: true,
+        ignoreCase: true,
+      }).status,
+    ).toBe("equal");
+  });
+});
+
+describe("getTextDiff - large dissimilar inputs", () => {
+  it("diffs two large, mostly dissimilar texts without exhausting memory", () => {
+    const previous = Array.from(
+      { length: 900 },
+      (_unused, i) => `alpha_${i}(x${i}).beta;`,
+    ).join(" ");
+    const current = Array.from(
+      { length: 900 },
+      (_unused, i) => `gamma${i % 7}[y${i}] = delta_${i} + 1;`,
+    ).join(" ");
+
+    const diff = getTextDiff(previous, current, {
+      separation: "word",
+      preserveWhitespace: true,
+    });
+
+    expect(diff.status).toBe("updated");
+
+    let rebuiltPrevious = "";
+    let rebuiltCurrent = "";
+    for (const part of diff.diff) {
+      if (part.status !== "added") rebuiltPrevious += part.value;
+      if (part.status !== "deleted") rebuiltCurrent += part.value;
+    }
+
+    expect(rebuiltPrevious).toBe(previous);
+    expect(rebuiltCurrent).toBe(current);
+  }, 15_000);
+});

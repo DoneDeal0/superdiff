@@ -212,4 +212,105 @@ describe("tokenizeText", () => {
       },
     ]);
   });
+
+  describe("preserveWhitespace", () => {
+    it("keeps the whitespace preceding each word", () => {
+      const tokens = tokenizeNormalText("  const foo = bar;  ", {
+        separation: "word",
+        preserveWhitespace: true,
+      });
+
+      expect(tokens).toEqual([
+        { value: "  const", normalizedValue: "  const", index: 0 },
+        { value: " foo", normalizedValue: " foo", index: 1 },
+        { value: " =", normalizedValue: " =", index: 2 },
+        { value: " bar;  ", normalizedValue: " bar;  ", index: 3 },
+      ]);
+    });
+
+    it("keeps the whitespace preceding each character", () => {
+      const tokens = tokenizeNormalText("  ab", {
+        separation: "character",
+        preserveWhitespace: true,
+      });
+
+      expect(tokens).toEqual([
+        { value: "  a", normalizedValue: "  a", index: 0 },
+        { value: "b", normalizedValue: "b", index: 1 },
+      ]);
+    });
+
+    it("keeps the whitespace preceding each sentence", () => {
+      const tokens = tokenizeNormalText("  Hi there.   Bye!  ", {
+        separation: "sentence",
+        preserveWhitespace: true,
+      });
+
+      expect(tokens).toEqual([
+        { value: "  Hi there.", normalizedValue: "  Hi there.", index: 0 },
+        { value: "   Bye!  ", normalizedValue: "   Bye!  ", index: 1 },
+      ]);
+    });
+
+    it("appends the trailing whitespace to the last token", () => {
+      const tokens = tokenizeNormalText("a b   ", {
+        separation: "word",
+        preserveWhitespace: true,
+      });
+
+      expect(tokens[tokens.length - 1]).toEqual({
+        value: " b   ",
+        normalizedValue: " b   ",
+        index: 1,
+      });
+    });
+
+    it("returns a single token for a whitespace-only text", () => {
+      expect(
+        tokenizeNormalText("   ", {
+          separation: "word",
+          preserveWhitespace: true,
+        }),
+      ).toEqual([{ value: "   ", normalizedValue: "   ", index: 0 }]);
+    });
+
+    it("returns no token for an empty text", () => {
+      expect(
+        tokenizeNormalText("", {
+          separation: "word",
+          preserveWhitespace: true,
+        }),
+      ).toEqual([]);
+    });
+
+    it("rebuilds the original text by concatenating the values", () => {
+      const text = "\t\tif (a && b) {  ";
+      for (const separation of ["word", "character", "sentence"] as const) {
+        const tokens = tokenizeNormalText(text, {
+          separation,
+          preserveWhitespace: true,
+        });
+        expect(tokens.map((token) => token.value).join("")).toBe(text);
+      }
+    });
+
+    it("still normalizes the token", () => {
+      const tokens = tokenizeNormalText("  Hello", {
+        separation: "word",
+        preserveWhitespace: true,
+        ignoreCase: true,
+      });
+
+      expect(tokens).toEqual([
+        { value: "  Hello", normalizedValue: "  hello", index: 0 },
+      ]);
+    });
+
+    it("drops the whitespace when disabled", () => {
+      expect(tokenizeNormalText("  a  b", { separation: "word" })).toEqual([
+        { value: "a", normalizedValue: "a", index: 0 },
+        { value: "b", normalizedValue: "b", index: 1 },
+      ]);
+    });
+  });
 });
