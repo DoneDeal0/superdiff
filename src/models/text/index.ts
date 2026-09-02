@@ -9,6 +9,7 @@ export const DEFAULT_TEXT_DIFF_OPTIONS: TextDiffOptions = {
   separation: "word",
   ignoreCase: false,
   ignorePunctuation: false,
+  preserveWhitespace: false,
   locale: undefined,
 };
 
@@ -34,14 +35,28 @@ export enum TextStatus {
   MOVED = "moved",
 }
 
-export type TextDiffOptions = {
-  separation?: "character" | "word" | "sentence";
-  accuracy?: "normal" | "high";
+export type TextSeparation = "character" | "word" | "sentence";
+
+type TextDiffCommonOptions = {
   detectMoves?: boolean;
   ignoreCase?: boolean;
   ignorePunctuation?: boolean;
   locale?: Intl.Locale | string;
 };
+
+export type TextDiffOptions = TextDiffCommonOptions &
+  (
+    | {
+        accuracy?: "normal";
+        separation?: TextSeparation;
+        preserveWhitespace?: boolean;
+      }
+    | {
+        accuracy: "high";
+        separation?: TextSeparation;
+        preserveWhitespace?: never;
+      }
+  );
 
 export type TextDiff = {
   type: "text";

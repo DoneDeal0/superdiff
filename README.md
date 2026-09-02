@@ -572,11 +572,12 @@ Compares two texts and returns a structured diff at a character, word, or senten
   previousText: string | null | undefined,
   currentText: string | null | undefined,
   options?: {
-    separation?: "character" | "word" | "sentence", // "word" by default
+    separation?: "character" | "word" | "sentence" // "word" by default
     accuracy?: "normal" | "high", // "normal" by default
     detectMoves?: boolean // false by default
     ignoreCase?: boolean, // false by default
     ignorePunctuation?: boolean, // false by default
+    preserveWhitespace?: boolean, // false by default
     locale?: Intl.Locale | string // undefined by default
   }
 ```
@@ -592,6 +593,7 @@ Compares two texts and returns a structured diff at a character, word, or senten
     - `true`: semantically precise, but noisier — a single insertion shifts all following tokens, breaking equality.
   - `ignoreCase`: if `true`, `hello` and `HELLO` are considered equal.
   - `ignorePunctuation`: if `true`, `hello!` and `hello` are considered equal.
+  - `preserveWhitespace`: if `true`, each token keeps the whitespace preceding it, so the original text can be rebuilt from the diff and whitespace-only edits are detected. Only available in normal accuracy mode.
   - `locale`: the locale of your text. Enables locale‑aware segmentation in high accuracy mode.
 
 **Output**

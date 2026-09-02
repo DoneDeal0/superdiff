@@ -50,7 +50,7 @@ export function runTextBench10KSentences() {
 
   const diff = bench("diff", 1, () => diffSentences(prev, curr, {}));
   const superdiff = bench("Superdiff", 1, () => {
-    getTextDiff(prev, curr, { separation: "sentences" });
+    getTextDiff(prev, curr, { separation: "sentence" });
   });
   return { superdiff, diff };
 }
