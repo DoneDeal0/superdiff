@@ -1,9 +1,4 @@
-import { TextStatus, TextToken } from "@models/text";
-
-type MyersEdit =
-  | { status: TextStatus.EQUAL; prev: number; curr: number }
-  | { status: TextStatus.ADDED; curr: number }
-  | { status: TextStatus.DELETED; prev: number };
+import { LCSStatus, MyersEdit, Token } from "@models/lcs";
 
 type Trace = Int32Array[];
 
@@ -13,7 +8,7 @@ function readDiagonal(trace: Int32Array, k: number, d: number): number {
   return trace[index];
 }
 
-function backtrack(trace: Trace, a: TextToken[], b: TextToken[]): MyersEdit[] {
+function backtrack(trace: Trace, a: Token[], b: Token[]): MyersEdit[] {
   let x = a.length;
   let y = b.length;
   const edits: MyersEdit[] = [];
@@ -37,7 +32,7 @@ function backtrack(trace: Trace, a: TextToken[], b: TextToken[]): MyersEdit[] {
 
     while (x > prevX && y > prevY) {
       edits.push({
-        status: TextStatus.EQUAL,
+        status: LCSStatus.EQUAL,
         prev: x - 1,
         curr: y - 1,
       });
@@ -49,13 +44,13 @@ function backtrack(trace: Trace, a: TextToken[], b: TextToken[]): MyersEdit[] {
 
     if (x === prevX) {
       edits.push({
-        status: TextStatus.ADDED,
+        status: LCSStatus.ADDED,
         curr: y - 1,
       });
       y--;
     } else {
       edits.push({
-        status: TextStatus.DELETED,
+        status: LCSStatus.DELETED,
         prev: x - 1,
       });
       x--;
@@ -65,7 +60,7 @@ function backtrack(trace: Trace, a: TextToken[], b: TextToken[]): MyersEdit[] {
   return edits.reverse();
 }
 
-export function myersDiff(a: TextToken[], b: TextToken[]): MyersEdit[] {
+export function myersDiff(a: Token[], b: Token[]): MyersEdit[] {
   const N = a.length;
   const M = b.length;
   const max = N + M;
