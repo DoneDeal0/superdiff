@@ -5,9 +5,9 @@ import {
   TextStatus,
 } from "@models/text";
 import { getPositionalTextDiff } from "./positional";
-import { getLCSTextDiff } from "./lcs";
 import { tokenizeNormalText } from "./tokenize/normal";
 import { tokenizeStrictText } from "./tokenize/strict";
+import { getLCSTextDiff } from "./lcs";
 
 /**
  *Compares two texts and returns a structured diff at a character, word, or sentence level.

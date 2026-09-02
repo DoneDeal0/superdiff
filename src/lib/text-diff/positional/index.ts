@@ -1,14 +1,15 @@
-import { TextDiff, TextToken, TextTokenDiff, TextStatus } from "@models/text";
+import { TextDiff, TextStatus } from "@models/text";
 import { getDiffStatus } from "../utils/status";
+import { Token, TokenDiff } from "@models/lcs";
 
 export function getPositionalTextDiff(
-  previousTokens: TextToken[],
-  currentTokens: TextToken[],
+  previousTokens: Token[],
+  currentTokens: Token[],
 ): TextDiff {
-  const previousTokensMap = new Map<string, TextToken[]>();
-  const addedTokensMap = new Map<number, TextToken>();
+  const previousTokensMap = new Map<string, Token[]>();
+  const addedTokensMap = new Map<number, Token>();
   const statusSet = new Set<TextStatus>();
-  const diff: TextTokenDiff[] = [];
+  const diff: TokenDiff<TextStatus>[] = [];
 
   for (let i = 0; i < previousTokens.length; i++) {
     const token = previousTokens[i];

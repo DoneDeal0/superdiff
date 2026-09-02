@@ -5,6 +5,7 @@ import {
 } from "./objects";
 import { runListBench100K, runListBench10K } from "./lists";
 import { runTextBench10KWords, runTextBench10KSentences } from "./texts";
+import { runCodeBench1K, runCodeBench10K, runCodeBench100K } from "./code";
 
 // Method: Warm up runs, then each script is executed 20 times, and we keep the median time.
 // To guarantee a fair assessment, all scenarios must be run individually, with a clean heap memory.
@@ -24,5 +25,10 @@ runListBench100K();
 // Text
 runTextBench10KWords();
 runTextBench10KSentences();
+
+// Code
+runCodeBench1K();
+runCodeBench10K();
+runCodeBench100K();
 
 console.log("\n- BENCHMARK COMPLETE -");

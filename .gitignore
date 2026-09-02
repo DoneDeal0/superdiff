@@ -2,5 +2,6 @@
 dist
 .DS_Store
 *.tsbuildinfo
+*.tgz
 # Ignore generated worker files
 src/lib/stream-list-diff/server/worker/node-worker.cjs
