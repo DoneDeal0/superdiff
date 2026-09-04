@@ -1,9 +1,9 @@
+import { Token } from "@models/lcs";
 import {
   DEFAULT_TEXT_DIFF_OPTIONS,
   EMOJI_SPLIT_REGEX,
   PUNCTUATION_REGEX,
   TextDiffOptions,
-  TextToken,
 } from "@models/text";
 
 const segmenterCache = new Map<string, Intl.Segmenter>();
@@ -35,8 +35,8 @@ function normalizeToken(token: string, options: TextDiffOptions): string {
 export const tokenizeStrictText = (
   text: string | null | undefined,
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
-): TextToken[] => {
-  const result: TextToken[] = [];
+): Token[] => {
+  const result: Token[] = [];
   if (!text || !text.trim()) return result;
 
   const separation = options.separation || DEFAULT_TEXT_DIFF_OPTIONS.separation;

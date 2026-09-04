@@ -1,9 +1,9 @@
+import { Token } from "@models/lcs";
 import {
   DEFAULT_TEXT_DIFF_OPTIONS,
   PUNCTUATION_REGEX,
   TextDiffOptions,
   TextSeparation,
-  TextToken,
 } from "@models/text";
 
 function normalizeToken(token: string, options: TextDiffOptions): string {
@@ -33,8 +33,8 @@ function tokenizePreservingWhitespace(
   text: string,
   options: TextDiffOptions,
   separation: TextSeparation,
-): TextToken[] {
-  const result: TextToken[] = [];
+): Token[] {
+  const result: Token[] = [];
   const tokens = text.match(TOKEN_WITH_LEADING_WHITESPACE[separation]) || [];
 
   let matchedLength = 0;
@@ -69,9 +69,9 @@ function tokenizePreservingWhitespace(
 export const tokenizeNormalText = (
   text: string | null | undefined,
   options: TextDiffOptions = DEFAULT_TEXT_DIFF_OPTIONS,
-): TextToken[] => {
+): Token[] => {
   const separation = options.separation || DEFAULT_TEXT_DIFF_OPTIONS.separation;
-  const result: TextToken[] = [];
+  const result: Token[] = [];
   if (!text) return result;
 
   if (options.preserveWhitespace) {

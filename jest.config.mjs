@@ -12,9 +12,10 @@ const config = {
             dynamicImport: true,
           },
           paths: {
+            "@core/*": ["./src/core/*"],
+            "@lib/*": ["./src/lib/*"],
             "@mocks/*": ["./src/mocks/*"],
             "@models/*": ["./src/models/*"],
-            "@lib/*": ["./src/lib/*"],
           },
           target: "esnext",
         },

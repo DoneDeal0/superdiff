@@ -19,12 +19,13 @@
 
 ## FEATURES
 
-**Superdiff** exports 5 functions:
+**Superdiff** exports 6 functions:
 
 - [getObjectDiff](#getobjectdiff) - recursively diff nested objects
 - [getListDiff](#getlistdiff) - detect additions, deletions, updates and moves in arrays
 - [streamListDiff](#streamlistdiff) - diff large lists incrementally via streams
 - [getTextDiff](#gettextdiff) - diff text by character, word or sentence
+- [getCodeDiff](#getcodediff) - diff code line by line, then token by token
 - [getGeoDiff](#getgeodiff) - detect coordinate changes, distance and direction
 
 <hr/>
@@ -110,6 +111,16 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 | 100k sentences          | **21.95 ms** | 62.03 ms   |
 
 <sub>(Superdiff uses its `normal` accuracy settings to match diff's behavior)</sub>
+
+### Code diff
+
+| Scenario   | superdiff    | diff (lines) | diff (lines + tokens) | diff-match-patch |
+| ---------- | ------------ | ------------ | --------------------- | ---------------- |
+| 1k lines   | **0.40 ms**  | 0.86 ms      | 1.13 ms               | 0.89 ms          |
+| 10k lines  | **9.62 ms**  | 66.25 ms     | 68.22 ms              | 12.39 ms         |
+| 100k lines | 942.69 ms    | 6994.49 ms   | 6948.90 ms            | **648.15 ms**    |
+
+<sub>(Superdiff is the only one returning line numbers and token level detail. `diff (lines)` returns line changes only. `diff (lines + tokens)` adds a word diff on each changed line to match Superdiff's output. `diff-match-patch` runs in line mode and returns neither line numbers nor token detail: on the 100k scenario Superdiff additionally token-diffs the 5,001 rewritten lines it reports.)</sub>
 
 > 👉 Despite providing a full structural diff with a richer output, **Superdiff consistently matches or outperforms the fastest alternatives tested**. It also scales linearly, even with deeply nested data.
 
@@ -748,6 +759,129 @@ getTextDiff(
 -       }
       ],
     }
+```
+
+<hr/>
+
+### getCodeDiff
+
+```js
+import { getCodeDiff } from "@donedeal0/superdiff";
+```
+
+Compares two codes and returns a structured diff. Lines are diffed first, then the lines that changed are diffed token by token, so an edit inside a statement only marks what actually changed. Identifiers are split from symbols, and the whitespace of each token is preserved, so indentation changes are reported and the original code can be rebuilt from the diff.
+
+To diff files, read them first: `getCodeDiff(await previousFile.text(), await currentFile.text())`.
+
+#### FORMAT
+
+**Input**
+
+```ts
+  previousCode: string | null | undefined,
+  currentCode: string | null | undefined,
+```
+
+**Output**
+
+```ts
+type CodeDiff = {
+  type: "code";
+  status: "added" | "deleted" | "equal" | "updated";
+  diff: {
+    value: string;
+    previousValue?: string;
+    line: number | null;
+    previousLine: number | null;
+    status: "added" | "deleted" | "equal" | "updated";
+    diff?: {
+      value: string;
+      previousValue?: string;
+      status: "added" | "deleted" | "equal" | "updated";
+    }[];
+  }[];
+};
+```
+
+`line` and `previousLine` are 1-based. `line` is `null` when the line was deleted, `previousLine` is `null` when it was added. The nested `diff` holds the token level changes and is set on `updated` lines.
+
+#### USAGE
+
+**Input**
+
+```diff
+getCodeDiff(
+- "const MAX = 280;\n\nfunction preview(post) {\n  return post.body;\n}",
++ "const MAX_LENGTH = 320;\n\nfunction preview(post) {\n  const text = post.body;\n  return text.slice(0, MAX_LENGTH);\n}"
+);
+```
+
+**Output**
+
+```diff
+{
+      type: "code",
++     status: "updated",
+      diff: [
+        {
++         value: "const MAX_LENGTH = 320;",
++         previousValue: "const MAX = 280;",
+          line: 1,
+          previousLine: 1,
++         status: "updated",
+          diff: [
+            { value: "const", status: "equal" },
++           { value: " MAX_LENGTH", previousValue: " MAX", status: "updated" },
+            { value: " =", status: "equal" },
++           { value: " 320", previousValue: " 280", status: "updated" },
+            { value: ";", status: "equal" },
+          ],
+        },
+        {
+          value: "",
+          previousValue: "",
+          line: 2,
+          previousLine: 2,
+          status: "equal",
+        },
+        {
+          value: "function preview(post) {",
+          previousValue: "function preview(post) {",
+          line: 3,
+          previousLine: 3,
+          status: "equal",
+        },
+        {
++         value: "  const text = post.body;",
++         previousValue: "  return post.body;",
+          line: 4,
+          previousLine: 4,
++         status: "updated",
+          diff: [
++           { value: "  const", previousValue: "  return", status: "updated" },
++           { value: " text", status: "added" },
++           { value: " =", status: "added" },
+            { value: " post", status: "equal" },
+            { value: ".", status: "equal" },
+            { value: "body", status: "equal" },
+            { value: ";", status: "equal" },
+          ],
+        },
+        {
++         value: "  return text.slice(0, MAX_LENGTH);",
+          line: 5,
+          previousLine: null,
++         status: "added",
+        },
+        {
+          value: "}",
+          previousValue: "}",
+          line: 6,
+          previousLine: 5,
+          status: "equal",
+        },
+      ],
+}
 ```
 
 <hr/>
