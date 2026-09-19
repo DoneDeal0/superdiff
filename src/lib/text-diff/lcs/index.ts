@@ -1,19 +1,20 @@
-import { TextDiff, TextStatus, TextToken, TextTokenDiff } from "@models/text";
-import { myersDiff } from "./myers";
+import { myersDiff } from "@core/myers";
+import { TextDiff, TextStatus } from "@models/text";
 import { getDiffStatus } from "../utils/status";
+import { LCSStatus, Token, TokenDiff } from "@models/lcs";
 
 export function getLCSTextDiff(
-  previousTokens: TextToken[],
-  currentTokens: TextToken[],
+  previousTokens: Token[],
+  currentTokens: Token[],
 ): TextDiff {
   const edits = myersDiff(previousTokens, currentTokens);
-  const diff: TextTokenDiff[] = [];
+  const diff: TokenDiff<TextStatus>[] = [];
   const statusSet = new Set<TextStatus>();
 
   for (let i = 0; i < edits.length; i++) {
     const edit = edits[i];
 
-    if (edit.status === TextStatus.EQUAL) {
+    if (edit.status === LCSStatus.EQUAL) {
       diff.push({
         value: currentTokens[edit.curr].value,
         index: edit.curr,
@@ -23,7 +24,7 @@ export function getLCSTextDiff(
       statusSet.add(TextStatus.EQUAL);
     }
 
-    if (edit.status === TextStatus.ADDED) {
+    if (edit.status === LCSStatus.ADDED) {
       diff.push({
         value: currentTokens[edit.curr].value,
         index: edit.curr,
@@ -33,7 +34,7 @@ export function getLCSTextDiff(
       statusSet.add(TextStatus.ADDED);
     }
 
-    if (edit.status === TextStatus.DELETED) {
+    if (edit.status === LCSStatus.DELETED) {
       diff.push({
         value: previousTokens[edit.prev].value,
         index: null,

@@ -11,7 +11,7 @@
 
 # WHAT IS IT? 
 
-**Superdiff** provides a rich and readable diff for **arrays**, **objects**, **texts** and **coordinates**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offers a **top-tier performance**. 
+**Superdiff** provides a rich and readable diff for **arrays**, **objects**, **code**, **text** and **coordinates**. It supports **stream** and file inputs for handling large datasets efficiently, is battle-tested, has zero dependencies, and offers **top-tier performance**. 
 
 ℹ️ The documentation is also available on our [website](https://superdiff.gitbook.io/donedeal0-superdiff)!
 
@@ -19,12 +19,13 @@
 
 ## FEATURES
 
-**Superdiff** exports 5 functions:
+**Superdiff** exports 6 functions:
 
 - [getObjectDiff](#getobjectdiff) - recursively diff nested objects
 - [getListDiff](#getlistdiff) - detect additions, deletions, updates and moves in arrays
 - [streamListDiff](#streamlistdiff) - diff large lists incrementally via streams
 - [getTextDiff](#gettextdiff) - diff text by character, word or sentence
+- [getCodeDiff](#getcodediff) - diff code line by line, then token by token
 - [getGeoDiff](#getgeodiff) - detect coordinate changes, distance and direction
 
 <hr/>
@@ -62,6 +63,14 @@
 
 <br/>
 
+![superdiff-get-code-diff-demo](https://raw.githubusercontent.com/DoneDeal0/superdiff/main/assets/get-code-diff-demo.png)
+
+<p align="center">
+<sub>Track code changes with <code>getCodeDiff</code></sub>
+</p>
+
+<br/>
+
 <hr/>
 
 ## ⚔ COMPETITORS
@@ -72,6 +81,7 @@
 | List diff                      | ✅         | ❌               | ⚠️        | ❌        | ⚠️        |
 | Text diff                      | ✅         | ❌               | ✅        | ✅        | ❌        |
 | Coordinates diff               | ✅         | ❌               | ❌        | ❌        | ❌        |
+| Code diff                      | ✅         | ❌               | ❌        | ✅        | ❌        |
 | Streaming for huge datasets    | ✅         | ❌               | ❌        | ❌        | ❌        |
 | Move detection                 | ✅         | ❌               | ❌        | ❌        | ❌        |
 | Output refinement              | ✅         | ❌               | ❌        | ❌        | ❌        |
@@ -104,12 +114,22 @@ Method: Warm up runs, then each script is executed 20 times, and we keep the med
 
 | Scenario                | superdiff    | diff       |
 | ----------------------- | ------------ | ---------- |
-| 10k words               | **1.38 ms**  | 3.86 ms    | 
-| 100k words              | **21.68 ms** | 45.93 ms   | 
-| 10k sentences           | **2.30 ms**  | 5.61 ms    |
-| 100k sentences          | **21.95 ms** | 62.03 ms   |
+| 10k words               | **1.32 ms**  | 3.86 ms    |
+| 100k words              | **12.09 ms** | 45.64 ms   |
+| 10k sentences           | **1.58 ms**  | 4.53 ms    |
+| 100k sentences          | **22.31 ms** | 55.60 ms   |
 
 <sub>(Superdiff uses its `normal` accuracy settings to match diff's behavior)</sub>
+
+### Code diff
+
+| Scenario   | superdiff     | diff       |
+| ---------- | ------------- | ---------- |
+| 1k lines   | **0.36 ms**   | 1.14 ms    |
+| 10k lines  | **9.55 ms**   | 67.21 ms   |
+| 100k lines | **911.80 ms** | 6995.84 ms |
+
+<sub>(diff has no line + token API, so both passes are run; its line pass alone is 66 ms at 10k lines)</sub>
 
 > 👉 Despite providing a full structural diff with a richer output, **Superdiff consistently matches or outperforms the fastest alternatives tested**. It also scales linearly, even with deeply nested data.
 
@@ -748,6 +768,129 @@ getTextDiff(
 -       }
       ],
     }
+```
+
+<hr/>
+
+### getCodeDiff
+
+```js
+import { getCodeDiff } from "@donedeal0/superdiff";
+```
+
+Compares two codes and returns a structured diff: lines first, then the tokens of each changed line. Whitespace is kept, so indentation changes are reported too.
+
+> ℹ️ To diff files, read them first: `getCodeDiff(await previousFile.text(), await currentFile.text())`.
+
+#### FORMAT
+
+**Input**
+
+```ts
+  previousCode: string | null | undefined,
+  currentCode: string | null | undefined,
+```
+
+**Output**
+
+```ts
+type CodeDiff = {
+  type: "code";
+  status: "added" | "deleted" | "equal" | "updated";
+  diff: {
+    value: string;
+    previousValue?: string;
+    line: number | null;
+    previousLine: number | null;
+    status: "added" | "deleted" | "equal" | "updated";
+    diff?: {
+      value: string;
+      previousValue?: string;
+      status: "added" | "deleted" | "equal" | "updated";
+    }[];
+  }[];
+};
+```
+
+Lines start at 1. `line` is `null` if the line was deleted, `previousLine` is `null` if it was added. `diff` holds the token changes of an `updated` line.
+
+#### USAGE
+
+**Input**
+
+```diff
+getCodeDiff(
+- "const MAX = 280;\n\nfunction preview(post) {\n  return post.body;\n}",
++ "const MAX_LENGTH = 320;\n\nfunction preview(post) {\n  const text = post.body;\n  return text.slice(0, MAX_LENGTH);\n}"
+);
+```
+
+**Output**
+
+```diff
+{
+      type: "code",
++     status: "updated",
+      diff: [
+        {
++         value: "const MAX_LENGTH = 320;",
++         previousValue: "const MAX = 280;",
+          line: 1,
+          previousLine: 1,
++         status: "updated",
+          diff: [
+            { value: "const", status: "equal" },
++           { value: " MAX_LENGTH", previousValue: " MAX", status: "updated" },
+            { value: " =", status: "equal" },
++           { value: " 320", previousValue: " 280", status: "updated" },
+            { value: ";", status: "equal" },
+          ],
+        },
+        {
+          value: "",
+          previousValue: "",
+          line: 2,
+          previousLine: 2,
+          status: "equal",
+        },
+        {
+          value: "function preview(post) {",
+          previousValue: "function preview(post) {",
+          line: 3,
+          previousLine: 3,
+          status: "equal",
+        },
+        {
++         value: "  const text = post.body;",
++         previousValue: "  return post.body;",
+          line: 4,
+          previousLine: 4,
++         status: "updated",
+          diff: [
++           { value: "  const", previousValue: "  return", status: "updated" },
++           { value: " text", status: "added" },
++           { value: " =", status: "added" },
+            { value: " post", status: "equal" },
+            { value: ".", status: "equal" },
+            { value: "body", status: "equal" },
+            { value: ";", status: "equal" },
+          ],
+        },
+        {
++         value: "  return text.slice(0, MAX_LENGTH);",
+          line: 5,
+          previousLine: null,
++         status: "added",
+        },
+        {
+          value: "}",
+          previousValue: "}",
+          line: 6,
+          previousLine: 5,
+          status: "equal",
+        },
+      ],
+}
 ```
 
 <hr/>

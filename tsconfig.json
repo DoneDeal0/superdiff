@@ -16,6 +16,7 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true ,
     "paths": {
+      "@core/*": ["./src/core/*"],
       "@lib/*": ["./src/lib/*"],
       "@mocks/*": ["./src/mocks/*"],
       "@models/*": ["./src/models/*"]

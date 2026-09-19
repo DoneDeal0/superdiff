@@ -31,26 +31,42 @@ function generateSentences(sentenceCount: number, mutate = false): string {
   return mutated.join(" ");
 }
 
-export function runTextBench10KWords() {
-  const prev = generateText(10_000);
-  const curr = generateText(10_000, true);
-  console.log("\nText diff – 10k words");
+function runWordsBench(wordCount: number, label: string) {
+  const prev = generateText(wordCount);
+  const curr = generateText(wordCount, true);
+  console.log(`\nText diff – ${label} words`);
 
-  const diff = bench("diff", 1, () => diffWords(prev, curr));
-  const superdiff = bench("Superdiff", 1, () => {
+  const diff = bench("diff", 20, () => diffWords(prev, curr));
+  const superdiff = bench("Superdiff", 20, () => {
     getTextDiff(prev, curr, { separation: "word" });
   });
   return { superdiff, diff };
 }
 
-export function runTextBench10KSentences() {
-  const prev = generateSentences(10_000);
-  const curr = generateSentences(10_000, true);
-  console.log("\nText diff – 10k sentences");
+function runSentencesBench(sentenceCount: number, label: string) {
+  const prev = generateSentences(sentenceCount);
+  const curr = generateSentences(sentenceCount, true);
+  console.log(`\nText diff – ${label} sentences`);
 
-  const diff = bench("diff", 1, () => diffSentences(prev, curr, {}));
-  const superdiff = bench("Superdiff", 1, () => {
+  const diff = bench("diff", 20, () => diffSentences(prev, curr, {}));
+  const superdiff = bench("Superdiff", 20, () => {
     getTextDiff(prev, curr, { separation: "sentence" });
   });
   return { superdiff, diff };
+}
+
+export function runTextBench10KWords() {
+  return runWordsBench(10_000, "10k");
+}
+
+export function runTextBench100KWords() {
+  return runWordsBench(100_000, "100k");
+}
+
+export function runTextBench10KSentences() {
+  return runSentencesBench(10_000, "10k");
+}
+
+export function runTextBench100KSentences() {
+  return runSentencesBench(100_000, "100k");
 }
