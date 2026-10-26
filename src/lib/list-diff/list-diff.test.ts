@@ -9,6 +9,13 @@ describe("getListDiff", () => {
       diff: [],
     });
   });
+  it("returns an equal diff if both lists are empty", () => {
+    expect(getListDiff([], [])).toStrictEqual({
+      type: "list",
+      status: "equal",
+      diff: [],
+    });
+  });
   it("consider previous list as completely deleted if no next list is provided", () => {
     expect(
       getListDiff(["mbappe", "mendes", "verratti", "ruiz"], null),

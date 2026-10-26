@@ -7,6 +7,11 @@ describe("getTextDiff - general", () => {
       status: "equal",
       diff: [],
     });
+    expect(getTextDiff(" ", " ")).toStrictEqual({
+      type: "text",
+      status: "equal",
+      diff: [],
+    });
     expect(getTextDiff(null, undefined)).toStrictEqual({
       type: "text",
       status: "equal",

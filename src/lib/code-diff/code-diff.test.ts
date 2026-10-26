@@ -32,6 +32,24 @@ describe("getCodeDiff - general", () => {
       status: "equal",
       diff: [],
     });
+    expect(getCodeDiff("", "")).toStrictEqual({
+      type: "code",
+      status: "equal",
+      diff: [],
+    });
+    expect(getCodeDiff(" ", " ")).toStrictEqual({
+      type: "code",
+      status: "equal",
+      diff: [
+        {
+          line: 1,
+          previousLine: 1,
+          previousValue: " ",
+          status: "equal",
+          value: " ",
+        },
+      ],
+    });
   });
 
   it("marks every line added when there is no previous code", () => {

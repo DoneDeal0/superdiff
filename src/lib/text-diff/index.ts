@@ -71,5 +71,6 @@ export function getTextDiff(
   if (options.detectMoves) {
     return getPositionalTextDiff(previousTokens, currentTokens);
   }
+
   return getLCSTextDiff(previousTokens, currentTokens);
 }

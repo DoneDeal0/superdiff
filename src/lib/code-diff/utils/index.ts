@@ -1,6 +1,7 @@
 import { CodeDiff, CodeStatus } from "@models/code";
 
 export function getDiffStatus(statusMap: Set<CodeStatus>): CodeDiff["status"] {
+  if (statusMap.size === 0) return CodeStatus.EQUAL;
   if (statusMap.has(CodeStatus.UPDATED)) return CodeStatus.UPDATED;
 
   const isUniqueStatus = (status: CodeStatus) => {
