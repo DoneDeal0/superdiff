@@ -8,6 +8,7 @@ import {
 } from "@models/list";
 
 function getDiffStatus(statusMap: Set<ListStatus>): ListStatus {
+  if (statusMap.size === 0) return ListStatus.EQUAL;
   if (statusMap.has(ListStatus.UPDATED)) return ListStatus.UPDATED;
   const isUnique = (status: ListStatus) => {
     for (const s of statusMap) if (s !== status) return false;

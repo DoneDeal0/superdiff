@@ -9,6 +9,13 @@ describe("getObjectDiff", () => {
       diff: [],
     });
   });
+  it("returns an equal diff if both objects are empty", () => {
+    expect(getObjectDiff({}, {})).toStrictEqual({
+      type: "object",
+      status: "equal",
+      diff: [],
+    });
+  });
   it("consider previous object as completely deleted if no next object is provided", () => {
     expect(
       getObjectDiff(

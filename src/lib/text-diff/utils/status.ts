@@ -1,6 +1,7 @@
 import { TextDiff, TextStatus } from "@models/text";
 
 export function getDiffStatus(statusMap: Set<TextStatus>): TextDiff["status"] {
+  if (statusMap.size === 0) return TextStatus.EQUAL;
   if (statusMap.has(TextStatus.UPDATED)) return TextStatus.UPDATED;
 
   const isUniqueStatus = (status: TextStatus) => {
