@@ -1,6 +1,28 @@
 import { isEqual, isObject } from ".";
 
 describe("isEqual", () => {
+  it("compares NaN consistently with native Map keys", () => {
+    expect(isEqual(NaN, NaN)).toBe(true);
+    expect(isEqual(NaN, null)).toBe(false);
+    expect(isEqual(NaN, Infinity)).toBe(false);
+  });
+  it("compares dates by timestamp", () => {
+    expect(isEqual(new Date(0), new Date(0))).toBe(true);
+    expect(isEqual(new Date(0), new Date(1))).toBe(false);
+    expect(isEqual(new Date(0), {})).toBe(false);
+    expect(isEqual({}, new Date(0))).toBe(false);
+  });
+  it("ignores nested array and object property order while preserving duplicate counts", () => {
+    expect(
+      isEqual([[1, 2], { a: 1, b: 2 }], [{ b: 2, a: 1 }, [2, 1]], {
+        ignoreArrayOrder: true,
+      }),
+    ).toBe(true);
+    expect(isEqual([[1, 1, 2]], [[1, 2, 2]], { ignoreArrayOrder: true })).toBe(
+      false,
+    );
+    expect(isEqual([NaN], [null], { ignoreArrayOrder: true })).toBe(false);
+  });
   it("return true if data are the same", () => {
     expect(isEqual(null, null)).toBeTruthy();
     expect(isEqual(undefined, undefined)).toBeTruthy();

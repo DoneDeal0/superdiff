@@ -1,10 +1,9 @@
-import { isEqual, isObject } from "@lib/utils";
+import { isEqual, isObject, stableStringify } from "@lib/utils";
 import {
   DEFAULT_LIST_DIFF_OPTIONS,
   ListStatus,
   ListDiff,
   ListDiffOptions,
-  ListData,
 } from "@models/list";
 
 function getDiffStatus(statusMap: Set<ListStatus>): ListStatus {
@@ -102,153 +101,85 @@ export const getListDiff = <T>(
   }
 
   const diff: ListDiff<T>["diff"] = [];
-  const previousMap = new Map<string, ListData<T>>();
+  const previousMap = new Map<unknown, { indexes: number[]; cursor: number }>();
   const statusMap = new Set<ListStatus>();
   const { referenceKey, ignoreArrayOrder } = options;
-  let containsArrays = false;
+  const stringifyCache = new Map<unknown, string>();
+  const unorderedCache = ignoreArrayOrder
+    ? new Map<unknown, string>()
+    : stringifyCache;
 
-  const stableStringifyCache = new Map<unknown, string>();
-
-  function stableStringifyCached(value: unknown): string {
-    const cached = stableStringifyCache.get(value);
+  function stableStringifyCached(value: unknown, unordered = ignoreArrayOrder) {
+    const cache = unordered ? unorderedCache : stringifyCache;
+    const cached = cache.get(value);
     if (cached !== undefined) return cached;
-    const result = stableStringify(value);
-    stableStringifyCache.set(value, result);
+    const result = stableStringify(value, unordered);
+    cache.set(value, result);
     return result;
   }
 
-  function stableStringify(value: unknown): string {
-    if (isObject(value)) {
-      const keys = Object.keys(value).sort();
-      let res = "{";
-      for (let i = 0; i < keys.length; i++) {
-        const data = keys[i];
-        res += JSON.stringify(data) + ":" + stableStringify(value[data]);
-        if (i < keys.length - 1) res += ",";
-      }
-      return res + "}";
+  function getMatchKey(value: T): unknown {
+    if (
+      referenceKey !== undefined &&
+      isObject(value) &&
+      referenceKey in value
+    ) {
+      return `key:${stableStringifyCached(value[referenceKey], false)}`;
     }
-    if (Array.isArray(value)) {
-      let res = "[";
-      for (let i = 0; i < value.length; i++) {
-        res += stableStringify(value[i]);
-        if (i < value.length - 1) res += ",";
-      }
-      return res + "]";
-    }
-    if (value === undefined) return "undefined";
-    return JSON.stringify(value);
+
+    return (typeof value === "object" && value !== null) ||
+      typeof value === "string"
+      ? stableStringifyCached(value)
+      : value;
   }
 
   for (let i = 0; i < prevList.length; i++) {
-    const prevValue = prevList[i];
-    if (ignoreArrayOrder && !containsArrays && Array.isArray(prevValue)) {
-      containsArrays = true;
-    }
-    let reference: string;
-
-    if (referenceKey && isObject(prevValue) && referenceKey in prevValue) {
-      reference = stableStringifyCached(prevValue[referenceKey]);
-    } else {
-      reference = stableStringifyCached(prevValue);
-    }
-
+    const reference = getMatchKey(prevList[i]);
     const match = previousMap.get(reference);
     if (match) {
       match.indexes.push(i);
     } else {
-      previousMap.set(reference, { value: prevValue, indexes: [i] });
+      previousMap.set(reference, { indexes: [i], cursor: 0 });
     }
   }
 
-  const getPreviousMatch = (nextValue: T) => {
-    let reference: string;
-    let previousMatch: ListData<T> | undefined;
-    let isStrictEqual = false;
+  for (let i = 0; i < nextList.length; i++) {
+    const nextValue = nextList[i];
+    const reference = getMatchKey(nextValue);
+    const previousMatch = previousMap.get(reference);
 
-    if (referenceKey && isObject(nextValue) && referenceKey in nextValue) {
-      reference = stableStringifyCached(nextValue[referenceKey]);
-      previousMatch = previousMap.get(reference);
-      if (previousMatch) {
-        isStrictEqual = isEqual(previousMatch.value, nextValue, {
-          ignoreArrayOrder,
-        });
-      }
-    } else {
-      reference = stableStringifyCached(nextValue);
-      previousMatch = previousMap.get(reference);
-
-      if (!previousMatch && ignoreArrayOrder && containsArrays) {
-        for (const prev of previousMap.values()) {
-          if (isEqual(prev.value, nextValue, { ignoreArrayOrder })) {
-            previousMatch = prev;
-            break;
-          }
-        }
-      }
-
-      if (previousMatch) {
-        isStrictEqual = true;
-      }
-    }
-
-    return { previousMatch, reference, isStrictEqual };
-  };
-
-  const injectNextValueInDiff = (
-    nextValue: T,
-    previousMatch: ListData<T> | undefined,
-    nextIndex: number,
-    reference: string,
-    isStrictEqual: boolean,
-  ) => {
     if (previousMatch) {
-      const previousIndex = previousMatch.indexes[0];
-      const indexDiff = nextIndex - previousIndex;
-      const nextStatus = getNextStatus(indexDiff, isStrictEqual, options);
+      const previousIndex = previousMatch.indexes[previousMatch.cursor++];
+      const isStrictEqual =
+        referenceKey === undefined ||
+        !isObject(nextValue) ||
+        !(referenceKey in nextValue) ||
+        isEqual(prevList[previousIndex], nextValue, options);
+      const status = getNextStatus(i - previousIndex, isStrictEqual, options);
+      diff.push({ value: nextValue, previousIndex, index: i, status });
+      statusMap.add(status);
 
-      diff.push({
-        value: nextValue,
-        previousIndex,
-        index: nextIndex,
-        status: nextStatus,
-      });
-      statusMap.add(nextStatus);
-
-      previousMatch.indexes.shift();
-      if (previousMatch.indexes.length === 0) {
+      if (previousMatch.cursor === previousMatch.indexes.length) {
         previousMap.delete(reference);
       }
     } else {
       diff.push({
         value: nextValue,
         previousIndex: null,
-        index: nextIndex,
+        index: i,
         status: ListStatus.ADDED,
       });
       statusMap.add(ListStatus.ADDED);
     }
-  };
-
-  for (let i = 0; i < nextList.length; i++) {
-    const nextValue = nextList[i];
-    const { previousMatch, reference, isStrictEqual } =
-      getPreviousMatch(nextValue);
-    injectNextValueInDiff(
-      nextValue,
-      previousMatch,
-      i,
-      reference,
-      isStrictEqual,
-    );
   }
 
-  for (const prevData of previousMap.values()) {
+  for (const previousMatch of previousMap.values()) {
     statusMap.add(ListStatus.DELETED);
-    for (let i = 0; i < prevData.indexes.length; i++) {
+    for (let i = previousMatch.cursor; i < previousMatch.indexes.length; i++) {
+      const previousIndex = previousMatch.indexes[i];
       diff.push({
-        value: prevData.value,
-        previousIndex: prevData.indexes[i],
+        value: prevList[previousIndex],
+        previousIndex,
         index: null,
         status: ListStatus.DELETED,
       });
