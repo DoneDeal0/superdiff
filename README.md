@@ -308,7 +308,7 @@ Compares two arrays and returns a diff for each entry. Supports duplicate values
   nextList: T[];
   options?: {
     showOnly?: ("added" | "deleted" | "moved" | "updated" | "equal")[], // [] by default
-    referenceKey?: string, // "" by default
+    referenceKey?: string, // undefined by default
     ignoreArrayOrder?: boolean, // false by default,
     considerMoveAsUpdate?: boolean // false by default
   }
